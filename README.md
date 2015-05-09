@@ -10,7 +10,11 @@ EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，�
 - 日志内容可包含级别、时间戳、线程、进程信息；
 - 日志输出被设计为线程安全的方式；
 - 支持多种操作系统（[RT-Thread](http://www.rt-thread.org/)、UCOS、Linux、Windows...），也支持裸机平台；
-- 日志支持 **RAW格式** [^raw]，可设定按 **标签** [^tag]进行过滤。
+- 日志支持 **RAW格式** ,可设定按 **标签** 进行过滤。
+
+> 名词解释：
+1、RAW格式：未经过格式化的原始日志。
+2、标签：在软件中可以按照文件、模块、功能等方面，对需要打印的日志设定标签，实现日志分类。
 
 # 2. 使用
 
@@ -66,13 +70,11 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 - 终端：方便用户动态查看，不具有存储功能；
 - 文件与Flash：都具有存储功能，用户可以查看历史日志。但是文件方式需要文件系统的支持，而Flash方式更加适合应用在无文件系统的小型嵌入式设备中。
 
-> 注：
-1、文件与Flash输出方式的插件优先级较低，会在后期实现；
-2、以上内容对应的API，可以打开[思维导图](http://naotu.baidu.com/viewshare.html?shareId=ausqm3j44f4k)看到更清晰的逻辑。
+> 注：以上内容对应的API，可以打开[思维导图](http://naotu.baidu.com/viewshare.html?shareId=ausqm3j44f4k)看到更清晰的逻辑。
 
 # 3. 后期
 
-- 1、Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)[^EasyFlash]中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，并具有历史日检索的功能；
+- 1、Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，并具有历史日检索的功能；
 - 2、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也会放到异步输出中去；
 - 3、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等，计划使用[NW.js](http://www.oschina.net/p/nwjs)框架；
 - 4、文件转档：文件系统下支持文件按容量转档，按时间区分；
@@ -82,11 +84,3 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 # 4. 许可
 
 GPL v3.0 Copyright (c) armink.ztl@gmail.com
-
-[^raw]:未经过格式化的原始日志。
-
-[^tag]:在软件中可以按照文件、模块、功能等方面，对需要打印的日志设定标签，实现日志分类。
-
-[^EasyFlash]:一个我开源的轻量级嵌入式Flash闪存库([Github](https://github.com/armink/EasyFlash)|[OSChina](http://git.oschina.net/armink/EasyFlash)|[Coding](https://coding.net/u/armink/p/EasyFlash/git))。
-
-
