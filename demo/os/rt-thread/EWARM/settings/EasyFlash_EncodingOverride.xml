@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<userOverrides>
+  <override>
+    <path>E:\Program\Repository\FreeModbus_Slaver-Master-RTT-STM32\APP\src\app_task.c</path>
+    <encoding>GB2312</encoding>
+  </override>
+</userOverrides>
+
+

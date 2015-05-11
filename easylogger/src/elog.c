@@ -206,7 +206,8 @@ void elog_raw(const char *format, ...) {
 void elog_output(uint8_t level, const char *tag, const char *file, const char *func,
         const long line, const char *format, ...) {
     size_t tag_len = strlen(tag), log_len = 0;
-    char line_num[ELOG_LINE_NUM_MAX_LEN] = { 0 };
+    char line_num[ELOG_LINE_NUM_MAX_LEN + 1] = { 0 };
+    char tag_sapce[ELOG_FILTER_TAG_MAX_LEN / 2 + 1] = { 0 };
     va_list args;
     int fmt_result;
 
@@ -239,8 +240,8 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, tag);
         /* if the tag length is less than 50% ELOG_FILTER_TAG_MAX_LEN, then fill space */
         if (tag_len <= ELOG_FILTER_TAG_MAX_LEN / 2) {
-            // memset(log_buf + log_len, ' ', ELOG_FILTER_TAG_MAX_LEN / 2 - tag_len);
-            // log_len += ELOG_FILTER_TAG_MAX_LEN / 2 - tag_len;
+             memset(tag_sapce, ' ', ELOG_FILTER_TAG_MAX_LEN / 2 - tag_len);
+             log_len += elog_strcpy(log_len, log_buf + log_len, tag_sapce);
         }
         log_len += elog_strcpy(log_len, log_buf + log_len, " ");
     }
@@ -305,9 +306,13 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     /* package other log data to buffer. CRLF length is 2. */
     fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - 2, format, args);
 
+    va_end(args);
+
     /* keyword filter */
     if (!strstr(log_buf, elog.filter.keyword)) {
         //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
+        /* unlock output */
+        elog_port_output_unlock();
         return;
     }
 
@@ -332,8 +337,6 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 
     /* unlock output */
     elog_port_output_unlock();
-
-    va_end(args);
 }
 
 /**
