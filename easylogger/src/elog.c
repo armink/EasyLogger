@@ -295,7 +295,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
         }
-        log_len += elog_strcpy(log_len, log_buf + log_len, ") ");
+        log_len += elog_strcpy(log_len, log_buf + log_len, ")");
     }
 
     /* add space and colon sign */
