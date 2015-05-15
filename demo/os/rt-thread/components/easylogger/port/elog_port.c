@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Function: Portable interface for each platform.
+ * Function: Portable interface for RT-Thread.
  * Created on: 2015-04-28
  */
 
@@ -44,7 +44,7 @@ ElogErrCode elog_port_init(void) {
  */
 void elog_port_output(const char *output, size_t size) {
     /* output to terminal */
-    rt_kprintf("%s", output);
+    rt_kprintf("%.*s", size, output);
     //TODO output to flash
 }
 

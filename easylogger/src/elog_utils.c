@@ -35,7 +35,7 @@ size_t elog_strcpy(size_t cur_len, char *dst, const char *src) {
     const char *src_old = src;
     while (*src != 0) {
         /* make sure destination has enough space */
-        if (cur_len++ < ELOG_BUF_SIZE) {
+        if (cur_len++ <= ELOG_BUF_SIZE) {
             *dst++ = *src++;
         } else {
             break;

@@ -240,8 +240,8 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, tag);
         /* if the tag length is less than 50% ELOG_FILTER_TAG_MAX_LEN, then fill space */
         if (tag_len <= ELOG_FILTER_TAG_MAX_LEN / 2) {
-             memset(tag_sapce, ' ', ELOG_FILTER_TAG_MAX_LEN / 2 - tag_len);
-             log_len += elog_strcpy(log_len, log_buf + log_len, tag_sapce);
+            memset(tag_sapce, ' ', ELOG_FILTER_TAG_MAX_LEN / 2 - tag_len);
+            log_len += elog_strcpy(log_len, log_buf + log_len, tag_sapce);
         }
         log_len += elog_strcpy(log_len, log_buf + log_len, " ");
     }
@@ -303,8 +303,8 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, ": ");
     }
 
-    /* package other log data to buffer. CRLF length is 2. */
-    fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - 2, format, args);
+    /* package other log data to buffer. CRLF length is 2. '\0' must be add in the end. */
+    fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - 2 + 1, format, args);
 
     va_end(args);
 
@@ -316,20 +316,16 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         return;
     }
 
-    /* package end sign( CRLF and '\0' ) */
-    if ((fmt_result > -1) && (fmt_result + log_len + 2 < ELOG_BUF_SIZE)) {
+    /* package CRLF */
+    if ((fmt_result > -1) && (fmt_result + log_len + 2 <= ELOG_BUF_SIZE)) {
         log_len += fmt_result;
-        /* add CRLF */
+        /* add CRLF, cut the '\0' */
         log_len += elog_strcpy(log_len, log_buf + log_len, "\r\n");
-        /* add '\0' */
-        log_buf[log_len++] = '\0';
 
     } else {
         /* add CRLF */
-        log_buf[ELOG_BUF_SIZE - 3] = '\r';
-        log_buf[ELOG_BUF_SIZE - 2] = '\n';
-        /* add log end sign */
-        log_buf[ELOG_BUF_SIZE - 1] = '\0';
+        log_buf[ELOG_BUF_SIZE - 2] = '\r';
+        log_buf[ELOG_BUF_SIZE - 1] = '\n';
     }
 
     /* output log */
