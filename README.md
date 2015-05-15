@@ -74,7 +74,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger各项功能。
 
-![easylogger](https://raw.githubusercontent.com/armink/EasyLogger/master/easylogger/docs/images/EasyLoggerDemo.gif)
+![easylogger](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/images/EasyLoggerDemo.gif)
 
 > 注：以上内容对应的API，可以打开[思维导图](http://naotu.baidu.com/viewshare.html?shareId=ausqm3j44f4k)看到更清晰的逻辑。
 
