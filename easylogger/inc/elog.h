@@ -27,10 +27,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#ifndef NULL
-    #define NULL 0
-#endif
-
 /* output log's level */
 #define ELOG_LVL_ASSERT                      0
 #define ELOG_LVL_ERROR                       1
