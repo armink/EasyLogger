@@ -36,7 +36,7 @@ typedef struct {
 typedef struct {
     ElogFilter filter;
     size_t enabled_fmt_set;
-    bool_t output_enabled;
+    bool output_enabled;
 }EasyLogger, *EasyLogger_t;
 
 /* EasyLogger object */
@@ -54,7 +54,7 @@ static const char *level_output_info[] = {
         "D/",
         "V/",
 };
-static bool_t get_fmt_enabled(size_t set);
+static bool get_fmt_enabled(size_t set);
 
 /**
  * EasyLogger initialize.
@@ -69,7 +69,7 @@ ElogErrCode elog_init(void) {
     /* set level is ELOG_LVL_VERBOSE */
     elog_set_filter_lvl(ELOG_LVL_VERBOSE);
     /* enable output */
-    elog_set_output_enabled(TRUE);
+    elog_set_output_enabled(true);
 
     if (result == ELOG_NO_ERR) {
         elog_d(tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
@@ -84,8 +84,8 @@ ElogErrCode elog_init(void) {
  *
  * @param enabled TRUE: enable FALSE: disable
  */
-void elog_set_output_enabled(bool_t enabled) {
-    ELOG_ASSERT((enabled == FALSE) || (enabled == TRUE));
+void elog_set_output_enabled(bool enabled) {
+    ELOG_ASSERT((enabled == false) || (enabled == true));
 
     elog.output_enabled = enabled;
 }
@@ -95,7 +95,7 @@ void elog_set_output_enabled(bool_t enabled) {
  *
  * @return enable or disable
  */
-bool_t elog_get_output_enabled(void) {
+bool elog_get_output_enabled(void) {
     return elog.output_enabled;
 }
 
@@ -303,7 +303,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, ": ");
     }
 
-    /* package other log data to buffer. CRLF length is 2. '\0' must be add in the end. */
+    /* package other log data to buffer. CRLF length is 2. '\0' must be added in the end by vsnprintf. */
     fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - 2 + 1, format, args);
 
     va_end(args);
@@ -319,11 +319,9 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     /* package CRLF */
     if ((fmt_result > -1) && (fmt_result + log_len + 2 <= ELOG_BUF_SIZE)) {
         log_len += fmt_result;
-        /* add CRLF, cut the '\0' */
         log_len += elog_strcpy(log_len, log_buf + log_len, "\r\n");
 
     } else {
-        /* add CRLF */
         log_buf[ELOG_BUF_SIZE - 2] = '\r';
         log_buf[ELOG_BUF_SIZE - 1] = '\n';
     }
@@ -342,10 +340,10 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
  *
  * @return enable or disable
  */
-static bool_t get_fmt_enabled(size_t set) {
+static bool get_fmt_enabled(size_t set) {
     if (elog.enabled_fmt_set & set) {
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }

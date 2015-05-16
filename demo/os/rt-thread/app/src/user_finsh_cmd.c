@@ -27,9 +27,9 @@ MSH_CMD_EXPORT(get_cpuusage, Get control board cpu usage);
 static void elog(uint8_t argc, char **argv) {
     if (argc > 1) {
         if (!strcmp(argv[1], "on") || !strcmp(argv[1], "ON")) {
-            elog_set_output_enabled(TRUE);
+            elog_set_output_enabled(true);
         } else if (!strcmp(argv[1], "off") || !strcmp(argv[1], "OFF")) {
-            elog_set_output_enabled(FALSE);
+            elog_set_output_enabled(false);
         } else {
             rt_kprintf("Please input elog on or elog off.\n");
         }

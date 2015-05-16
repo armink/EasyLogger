@@ -23,7 +23,13 @@
 #ifndef __ELOG_H__
 #define __ELOG_H__
 
-#include "types.h"
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+
+#ifndef NULL
+    #define NULL 0
+#endif
 
 /* output log's level */
 #define ELOG_LVL_ASSERT                      0
@@ -47,7 +53,7 @@
 /* output filter's keyword max length */
 #define ELOG_FILTER_KW_MAX_LEN               16
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.05.15"
+#define ELOG_SW_VERSION                      "0.05.16"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                   \
@@ -76,8 +82,8 @@ typedef enum {
 
 /* elog.c */
 ElogErrCode elog_init(void);
-void elog_set_output_enabled(bool_t enabled);
-bool_t elog_get_output_enabled(void);
+void elog_set_output_enabled(bool enabled);
+bool elog_get_output_enabled(void);
 void elog_set_fmt(size_t set);
 void elog_set_filter(uint8_t level, const char *tag, const char *keyword);
 void elog_set_filter_lvl(uint8_t level);
