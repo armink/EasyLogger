@@ -27,6 +27,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* output log's level */
 #define ELOG_LVL_ASSERT                      0
 #define ELOG_LVL_ERROR                       1
@@ -49,7 +53,7 @@
 /* output filter's keyword max length */
 #define ELOG_FILTER_KW_MAX_LEN               16
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.05.16"
+#define ELOG_SW_VERSION                      "0.05.25"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                   \
@@ -154,5 +158,8 @@ const char *elog_port_get_time(void);
 const char *elog_port_get_p_info(void);
 const char *elog_port_get_t_info(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __ELOG_H__ */
