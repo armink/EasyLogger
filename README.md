@@ -4,7 +4,9 @@
 
 # 1. 介绍
 
-EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，非常适合对资源敏感的嵌入式软件。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展，非常适合应用于小型的非嵌入式软件。EasyLogger主要特性如下：
+EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，非常适合对资源敏感的嵌入式软件。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展，非常适合应用于小型的非嵌入式软件。
+
+## 1.1 主要特性
 
 - 支持用户自定义输出方式（例如: 终端、文件、串口、485、Flash...）；
 - 日志内容可包含级别、时间戳、线程、进程信息；
@@ -17,9 +19,11 @@ EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，�
 1、RAW格式：未经过格式化的原始日志。
 2、标签：在软件中可以按照文件、模块、功能等方面，对需要打印的日志设定标签，实现日志分类。
 
-EasyLogger目前支持的插件有：
+## 1.2 支持的插件
 
 - 1. Flash Log: 使用[EasyFlash](https://github.com/armink/EasyFlash)库提供的无缝接口，可以把日志直接存储在Flash中。
+
+## 1.3 Fork & Start
 
 后续我还会提供更多插件。也非常欢迎大家设计、开发更多实用插件和功能，一起来完善EasyLogger **([Github](https://github.com/armink/EasyLogger)|[OSChina](http://git.oschina.net/armink/EasyLogger)|[Coding](https://coding.net/u/armink/p/EasyLogger/git))** ，同时把它推广给更多有需要的朋友。
 

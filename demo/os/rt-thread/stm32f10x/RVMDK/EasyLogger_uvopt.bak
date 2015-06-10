@@ -414,7 +414,7 @@
       <TopLine>0</TopLine>
       <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\easylogger\src\elog.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\easylogger\src\elog.c</PathWithFileName>
       <FilenameWithoutPath>elog.c</FilenameWithoutPath>
     </File>
     <File>
@@ -428,7 +428,7 @@
       <TopLine>0</TopLine>
       <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\easylogger\src\elog_utils.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\easylogger\src\elog_utils.c</PathWithFileName>
       <FilenameWithoutPath>elog_utils.c</FilenameWithoutPath>
     </File>
   </Group>

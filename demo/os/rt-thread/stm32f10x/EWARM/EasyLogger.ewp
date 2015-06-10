@@ -305,7 +305,7 @@
           <state>$PROJ_DIR$\..\RT-Thread-1.2.2\components\finsh</state>
           <state>$PROJ_DIR$\..\Libraries\CMSIS_EWARM\Include</state>
           <state>$PROJ_DIR$\..\Libraries\CMSIS_EWARM\CM3\DeviceSupport\ST\STM32F10x</state>
-          <state>$PROJ_DIR$\..\..\..\..\easylogger\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\easylogger\inc</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -961,10 +961,10 @@
       <group>
         <name>src</name>
         <file>
-          <name>$PROJ_DIR$\..\..\..\..\easylogger\src\elog.c</name>
+          <name>$PROJ_DIR$\..\..\..\..\..\easylogger\src\elog.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\..\..\easylogger\src\elog_utils.c</name>
+          <name>$PROJ_DIR$\..\..\..\..\..\easylogger\src\elog_utils.c</name>
         </file>
       </group>
     </group>
