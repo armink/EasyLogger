@@ -66,14 +66,24 @@ ElogErrCode elog_flash_init(void) {
 }
 
 /**
- * Read and output all log which saved in flash. @note It will use filter. @see elog_flash_set_filter
+ * Read and output log which saved in flash.
+ *
+ * @param index index for saved log.
+ *        Minimum index is 0.
+ *        Maximum index is log used flash total size - 1.
+ * @param size
  */
-void elog_flash_outout_all(void) {
+void elog_flash_outout(size_t index, size_t size) {
     /* 128 bytes buffer */
     uint32_t buf[32] = { 0 };
     size_t log_total_size = flash_log_get_used_size();
     size_t buf_szie = sizeof(buf);
     size_t read_size = 0, read_overage_size = 0;
+
+    if (index + size > log_total_size) {
+        log_i("The output position and size is out of bound. The max size is %d.", log_total_size);
+        return;
+    }
 
     /* must be call this function after initialize OK */
     ELOG_ASSERT(init_ok);
@@ -81,19 +91,21 @@ void elog_flash_outout_all(void) {
     elog_flash_port_lock();
     /* Output all flash saved log. It will use filter */
     while (true) {
-        if (read_size + buf_szie < log_total_size) {
-            flash_log_read(read_size, buf, buf_szie);
+        if (index + read_size + buf_szie < log_total_size) {
+            flash_log_read(index + read_size, buf, buf_szie);
             elog_flash_port_output((const char*)buf, buf_szie);
             read_size += buf_szie;
         } else {
             /* flash read is word alignment */
-            if ((log_total_size - read_size) % 4 == 0) {
+            if ((log_total_size - index - read_size) % 4 == 0) {
                 read_overage_size = 0;
             } else {
-                read_overage_size = 4 - ((log_total_size - read_size) % 4);
+                read_overage_size = 4 - ((log_total_size - index - read_size) % 4);
             }
-            flash_log_read(read_size, buf, log_total_size - read_size + read_overage_size);
-            elog_flash_port_output((const char*)buf, log_total_size - read_size);
+            flash_log_read(index + read_size - read_overage_size, buf,
+                    log_total_size - index - read_size + read_overage_size);
+            elog_flash_port_output((const char*) buf + read_overage_size,
+                    log_total_size - index - read_size);
             //TODO CRLF 后期需要统一在头文件宏定义
             elog_flash_port_output("\r\n", 2);
             break;
@@ -101,6 +113,27 @@ void elog_flash_outout_all(void) {
     }
     /* unlock flash log buffer */
     elog_flash_port_unlock();
+}
+
+/**
+ * Read and output all log which saved in flash.
+ */
+void elog_flash_outout_all(void) {
+    elog_flash_outout(0, flash_log_get_used_size());
+}
+
+/**
+ * Read and output recent log which saved in flash.
+ *
+ * @param size recent log size
+ */
+void elog_flash_outout_recent(size_t size) {
+    size_t max_size = flash_log_get_used_size();
+    if (size > max_size) {
+        log_i("The output size is out of bound. The max size is %d.", max_size);
+    } else {
+        elog_flash_outout(max_size - size, size);
+    }
 }
 
 /**

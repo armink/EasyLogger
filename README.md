@@ -19,7 +19,7 @@ EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，�
 1、RAW格式：未经过格式化的原始日志。
 2、标签：在软件中可以按照文件、模块、功能等方面，对需要打印的日志设定标签，实现日志分类。
 
-## 1.2 支持的插件
+## 1.2 插件
 
 - 1. Flash Log: 使用[EasyFlash](https://github.com/armink/EasyFlash)库提供的无缝接口，可以把日志直接存储在Flash中。
 
