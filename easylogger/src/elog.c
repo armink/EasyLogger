@@ -25,26 +25,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-/* output log's filter */
-typedef struct {
-    uint8_t level;
-    char tag[ELOG_FILTER_TAG_MAX_LEN + 1];
-    char keyword[ELOG_FILTER_KW_MAX_LEN + 1];
-} ElogFilter, *ElogFilter_t;
-
-/* easy logger */
-typedef struct {
-    ElogFilter filter;
-    size_t enabled_fmt_set;
-    bool output_enabled;
-}EasyLogger, *EasyLogger_t;
-
 /* EasyLogger object */
 static EasyLogger elog;
 /* log buffer */
 static char log_buf[ELOG_BUF_SIZE] = { 0 };
 /* log tag */
-static const char *tag = "ELOG";
+static const char *tag = "elog";
 /* level output info */
 static const char *level_output_info[] = {
         "A/",
@@ -68,15 +54,18 @@ ElogErrCode elog_init(void) {
     result = elog_port_init();
     /* set level is ELOG_LVL_VERBOSE */
     elog_set_filter_lvl(ELOG_LVL_VERBOSE);
+
+    return result;
+}
+
+/**
+ * EasyLogger start after initialize.
+ */
+void elog_start(void) {
     /* enable output */
     elog_set_output_enabled(true);
-
-    if (result == ELOG_NO_ERR) {
-        elog_d(tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
-    } else {
-        elog_d(tag, "EasyLogger V%s is initialize fail.", ELOG_SW_VERSION);
-    }
-    return result;
+    /* show version */
+    elog_i(tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
 }
 
 /**

@@ -21,6 +21,8 @@
  */
  
 #include "elog.h"
+/* @note If you don't use flash log plugin, you can delete this include. */
+#include "elog_flash.h"
 
 /**
  * EasyLogger port initialize
@@ -30,8 +32,8 @@
 ElogErrCode elog_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
-	//add your code here
-	
+    /* add your code here */
+    
     return result;
 }
 
@@ -39,28 +41,56 @@ ElogErrCode elog_port_init(void) {
  * output log port interface
  */
 void elog_port_output(const char *output, size_t size) {
-	
-    //add your code here
-	
+    
+    /* add your code here */
+    
+}
+
+/**
+ * output flash saved log port interface
+ */
+void elog_flash_port_output(const char *output, size_t size) {
+    
+    /* If used flash log plugin, then you must implement this function. */
+    
 }
 
 /**
  * output lock
  */
 void elog_port_output_lock(void) {
-	
-    //add your code here
-	
+    
+    /* add your code here */
+    
 }
 
 /**
  * output unlock
  */
 void elog_port_output_unlock(void) {
-	
-    //add your code here
-	
+    
+    /* add your code here */
+    
 }
+
+/**
+ * flash log lock
+ */
+void elog_flash_port_lock(void) {
+    
+    /* If used flash log plugin, then you must implement this function. */
+    
+}
+
+/**
+ * flash log unlock
+ */
+void elog_flash_port_unlock(void) {
+    
+    /* If used flash log plugin, then you must implement this function. */
+    
+}
+
 
 /**
  * get current time interface
@@ -68,9 +98,9 @@ void elog_port_output_unlock(void) {
  * @return current time
  */
 const char *elog_port_get_time(void) {
-	
-    //add your code here
-	
+    
+    /* add your code here */
+    
 }
 
 /**
@@ -79,9 +109,9 @@ const char *elog_port_get_time(void) {
  * @return current process name
  */
 const char *elog_port_get_p_info(void) {
-	
-    //add your code here
-	
+    
+    /* add your code here */
+    
 }
 
 /**
@@ -90,7 +120,7 @@ const char *elog_port_get_p_info(void) {
  * @return current thread name
  */
 const char *elog_port_get_t_info(void) {
-	
-    //add your code here
-	
+    
+    /* add your code here */
+    
 }

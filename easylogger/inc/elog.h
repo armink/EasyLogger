@@ -53,13 +53,13 @@ extern "C" {
 /* output filter's keyword max length */
 #define ELOG_FILTER_KW_MAX_LEN               16
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.05.25"
+#define ELOG_SW_VERSION                      "0.06.09"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                   \
 if (!(EXPR))                                                                \
 {                                                                           \
-    elog_a("ELOG", "(%s) has assert failed at %s.\n", #EXPR, __FUNCTION__); \
+    elog_a("elog", "(%s) has assert failed at %s.\n", #EXPR, __FUNCTION__); \
     while (1);                                                              \
 }
 
@@ -75,6 +75,20 @@ typedef enum {
     ELOG_FMT_LINE   = 1 << 7, /**< line number */
 } ElogFmtIndex;
 
+/* output log's filter */
+typedef struct {
+    uint8_t level;
+    char tag[ELOG_FILTER_TAG_MAX_LEN + 1];
+    char keyword[ELOG_FILTER_KW_MAX_LEN + 1];
+} ElogFilter, *ElogFilter_t;
+
+/* easy logger */
+typedef struct {
+    ElogFilter filter;
+    size_t enabled_fmt_set;
+    bool output_enabled;
+}EasyLogger, *EasyLogger_t;
+
 /* EasyLogger error code */
 typedef enum {
     ELOG_NO_ERR,
@@ -82,6 +96,7 @@ typedef enum {
 
 /* elog.c */
 ElogErrCode elog_init(void);
+void elog_start(void);
 void elog_set_output_enabled(bool enabled);
 bool elog_get_output_enabled(void);
 void elog_set_fmt(size_t set);

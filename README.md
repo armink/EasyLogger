@@ -4,17 +4,24 @@
 
 # 1. 介绍
 
-EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，非常适合对资源敏感的嵌入式软件。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，也非常适合应用于小型的非嵌入式软件。EasyLogger主要特性如下：
+EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3k)、高性能的C日志库，非常适合对资源敏感的嵌入式软件。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展，非常适合应用于小型的非嵌入式软件。EasyLogger主要特性如下：
 
-- 支持多种输出方式（终端、文件、串口、485、Flash...）；
+- 支持用户自定义输出方式（例如: 终端、文件、串口、485、Flash...）；
 - 日志内容可包含级别、时间戳、线程、进程信息；
 - 日志输出被设计为线程安全的方式；
 - 支持多种操作系统（[RT-Thread](http://www.rt-thread.org/)、UCOS、Linux、Windows...），也支持裸机平台；
-- 日志支持 **RAW格式** ,可设定按 **标签** 进行过滤。
+- 日志支持 **RAW格式** ,可设定按 **标签** 进行过滤；
+- 扩展性强，支持已插件形式扩展新功能。
 
 > 名词解释：
 1、RAW格式：未经过格式化的原始日志。
 2、标签：在软件中可以按照文件、模块、功能等方面，对需要打印的日志设定标签，实现日志分类。
+
+EasyLogger目前支持的插件有：
+
+- 1. Flash Log: 使用[EasyFlash](https://github.com/armink/EasyFlash)库提供的无缝接口，可以把日志直接存储在Flash中。
+
+后续我还会提供更多插件。也非常欢迎大家设计、开发更多实用插件和功能，一起来完善EasyLogger **([Github](https://github.com/armink/EasyLogger)|[OSChina](http://git.oschina.net/armink/EasyLogger)|[Coding](https://coding.net/u/armink/p/EasyLogger/git))** ，同时把它推广给更多有需要的朋友。
 
 # 2. 使用
 
@@ -72,7 +79,9 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.6 Demo
 
-下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger各项功能。
+### 2.6.1 核心功能
+
+下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger核心功能。
 
 ![easylogger](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/images/EasyLoggerDemo.gif)
 
@@ -80,7 +89,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 # 3. 后期
 
-- 1、Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，并具有历史日检索的功能；
+- ~~1、Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，~~并具有历史日检索的功能；
 - 2、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也会放到异步输出中去；
 - 3、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等，计划使用[NW.js](http://www.oschina.net/p/nwjs)框架；
 - 4、文件转档：文件系统下支持文件按容量转档，按时间区分；
