@@ -87,13 +87,19 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger核心功能。
 
-![easylogger](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/images/EasyLoggerDemo.gif)
+![easylogger](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/EasyLoggerDemo.gif)
 
 > 注：以上内容对应的API，可以打开[思维导图](http://naotu.baidu.com/viewshare.html?shareId=ausqm3j44f4k)看到更清晰的逻辑。
 
+### 2.6.2 Flash Log
+
+下图过程为通过控制台输出日志，并将输出的日志存储到Flash中。重启再读取上次保存的日志，最后清空Flash日志。
+
+![FlashLog](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/LogDemo.gif)
+
 # 3. 后期
 
-- ~~1、Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，~~并具有历史日检索的功能；
+- 1、~~Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，~~并具有历史日检索的功能；
 - 2、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也会放到异步输出中去；
 - 3、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等，计划使用[NW.js](http://www.oschina.net/p/nwjs)框架；
 - 4、文件转档：文件系统下支持文件按容量转档，按时间区分；
