@@ -200,7 +200,7 @@ void elog_raw(const char *format, ...) {
  */
 void elog_output(uint8_t level, const char *tag, const char *file, const char *func,
         const long line, const char *format, ...) {
-    size_t tag_len = strlen(tag), log_len = 0;
+    size_t tag_len = strlen(tag), log_len = 0, newline_len = strlen(ELOG_NEWLINE_SIGN);
     char line_num[ELOG_LINE_NUM_MAX_LEN + 1] = { 0 };
     char tag_sapce[ELOG_FILTER_TAG_MAX_LEN / 2 + 1] = { 0 };
     va_list args;
@@ -298,8 +298,8 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, ": ");
     }
 
-    /* package other log data to buffer. CRLF length is 2. '\0' must be added in the end by vsnprintf. */
-    fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - 2 + 1, format, args);
+    /* package other log data to buffer. '\0' must be added in the end by vsnprintf. */
+    fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - newline_len + 1, format, args);
 
     va_end(args);
 
@@ -312,13 +312,13 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     }
 
     /* package CRLF */
-    if ((fmt_result > -1) && (fmt_result + log_len + 2 <= ELOG_BUF_SIZE)) {
+    if ((fmt_result > -1) && (fmt_result + log_len + newline_len <= ELOG_BUF_SIZE)) {
         log_len += fmt_result;
-        log_len += elog_strcpy(log_len, log_buf + log_len, "\r\n");
+        log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);
 
     } else {
-        log_buf[ELOG_BUF_SIZE - 2] = '\r';
-        log_buf[ELOG_BUF_SIZE - 1] = '\n';
+        /* copy newline sign */
+        strcpy(log_buf - newline_len, ELOG_NEWLINE_SIGN);
     }
 
     /* output log */

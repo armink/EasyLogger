@@ -109,4 +109,4 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 # 4. 许可
 
-MIT Copyright (c) armink (armink.ztl@gmail.com)
+MIT Copyright (c) armink.ztl@gmail.com

@@ -58,8 +58,10 @@ extern "C" {
 #define ELOG_FILTER_TAG_MAX_LEN              16
 /* output filter's keyword max length */
 #define ELOG_FILTER_KW_MAX_LEN               16
+/* output newline sign */
+#define ELOG_NEWLINE_SIGN                    "\r\n"
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.06.09"
+#define ELOG_SW_VERSION                      "0.06.23"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                   \

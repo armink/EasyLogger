@@ -112,8 +112,8 @@ void elog_flash_outout(size_t index, size_t size) {
                     log_total_size - index - read_size + read_overage_size);
             elog_flash_port_output((const char*) buf + read_overage_size,
                     log_total_size - index - read_size);
-            //TODO CRLF 后期需要统一在头文件宏定义
-            elog_flash_port_output("\r\n", 2);
+            /* output newline sign */
+            elog_flash_port_output(ELOG_NEWLINE_SIGN, strlen(ELOG_NEWLINE_SIGN));
             break;
         }
     }
