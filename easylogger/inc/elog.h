@@ -61,7 +61,7 @@ extern "C" {
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\r\n"
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.06.23"
+#define ELOG_SW_VERSION                      "0.06.24"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                   \
@@ -128,46 +128,53 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 #else /* ELOG_OUTPUT_ENABLE */
 
 #if ELOG_OUTPUT_LVL >= ELOG_LVL_ASSERT
-#define elog_a(tag, ...) \
+#define elog_assert(tag, ...) \
         elog_output(ELOG_LVL_ASSERT, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #else
-#define elog_a(tag, ...)
+#define elog_assert(tag, ...)
 #endif
 
 #if ELOG_OUTPUT_LVL >= ELOG_LVL_ERROR
-#define elog_e(tag, ...) \
+#define elog_error(tag, ...) \
         elog_output(ELOG_LVL_ERROR, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #else
-#define elog_e(tag, ...)
+#define elog_error(tag, ...)
 #endif
 
 #if ELOG_OUTPUT_LVL >= ELOG_LVL_WARN
-#define elog_w(tag, ...) \
+#define elog_warn(tag, ...) \
         elog_output(ELOG_LVL_WARN, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #else
-#define elog_w(tag, ...)
+#define elog_warn(tag, ...)
 #endif
 
 #if ELOG_OUTPUT_LVL >= ELOG_LVL_INFO
-#define elog_i(tag, ...) \
+#define elog_info(tag, ...) \
         elog_output(ELOG_LVL_INFO, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #else
-#define elog_i(tag, ...)
+#define elog_info(tag, ...)
 #endif
 
 #if ELOG_OUTPUT_LVL >= ELOG_LVL_DEBUG
-#define elog_d(tag, ...) \
+#define elog_debug(tag, ...) \
         elog_output(ELOG_LVL_DEBUG, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #else
-#define elog_d(tag, ...)
+#define elog_debug(tag, ...)
 #endif
 
 #if ELOG_OUTPUT_LVL == ELOG_LVL_VERBOSE
-#define elog_v(tag, ...) \
+#define elog_verbose(tag, ...) \
         elog_output(ELOG_LVL_VERBOSE, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #endif
 
 #endif /* ELOG_OUTPUT_ENABLE */
+
+#define elog_a(tag, ...)    elog_assert(tag, __VA_ARGS__)
+#define elog_e(tag, ...)    elog_error(tag, __VA_ARGS__)
+#define elog_w(tag, ...)    elog_warn(tag, __VA_ARGS__)
+#define elog_i(tag, ...)    elog_info(tag, __VA_ARGS__)
+#define elog_d(tag, ...)    elog_debug(tag, __VA_ARGS__)
+#define elog_v(tag, ...)    elog_verbose(tag, __VA_ARGS__)
 
 /* elog_utils.c */
 size_t elog_strcpy(size_t cur_len, char *dst, const char *src);
