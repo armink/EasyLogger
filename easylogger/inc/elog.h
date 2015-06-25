@@ -61,7 +61,7 @@ extern "C" {
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\r\n"
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.06.24"
+#define ELOG_SW_VERSION                      "0.06.25"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                   \
@@ -115,6 +115,7 @@ void elog_set_filter_kw(const char *keyword);
 void elog_raw(const char *format, ...);
 void elog_output(uint8_t level, const char *tag, const char *file, const char *func,
         const long line, const char *format, ...);
+void elog_output_lock_enabled(bool enabled);
 
 #ifndef ELOG_OUTPUT_ENABLE
 

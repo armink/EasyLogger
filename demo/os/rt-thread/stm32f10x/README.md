@@ -22,3 +22,7 @@
 `RVMDK` 下为Keil工程文件
 
 `EWARM` 下为IAR工程文件
+
+## 3、其他功能
+
+- 1、新增 RTT断言及硬件异常的钩子的方法，使得系统在出现异常时，错误日志依然可以被输出或保存。参考 `app\src\app_task.c` 中的 `assert_hook` 及 `exception_hook` 方法。

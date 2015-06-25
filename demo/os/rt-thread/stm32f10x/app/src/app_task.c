@@ -32,6 +32,8 @@ static rt_uint8_t thread_sys_monitor_stack[512];
 struct rt_thread thread_sys_monitor;
 
 static void test_elog(void);
+static void assert_hook(const char* ex, const char* func, rt_size_t line);
+static rt_err_t exception_hook(void *context);
 
 /**
  * System monitor thread.
@@ -90,6 +92,10 @@ void sys_init_thread(void* parameter){
         /* set enabled format */
         elog_set_fmt(ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME /*| ELOG_FMT_P_INFO*/ | ELOG_FMT_T_INFO | ELOG_FMT_DIR
                 /*| ELOG_FMT_FUNC*/ | ELOG_FMT_LINE);
+        /* set hardware exception hook */
+        rt_hw_exception_install(exception_hook);
+        /* set RT-Thread assert hook */
+        rt_assert_set_hook(assert_hook);
         /* initialize OK and switch to running status */
         set_system_status(SYSTEM_STATUS_RUN);
     } else {
@@ -98,6 +104,45 @@ void sys_init_thread(void* parameter){
     }
 
     rt_thread_delete(rt_thread_self());
+}
+
+static void assert_hook(const char* ex, const char* func, rt_size_t line) {
+    elog_output_lock_enabled(false);
+    //elog_flash_lock_enabled(false);
+    elog_a("assert", "(%s) has assert failed at %s:%ld.\n", ex, func, line);
+    //elog_flash_flush();
+    while(1);
+}
+
+static rt_err_t exception_hook(void *context) {
+    struct exception_stack_frame {
+        rt_uint32_t r0;
+        rt_uint32_t r1;
+        rt_uint32_t r2;
+        rt_uint32_t r3;
+        rt_uint32_t r12;
+        rt_uint32_t lr;
+        rt_uint32_t pc;
+        rt_uint32_t psr;
+    };
+    struct exception_stack_frame *exception_stack = (struct exception_stack_frame *) context;
+
+    elog_output_lock_enabled(false);
+    //elog_flash_lock_enabled(false);
+
+    elog_e("hw_fault", "psr: 0x%08x", exception_stack->psr);
+    elog_e("hw_fault", " pc: 0x%08x", exception_stack->pc);
+    elog_e("hw_fault", " lr: 0x%08x", exception_stack->lr);
+    elog_e("hw_fault", "r12: 0x%08x", exception_stack->r12);
+    elog_e("hw_fault", "r03: 0x%08x", exception_stack->r3);
+    elog_e("hw_fault", "r02: 0x%08x", exception_stack->r2);
+    elog_e("hw_fault", "r01: 0x%08x", exception_stack->r1);
+    elog_e("hw_fault", "r00: 0x%08x", exception_stack->r0);
+    elog_e("hw_fault", "hard fault on thread: %s", rt_thread_self()->name);
+
+   //elog_flash_flush();
+
+    return RT_EOK;
 }
 
 int rt_application_init(void)

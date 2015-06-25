@@ -48,6 +48,14 @@ static size_t cur_buf_size = 0;
 
 /* initialize OK flag */
 static bool init_ok = false;
+/* the flash log buffer lock enable or disable. default is enable */
+static bool log_buf_lock_enabled = true;
+/* the flash log buffer is locked before enable. */
+static bool log_buf_is_locked_before_enable = false;
+/* the flash log buffer is locked before disable. */
+static bool log_buf_is_locked_before_disable = false;
+static void log_buf_lock(void);
+static void log_buf_unlock(void);
 
 /**
  * EasyLogger flash save plugin initialize.
@@ -94,7 +102,7 @@ void elog_flash_outout(size_t index, size_t size) {
     /* must be call this function after initialize OK */
     ELOG_ASSERT(init_ok);
     /* lock flash log buffer */
-    elog_flash_port_lock();
+    log_buf_lock();
     /* Output all flash saved log. It will use filter */
     while (true) {
         if (index + read_size + buf_szie < log_total_size) {
@@ -118,7 +126,7 @@ void elog_flash_outout(size_t index, size_t size) {
         }
     }
     /* unlock flash log buffer */
-    elog_flash_port_unlock();
+    log_buf_unlock();
 }
 
 /**
@@ -163,7 +171,7 @@ void elog_flash_write(const char *log, size_t size) {
     ELOG_ASSERT(init_ok);
 
     /* lock flash log buffer */
-    elog_flash_port_lock();
+    log_buf_lock();
 
 #ifdef ELOG_FLASH_USING_BUF_MODE
     while (true) {
@@ -174,11 +182,11 @@ void elog_flash_write(const char *log, size_t size) {
             size -= write_size;
             cur_buf_size += write_size;
             /* unlock flash log buffer */
-            elog_flash_port_unlock();
+            log_buf_unlock();
             /* write all buffered log to flash, cur_buf_size will reset */
             elog_flash_flush();
             /* lock flash log buffer */
-            elog_flash_port_lock();
+            log_buf_lock();
         } else {
             memcpy(log_buf + cur_buf_size, log + write_index, size);
             cur_buf_size += size;
@@ -198,7 +206,7 @@ void elog_flash_write(const char *log, size_t size) {
 #endif
 
     /* unlock flash log buffer */
-    elog_flash_port_unlock();
+    log_buf_unlock();
 }
 
 #ifdef ELOG_FLASH_USING_BUF_MODE
@@ -211,7 +219,7 @@ void elog_flash_flush(void) {
     /* must be call this function after initialize OK */
     ELOG_ASSERT(init_ok);
     /* lock flash log buffer */
-    elog_flash_port_lock();
+    log_buf_lock();
     /* flash write is word alignment */
     if (cur_buf_size % 4 != 0) {
         write_overage_size = 4 - (cur_buf_size % 4);
@@ -223,7 +231,7 @@ void elog_flash_flush(void) {
     /* reset position */
     cur_buf_size = 0;
     /* unlock flash log buffer */
-    elog_flash_port_unlock();
+    log_buf_unlock();
 }
 #endif
 
@@ -236,7 +244,7 @@ void elog_flash_clean(void) {
     /* must be call this function after initialize OK */
     ELOG_ASSERT(init_ok);
     /* lock flash log buffer */
-    elog_flash_port_lock();
+    log_buf_lock();
     /* clean all log which in flash */
     clean_result = flash_log_clean();
 
@@ -246,11 +254,54 @@ void elog_flash_clean(void) {
 #endif
 
     /* unlock flash log buffer */
-    elog_flash_port_unlock();
+    log_buf_unlock();
 
     if(clean_result == FLASH_NO_ERR) {
         log_i("All logs which in flash is clean OK.");
     } else {
         log_e("Clean logs which in flash has an error!");
+    }
+}
+
+/**
+ * enable or disable flash plugin lock
+ * @note disable this lock is not recommended except you want output system exception log
+ *
+ * @param enabled true: enable  false: disable
+ */
+void elog_flash_lock_enabled(bool enabled) {
+    log_buf_lock_enabled = enabled;
+    /* it will re-lock or re-unlock before log buffer lock enable */
+    if (log_buf_lock_enabled) {
+        if (!log_buf_is_locked_before_disable && log_buf_is_locked_before_enable) {
+            /* the log buffer lock is unlocked before disable, and the lock will unlocking after enable */
+            elog_flash_port_lock();
+        } else if (log_buf_is_locked_before_disable && !log_buf_is_locked_before_enable) {
+            /* the log buffer lock is locked before disable, and the lock will locking after enable */
+            elog_flash_port_unlock();
+        }
+    }
+}
+
+/**
+ * lock flash log buffer
+ */
+static void log_buf_lock(void) {
+    if (log_buf_lock_enabled) {
+        elog_flash_port_lock();
+        log_buf_is_locked_before_disable = true;
+    } else {
+        log_buf_is_locked_before_enable = true;
+    }
+}
+/**
+ * unlock flash log buffer
+ */
+static void log_buf_unlock(void) {
+    if (log_buf_lock_enabled) {
+        elog_flash_port_unlock();
+        log_buf_is_locked_before_disable = false;
+    } else {
+        log_buf_is_locked_before_enable = false;
     }
 }

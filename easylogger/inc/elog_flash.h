@@ -40,7 +40,7 @@ extern "C" {
 /* EasyLogger flash save plugin's RAM buffer size */
 #define ELOG_FLASH_BUF_SIZE                  1024
 /* EasyLogger flash save plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "0.06.10"
+#define ELOG_FLASH_SW_VERSION                "0.06.25"
 
 /* elog_flash.c */
 ElogErrCode elog_flash_init(void);
@@ -50,6 +50,7 @@ void elog_flash_outout_recent(size_t size);
 void elog_flash_set_filter(uint8_t level,const char *tag,const char *keyword);
 void elog_flash_write(const char *log, size_t size);
 void elog_flash_clean(void);
+void elog_flash_lock_enabled(bool enabled);
 
 #ifdef ELOG_FLASH_USING_BUF_MODE
 void elog_flash_flush(void);

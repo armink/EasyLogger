@@ -46,6 +46,14 @@ static const char *level_output_info[] = {
         "D/",
         "V/",
 };
+/* the output lock enable or disable. default is enable */
+static bool output_lock_enabled = true;
+/* the output is locked before enable. */
+static bool output_is_locked_before_enable = false;
+/* the output is locked before disable. */
+static bool output_is_locked_before_disable = false;
+static void output_lock(void);
+static void output_unlock(void);
 static bool get_fmt_enabled(size_t set);
 
 /**
@@ -166,7 +174,7 @@ void elog_raw(const char *format, ...) {
     va_start(args, format);
 
     /* lock output */
-    elog_port_output_lock();
+    output_lock();
 
     /* package log data to buffer */
     fmt_result = vsnprintf(log_buf, ELOG_BUF_SIZE, format, args);
@@ -225,7 +233,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     va_start(args, format);
 
     /* lock output */
-    elog_port_output_lock();
+    output_lock();
     /* package level info */
     if (get_fmt_enabled(ELOG_FMT_LVL)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, level_output_info[level]);
@@ -307,7 +315,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     if (!strstr(log_buf, elog.filter.keyword)) {
         //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
         /* unlock output */
-        elog_port_output_unlock();
+        output_unlock();
         return;
     }
 
@@ -325,7 +333,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     elog_port_output(log_buf, log_len);
 
     /* unlock output */
-    elog_port_output_unlock();
+    output_unlock();
 }
 
 /**
@@ -340,5 +348,48 @@ static bool get_fmt_enabled(size_t set) {
         return true;
     } else {
         return false;
+    }
+}
+
+/**
+ * enable or disable logger output lock
+ * @note disable this lock is not recommended except you want output system exception log
+ *
+ * @param enabled true: enable  false: disable
+ */
+void elog_output_lock_enabled(bool enabled) {
+    output_lock_enabled = enabled;
+    /* it will re-lock or re-unlock before output lock enable */
+    if (output_lock_enabled) {
+        if (!output_is_locked_before_disable && output_is_locked_before_enable) {
+            /* the output lock is unlocked before disable, and the lock will unlocking after enable */
+            elog_port_output_lock();
+        } else if (output_is_locked_before_disable && !output_is_locked_before_enable) {
+            /* the output lock is locked before disable, and the lock will locking after enable */
+            elog_port_output_unlock();
+        }
+    }
+}
+
+/**
+ * lock output
+ */
+static void output_lock(void) {
+    if (output_lock_enabled) {
+        elog_port_output_lock();
+        output_is_locked_before_disable = true;
+    } else {
+        output_is_locked_before_enable = true;
+    }
+}
+/**
+ * unlock output
+ */
+static void output_unlock(void) {
+    if (output_lock_enabled) {
+        elog_port_output_unlock();
+        output_is_locked_before_disable = false;
+    } else {
+        output_is_locked_before_enable = false;
     }
 }
