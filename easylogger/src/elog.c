@@ -56,6 +56,9 @@ static void output_lock(void);
 static void output_unlock(void);
 static bool get_fmt_enabled(size_t set);
 
+/* EasyLogger assert hook */
+void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
+
 /**
  * EasyLogger initialize.
  *
@@ -392,4 +395,13 @@ static void output_unlock(void) {
     } else {
         output_is_locked_before_enable = false;
     }
+}
+
+/**
+ * Set a hook function to EasyLogger assert. It will run when the expression is false.
+ *
+ * @param hook the hook function
+ */
+void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_t line)) {
+    elog_assert_hook = hook;
 }

@@ -32,7 +32,8 @@ static rt_uint8_t thread_sys_monitor_stack[512];
 struct rt_thread thread_sys_monitor;
 
 static void test_elog(void);
-static void assert_hook(const char* ex, const char* func, rt_size_t line);
+static void rtt_user_assert_hook(const char* ex, const char* func, rt_size_t line);
+static void elog_user_assert_hook(const char* ex, const char* func, size_t line);
 static rt_err_t exception_hook(void *context);
 
 /**
@@ -92,10 +93,12 @@ void sys_init_thread(void* parameter){
         /* set enabled format */
         elog_set_fmt(ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME /*| ELOG_FMT_P_INFO*/ | ELOG_FMT_T_INFO | ELOG_FMT_DIR
                 /*| ELOG_FMT_FUNC*/ | ELOG_FMT_LINE);
+        /* set EasyLogger assert hook */
+        elog_assert_set_hook(elog_user_assert_hook);
         /* set hardware exception hook */
         rt_hw_exception_install(exception_hook);
         /* set RT-Thread assert hook */
-        rt_assert_set_hook(assert_hook);
+        rt_assert_set_hook(rtt_user_assert_hook);
         /* initialize OK and switch to running status */
         set_system_status(SYSTEM_STATUS_RUN);
     } else {
@@ -106,11 +109,19 @@ void sys_init_thread(void* parameter){
     rt_thread_delete(rt_thread_self());
 }
 
-static void assert_hook(const char* ex, const char* func, rt_size_t line) {
+static void elog_user_assert_hook(const char* ex, const char* func, size_t line) {
     elog_output_lock_enabled(false);
-    //elog_flash_lock_enabled(false);
-    elog_a("assert", "(%s) has assert failed at %s:%ld.\n", ex, func, line);
-    //elog_flash_flush();
+//    elog_flash_lock_enabled(false);
+    elog_a("elog", "(%s) has assert failed at %s:%ld.", ex, func, line);
+//    elog_flash_flush();
+    while(1);
+}
+
+static void rtt_user_assert_hook(const char* ex, const char* func, rt_size_t line) {
+    elog_output_lock_enabled(false);
+//    elog_flash_lock_enabled(false);
+    elog_a("rtt", "(%s) has assert failed at %s:%ld.\n", ex, func, line);
+//    elog_flash_flush();
     while(1);
 }
 

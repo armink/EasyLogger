@@ -61,14 +61,18 @@ extern "C" {
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\r\n"
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.06.25"
+#define ELOG_SW_VERSION                      "0.06.27"
 
 /* EasyLogger assert for developer. */
-#define ELOG_ASSERT(EXPR)                                                   \
-if (!(EXPR))                                                                \
-{                                                                           \
-    elog_a("elog", "(%s) has assert failed at %s.\n", #EXPR, __FUNCTION__); \
-    while (1);                                                              \
+#define ELOG_ASSERT(EXPR)                                                     \
+if (!(EXPR))                                                                  \
+{                                                                             \
+    if (elog_assert_hook == NULL) {                                           \
+        elog_a("elog", "(%s) has assert failed at %s:%ld.", #EXPR, __FUNCTION__, __LINE__); \
+        while (1);                                                            \
+    } else {                                                                  \
+        elog_assert_hook(#EXPR, __FUNCTION__, __LINE__);                      \
+    }                                                                         \
 }
 
 /* all formats index */
@@ -116,6 +120,8 @@ void elog_raw(const char *format, ...);
 void elog_output(uint8_t level, const char *tag, const char *file, const char *func,
         const long line, const char *format, ...);
 void elog_output_lock_enabled(bool enabled);
+extern void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
+void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_t line));
 
 #ifndef ELOG_OUTPUT_ENABLE
 

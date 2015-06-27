@@ -25,4 +25,5 @@
 
 ## 3、其他功能
 
-- 1、新增 RTT断言及硬件异常的钩子的方法，使得系统在出现异常时，错误日志依然可以被输出或保存。参考 `app\src\app_task.c` 中的 `assert_hook` 及 `exception_hook` 方法。
+- 1、新增 RTT断言及硬件异常的钩子方法，使得系统在出现异常时，错误日志依然可以被输出或保存。参考 `app\src\app_task.c` 中的 `rtt_user_assert_hook` 及 `exception_hook` 方法。
+- 2、新增 EasyLogger断言的钩子方法，使得系统在出现异常时，错误日志依然可以被输出或保存。参考 `app\src\app_task.c` 中的 `elog_user_assert_hook` 方法。
