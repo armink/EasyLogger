@@ -27,7 +27,7 @@
  */
 
 #include "elog_flash.h"
-#include "flash.h"
+#include "easyflash.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -90,7 +90,7 @@ ElogErrCode elog_flash_init(void) {
 void elog_flash_outout(size_t index, size_t size) {
     /* 128 bytes buffer */
     uint32_t buf[32] = { 0 };
-    size_t log_total_size = flash_log_get_used_size();
+    size_t log_total_size = ef_log_get_used_size();
     size_t buf_szie = sizeof(buf);
     size_t read_size = 0, read_overage_size = 0;
 
@@ -106,7 +106,7 @@ void elog_flash_outout(size_t index, size_t size) {
     /* Output all flash saved log. It will use filter */
     while (true) {
         if (index + read_size + buf_szie < log_total_size) {
-            flash_log_read(index + read_size, buf, buf_szie);
+            ef_log_read(index + read_size, buf, buf_szie);
             elog_flash_port_output((const char*)buf, buf_szie);
             read_size += buf_szie;
         } else {
@@ -116,7 +116,7 @@ void elog_flash_outout(size_t index, size_t size) {
             } else {
                 read_overage_size = 4 - ((log_total_size - index - read_size) % 4);
             }
-            flash_log_read(index + read_size - read_overage_size, buf,
+            ef_log_read(index + read_size - read_overage_size, buf,
                     log_total_size - index - read_size + read_overage_size);
             elog_flash_port_output((const char*) buf + read_overage_size,
                     log_total_size - index - read_size);
@@ -133,7 +133,7 @@ void elog_flash_outout(size_t index, size_t size) {
  * Read and output all log which saved in flash.
  */
 void elog_flash_outout_all(void) {
-    elog_flash_outout(0, flash_log_get_used_size());
+    elog_flash_outout(0, ef_log_get_used_size());
 }
 
 /**
@@ -142,7 +142,7 @@ void elog_flash_outout_all(void) {
  * @param size recent log size
  */
 void elog_flash_outout_recent(size_t size) {
-    size_t max_size = flash_log_get_used_size();
+    size_t max_size = ef_log_get_used_size();
     if (size > max_size) {
         log_i("The output size is out of bound. The max size is %d.", max_size);
     } else {
@@ -162,7 +162,7 @@ void elog_flash_write(const char *log, size_t size) {
     size_t write_size = 0, write_index = 0;
 #else
     size_t write_size_temp = 0;
-    FlashErrCode result = FLASH_NO_ERR;
+    EfErrCode result = EF_NO_ERR;
     /* write some '\r' for word alignment */
     char write_overage_c[4] = { '\r', '\r', '\r', '\r' };
 #endif
@@ -197,11 +197,11 @@ void elog_flash_write(const char *log, size_t size) {
     /* calculate the word alignment write size */
     write_size_temp = size / 4 * 4;
     /* write log to flash */
-    result = flash_log_write((uint32_t *) log, write_size_temp);
+    result = ef_log_write((uint32_t *) log, write_size_temp);
     /* write last word alignment data */
-    if ((result == FLASH_NO_ERR) && (write_size_temp != size)) {
+    if ((result == EF_NO_ERR) && (write_size_temp != size)) {
         memcpy(write_overage_c, log + write_size_temp, size - write_size_temp);
-        flash_log_write((uint32_t *) write_overage_c, 4);
+        ef_log_write((uint32_t *) write_overage_c, 4);
     }
 #endif
 
@@ -227,7 +227,7 @@ void elog_flash_flush(void) {
     /* fill '\r' for word alignment */
     memset(log_buf + cur_buf_size, '\r', write_overage_size);
     /* write all buffered log to flash */
-    flash_log_write((uint32_t *) log_buf, cur_buf_size + write_overage_size);
+    ef_log_write((uint32_t *) log_buf, cur_buf_size + write_overage_size);
     /* reset position */
     cur_buf_size = 0;
     /* unlock flash log buffer */
@@ -239,14 +239,14 @@ void elog_flash_flush(void) {
  * clean all log which in flash and ram buffer
  */
 void elog_flash_clean(void) {
-    FlashErrCode clean_result = FLASH_NO_ERR;
+    EfErrCode clean_result = EF_NO_ERR;
 
     /* must be call this function after initialize OK */
     ELOG_ASSERT(init_ok);
     /* lock flash log buffer */
     log_buf_lock();
     /* clean all log which in flash */
-    clean_result = flash_log_clean();
+    clean_result = ef_log_clean();
 
 #ifdef ELOG_FLASH_USING_BUF_MODE
     /* reset position */
@@ -256,7 +256,7 @@ void elog_flash_clean(void) {
     /* unlock flash log buffer */
     log_buf_unlock();
 
-    if(clean_result == FLASH_NO_ERR) {
+    if(clean_result == EF_NO_ERR) {
         log_i("All logs which in flash is clean OK.");
     } else {
         log_e("Clean logs which in flash has an error!");

@@ -40,7 +40,7 @@ extern "C" {
 /* EasyLogger flash save plugin's RAM buffer size */
 #define ELOG_FLASH_BUF_SIZE                  1024
 /* EasyLogger flash save plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "0.06.25"
+#define ELOG_FLASH_SW_VERSION                "0.07.04"
 
 /* elog_flash.c */
 ElogErrCode elog_flash_init(void);
