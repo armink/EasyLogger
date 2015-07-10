@@ -22,7 +22,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: Is is an head file for flash log plugin. You can see all be called functions.
+ * Function: It is an head file for flash log plugin. You can see all be called functions.
  * Created on: 2015-06-05
  */
 
