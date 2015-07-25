@@ -91,10 +91,16 @@ void sys_init_thread(void* parameter){
     /* EasyLogger initialization */
     if (elog_init() == ELOG_NO_ERR) {
         /* set enabled format */
-        elog_set_fmt(ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME /*| ELOG_FMT_P_INFO*/ | ELOG_FMT_T_INFO | ELOG_FMT_DIR
-                /*| ELOG_FMT_FUNC*/ | ELOG_FMT_LINE);
+        elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL & ~ELOG_FMT_P_INFO);
+        elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+        elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+        elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+        elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_P_INFO));
+        elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_P_INFO));
         /* set EasyLogger assert hook */
         elog_assert_set_hook(elog_user_assert_hook);
+        /* start EasyLogger */
+        elog_start();
         /* set hardware exception hook */
         rt_hw_exception_install(exception_hook);
         /* set RT-Thread assert hook */

@@ -28,7 +28,7 @@ ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
 [DebugChecksum]
-Checksum=-655121013
+Checksum=-1118035218
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0

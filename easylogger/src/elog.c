@@ -54,7 +54,7 @@ static bool output_is_locked_before_enable = false;
 static bool output_is_locked_before_disable = false;
 static void output_lock(void);
 static void output_unlock(void);
-static bool get_fmt_enabled(size_t set);
+static bool get_fmt_enabled(uint8_t level, size_t set);
 
 /* EasyLogger assert hook */
 void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
@@ -108,10 +108,13 @@ bool elog_get_output_enabled(void) {
 /**
  * set log output format. only enable or disable
  *
+ * @param level level
  * @param set format set
  */
-void elog_set_fmt(size_t set) {
-    elog.enabled_fmt_set = set;
+void elog_set_fmt(uint8_t level, size_t set) {
+    ELOG_ASSERT(level <= ELOG_LVL_VERBOSE);
+
+    elog.enabled_fmt_set[level] = set;
 }
 
 /**
@@ -238,11 +241,11 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     /* lock output */
     output_lock();
     /* package level info */
-    if (get_fmt_enabled(ELOG_FMT_LVL)) {
+    if (get_fmt_enabled(level, ELOG_FMT_LVL)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, level_output_info[level]);
     }
     /* package tag info */
-    if (get_fmt_enabled(ELOG_FMT_TAG)) {
+    if (get_fmt_enabled(level, ELOG_FMT_TAG)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, tag);
         /* if the tag length is less than 50% ELOG_FILTER_TAG_MAX_LEN, then fill space */
         if (tag_len <= ELOG_FILTER_TAG_MAX_LEN / 2) {
@@ -252,51 +255,49 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, " ");
     }
     /* package time, process and thread info */
-    if (get_fmt_enabled(ELOG_FMT_TIME) || get_fmt_enabled(ELOG_FMT_P_INFO)
-            || get_fmt_enabled(ELOG_FMT_T_INFO)) {
+    if (get_fmt_enabled(level, ELOG_FMT_TIME | ELOG_FMT_P_INFO | ELOG_FMT_T_INFO)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, "[");
         /* package time info */
-        if (get_fmt_enabled(ELOG_FMT_TIME)) {
+        if (get_fmt_enabled(level, ELOG_FMT_TIME)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, elog_port_get_time());
-            if (get_fmt_enabled(ELOG_FMT_P_INFO) || get_fmt_enabled(ELOG_FMT_T_INFO)) {
+            if (get_fmt_enabled(level, ELOG_FMT_P_INFO | ELOG_FMT_T_INFO)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
             }
         }
         /* package process info */
-        if (get_fmt_enabled(ELOG_FMT_P_INFO)) {
+        if (get_fmt_enabled(level, ELOG_FMT_P_INFO)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, elog_port_get_p_info());
-            if (get_fmt_enabled(ELOG_FMT_T_INFO)) {
+            if (get_fmt_enabled(level, ELOG_FMT_T_INFO)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
             }
         }
         /* package thread info */
-        if (get_fmt_enabled(ELOG_FMT_T_INFO)) {
+        if (get_fmt_enabled(level, ELOG_FMT_T_INFO)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, elog_port_get_t_info());
         }
         log_len += elog_strcpy(log_len, log_buf + log_len, "] ");
     }
     /* package file directory and name, function name and line number info */
-    if (get_fmt_enabled(ELOG_FMT_DIR) || get_fmt_enabled(ELOG_FMT_FUNC)
-            || get_fmt_enabled(ELOG_FMT_LINE)) {
+    if (get_fmt_enabled(level, ELOG_FMT_DIR | ELOG_FMT_FUNC | ELOG_FMT_LINE)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, "(");
         /* package time info */
-        if (get_fmt_enabled(ELOG_FMT_DIR)) {
+        if (get_fmt_enabled(level, ELOG_FMT_DIR)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, file);
-            if (get_fmt_enabled(ELOG_FMT_FUNC)) {
+            if (get_fmt_enabled(level, ELOG_FMT_FUNC)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
-            } else if (get_fmt_enabled(ELOG_FMT_LINE)) {
+            } else if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, ":");
             }
         }
         /* package process info */
-        if (get_fmt_enabled(ELOG_FMT_FUNC)) {
+        if (get_fmt_enabled(level, ELOG_FMT_FUNC)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, func);
-            if (get_fmt_enabled(ELOG_FMT_LINE)) {
+            if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, ":");
             }
         }
         /* package thread info */
-        if (get_fmt_enabled(ELOG_FMT_LINE)) {
+        if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
             //TODO snprintf资源占用可能较高，待优化
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
@@ -342,12 +343,15 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 /**
  * get format enabled
  *
+ * @param level level
  * @param set format set
  *
  * @return enable or disable
  */
-static bool get_fmt_enabled(size_t set) {
-    if (elog.enabled_fmt_set & set) {
+static bool get_fmt_enabled(uint8_t level, size_t set) {
+    ELOG_ASSERT(level <= ELOG_LVL_VERBOSE);
+
+    if (elog.enabled_fmt_set[level] & set) {
         return true;
     } else {
         return false;

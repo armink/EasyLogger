@@ -38,12 +38,15 @@ extern "C" {
 #endif
 
 /* output log's level */
-#define ELOG_LVL_ASSERT                      0
-#define ELOG_LVL_ERROR                       1
-#define ELOG_LVL_WARN                        2
-#define ELOG_LVL_INFO                        3
-#define ELOG_LVL_DEBUG                       4
-#define ELOG_LVL_VERBOSE                     5
+enum {
+    ELOG_LVL_ASSERT = 0,
+    ELOG_LVL_ERROR,
+    ELOG_LVL_WARN,
+    ELOG_LVL_INFO,
+    ELOG_LVL_DEBUG,
+    ELOG_LVL_VERBOSE,
+    ELOG_LVL_TOTAL_NUM,
+};
 /* setting static output log level. default is verbose */
 #define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
 /* enable log output. default open this macro */
@@ -61,7 +64,7 @@ extern "C" {
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\r\n"
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.06.27"
+#define ELOG_SW_VERSION                      "0.07.25"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                     \
@@ -87,6 +90,10 @@ typedef enum {
     ELOG_FMT_LINE   = 1 << 7, /**< line number */
 } ElogFmtIndex;
 
+/* macro definition for all formats */
+#define ELOG_FMT_ALL    (ELOG_FMT_LVL|ELOG_FMT_TAG|ELOG_FMT_TIME|ELOG_FMT_P_INFO|ELOG_FMT_T_INFO| \
+    ELOG_FMT_DIR|ELOG_FMT_FUNC|ELOG_FMT_LINE)
+
 /* output log's filter */
 typedef struct {
     uint8_t level;
@@ -97,7 +104,7 @@ typedef struct {
 /* easy logger */
 typedef struct {
     ElogFilter filter;
-    size_t enabled_fmt_set;
+    size_t enabled_fmt_set[ELOG_LVL_TOTAL_NUM];
     bool output_enabled;
 }EasyLogger, *EasyLogger_t;
 
@@ -111,7 +118,7 @@ ElogErrCode elog_init(void);
 void elog_start(void);
 void elog_set_output_enabled(bool enabled);
 bool elog_get_output_enabled(void);
-void elog_set_fmt(size_t set);
+void elog_set_fmt(uint8_t level, size_t set);
 void elog_set_filter(uint8_t level, const char *tag, const char *keyword);
 void elog_set_filter_lvl(uint8_t level);
 void elog_set_filter_tag(const char *tag);
