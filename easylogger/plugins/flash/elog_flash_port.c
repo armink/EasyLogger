@@ -22,80 +22,51 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: Portable interface for RT-Thread.
- * Created on: 2015-04-28
+ * Function: Portable interface for EasyLogger's flash log pulgin.
+ * Created on: 2015-07-28
  */
 
-#include "elog.h"
-#include <rthw.h>
-#include <rtthread.h>
-
-static struct rt_semaphore output_lock;
+#include "elog_flash.h"
 
 /**
- * EasyLogger port initialize
+ * EasyLogger flash log pulgin port initialize
  *
  * @return result
  */
-ElogErrCode elog_port_init(void) {
+ElogErrCode elog_flash_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
-
-    rt_sem_init(&output_lock, "elog lock", 1, RT_IPC_FLAG_PRIO);
+    
+    /* add your code here */
 
     return result;
 }
 
 /**
- * output log port interface
+ * output flash saved log port interface
  *
- * @param log output of log
+ * @param log flash saved log
  * @param size log size
  */
-void elog_port_output(const char *log, size_t size) {
-    /* output to terminal */
-    rt_kprintf("%.*s", size, log);
-    //TODO output to flash
+void elog_flash_port_output(const char *log, size_t size) {
+    
+    /* add your code here */
+    
 }
 
 /**
- * output lock
+ * flash log lock
  */
-void elog_port_output_lock(void) {
-    rt_sem_take(&output_lock, RT_WAITING_FOREVER);
+void elog_flash_port_lock(void) {
+    
+    /* add your code here */
+    
 }
 
 /**
- * output unlock
+ * flash log unlock
  */
-void elog_port_output_unlock(void) {
-    rt_sem_release(&output_lock);
-}
-
-/**
- * get current time interface
- *
- * @return current time
- */
-const char *elog_port_get_time(void) {
-    static char cur_system_time[16] = { 0 };
-    rt_snprintf(cur_system_time, 16, "tick:%010d", rt_tick_get());
-    return cur_system_time;
-}
-
-/**
- * get current process name interface
- *
- * @return current process name
- */
-const char *elog_port_get_p_info(void) {
-    return "";
-}
-
-/**
- * get current thread name interface
- *
- * @return current thread name
- */
-const char *elog_port_get_t_info(void) {
-    return rt_thread_self()->name;
+void elog_flash_port_unlock(void) {
+    
+    /* add your code here */
+    
 }

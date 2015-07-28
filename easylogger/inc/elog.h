@@ -64,7 +64,7 @@ enum {
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\r\n"
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.07.25"
+#define ELOG_SW_VERSION                      "0.07.28"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                     \
@@ -195,7 +195,7 @@ size_t elog_strcpy(size_t cur_len, char *dst, const char *src);
 
 /* elog_port.c */
 ElogErrCode elog_port_init(void);
-void elog_port_output(const char *output, size_t size);
+void elog_port_output(const char *log, size_t size);
 void elog_port_output_lock(void);
 void elog_port_output_unlock(void);
 const char *elog_port_get_time(void);

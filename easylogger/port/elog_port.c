@@ -45,19 +45,13 @@ ElogErrCode elog_port_init(void) {
 
 /**
  * output log port interface
+ *
+ * @param log output of log
+ * @param size log size
  */
-void elog_port_output(const char *output, size_t size) {
+void elog_port_output(const char *log, size_t size) {
     
     /* add your code here */
-    
-}
-
-/**
- * output flash saved log port interface
- */
-void elog_flash_port_output(const char *output, size_t size) {
-    
-    /* If used flash log plugin, then you must implement this function. */
     
 }
 
@@ -78,25 +72,6 @@ void elog_port_output_unlock(void) {
     /* add your code here */
     
 }
-
-/**
- * flash log lock
- */
-void elog_flash_port_lock(void) {
-    
-    /* If used flash log plugin, then you must implement this function. */
-    
-}
-
-/**
- * flash log unlock
- */
-void elog_flash_port_unlock(void) {
-    
-    /* If used flash log plugin, then you must implement this function. */
-    
-}
-
 
 /**
  * get current time interface

@@ -58,7 +58,7 @@ static void log_buf_lock(void);
 static void log_buf_unlock(void);
 
 /**
- * EasyLogger flash save plugin initialize.
+ * EasyLogger flash log plugin initialize.
  *
  * @return result
  */
@@ -73,6 +73,8 @@ ElogErrCode elog_flash_init(void) {
     cur_buf_size = 0;
 #endif
 
+    /* port initialize */
+    elog_flash_port_init();
     /* initialize OK */
     init_ok = true;
 
