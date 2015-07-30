@@ -345,7 +345,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,USE_FULL_ASSERT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\app\inc;..\components\rtt_uart;..\components\others;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\Libraries\CMSIS_RVMDK\CM3\DeviceSupport\ST\STM32F10x;..\RT-Thread-1.2.2\include;..\RT-Thread-1.2.2\components\drivers\include;..\RT-Thread-1.2.2\components\drivers\include\drivers;..\RT-Thread-1.2.2\components\finsh;..\..\..\..\easylogger\inc</IncludePath>
+              <IncludePath>..\app\inc;..\components\rtt_uart;..\components\others;..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\Libraries\CMSIS_RVMDK\CM3\DeviceSupport\ST\STM32F10x;..\RT-Thread-1.2.2\include;..\RT-Thread-1.2.2\components\drivers\include;..\RT-Thread-1.2.2\components\drivers\include\drivers;..\RT-Thread-1.2.2\components\finsh;..\..\..\..\..\easylogger\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -468,12 +468,12 @@
             <File>
               <FileName>elog.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\easylogger\src\elog.c</FilePath>
+              <FilePath>..\..\..\..\..\easylogger\src\elog.c</FilePath>
             </File>
             <File>
               <FileName>elog_utils.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\easylogger\src\elog_utils.c</FilePath>
+              <FilePath>..\..\..\..\..\easylogger\src\elog_utils.c</FilePath>
             </File>
           </Files>
         </Group>

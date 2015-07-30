@@ -22,84 +22,26 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: Portable interface for each platform.
- * Created on: 2015-04-28
+ * Function: It is the configure head file for this library.
+ * Created on: 2015-07-30
  */
- 
-#include <elog.h>
 
-/**
- * EasyLogger port initialize
- *
- * @return result
- */
-ElogErrCode elog_port_init(void) {
-    ElogErrCode result = ELOG_NO_ERR;
+#ifndef _ELOG_CFG_H_
+#define _ELOG_CFG_H_
 
-    /* add your code here */
-    
-    return result;
-}
+/* setting static output log level */
+#define ELOG_OUTPUT_LVL                      /* @note you must define it for a value */
+/* enable log output. default open this macro */
+#define ELOG_OUTPUT_ENABLE
+/* output line number max length */
+#define ELOG_LINE_NUM_MAX_LEN                /* @note you must define it for a value */
+/* log buffer size */
+#define ELOG_BUF_SIZE                        /* @note you must define it for a value */
+/* output filter's tag max length */
+#define ELOG_FILTER_TAG_MAX_LEN              /* @note you must define it for a value */
+/* output filter's keyword max length */
+#define ELOG_FILTER_KW_MAX_LEN               /* @note you must define it for a value */
+/* output newline sign */
+#define ELOG_NEWLINE_SIGN                    /* @note you must define it for a value */
 
-/**
- * output log port interface
- *
- * @param log output of log
- * @param size log size
- */
-void elog_port_output(const char *log, size_t size) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * output lock
- */
-void elog_port_output_lock(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * output unlock
- */
-void elog_port_output_unlock(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * get current time interface
- *
- * @return current time
- */
-const char *elog_port_get_time(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * get current process name interface
- *
- * @return current process name
- */
-const char *elog_port_get_p_info(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * get current thread name interface
- *
- * @return current thread name
- */
-const char *elog_port_get_t_info(void) {
-    
-    /* add your code here */
-    
-}
+#endif /* _ELOG_CFG_H_ */

@@ -297,6 +297,7 @@
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\..\app\inc</state>
           <state>$PROJ_DIR$\..\components\rtt_uart</state>
+          <state>$PROJ_DIR$\..\components\easylogger\inc</state>
           <state>$PROJ_DIR$\..\components\others</state>
           <state>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\RT-Thread-1.2.2\include</state>

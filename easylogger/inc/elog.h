@@ -29,6 +29,7 @@
 #ifndef __ELOG_H__
 #define __ELOG_H__
 
+#include <elog_cfg.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -37,34 +38,43 @@
 extern "C" {
 #endif
 
+#if !defined(ELOG_OUTPUT_LVL)
+    #error "Please configure static output log level (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_LINE_NUM_MAX_LEN)
+    #error "Please configure output line number max length (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_BUF_SIZE)
+    #error "Please configure log buffer size (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_FILTER_TAG_MAX_LEN)
+    #error "Please configure output filter's tag max length (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_FILTER_KW_MAX_LEN)
+    #error "Please configure output filter's keyword max length (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_NEWLINE_SIGN)
+    #error "Please configure output newline sign (in elog_cfg.h)"
+#endif
+
 /* output log's level */
-enum {
-    ELOG_LVL_ASSERT = 0,
-    ELOG_LVL_ERROR,
-    ELOG_LVL_WARN,
-    ELOG_LVL_INFO,
-    ELOG_LVL_DEBUG,
-    ELOG_LVL_VERBOSE,
-    ELOG_LVL_TOTAL_NUM,
-};
-/* setting static output log level. default is verbose */
-#define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
-/* enable log output. default open this macro */
-#define ELOG_OUTPUT_ENABLE
-/* using output to file mode */
-#define ELOG_USING_OUTPUT_FILE
-/* output line number max length */
-#define ELOG_LINE_NUM_MAX_LEN                5
-/* log buffer size */
-#define ELOG_BUF_SIZE                        256
-/* output filter's tag max length */
-#define ELOG_FILTER_TAG_MAX_LEN              16
-/* output filter's keyword max length */
-#define ELOG_FILTER_KW_MAX_LEN               16
-/* output newline sign */
-#define ELOG_NEWLINE_SIGN                    "\r\n"
+#define ELOG_LVL_ASSERT                      0
+#define ELOG_LVL_ERROR                       1
+#define ELOG_LVL_WARN                        2
+#define ELOG_LVL_INFO                        3
+#define ELOG_LVL_DEBUG                       4
+#define ELOG_LVL_VERBOSE                     5
+
+/* output log's level total number */
+#define ELOG_LVL_TOTAL_NUM                   6
+
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.07.28"
+#define ELOG_SW_VERSION                      "0.07.30"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                     \

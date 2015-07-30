@@ -27,7 +27,7 @@
  */
 
 #include "elog_flash.h"
-#include "easyflash.h"
+#include <easyflash.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

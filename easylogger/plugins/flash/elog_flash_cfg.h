@@ -22,84 +22,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: Portable interface for each platform.
- * Created on: 2015-04-28
+ * Function: It is the configure head file for this flash log plugin.
+ * Created on: 2015-07-30
  */
- 
-#include <elog.h>
 
-/**
- * EasyLogger port initialize
- *
- * @return result
- */
-ElogErrCode elog_port_init(void) {
-    ElogErrCode result = ELOG_NO_ERR;
+#ifndef _ELOG_FLASH_CFG_H_
+#define _ELOG_FLASH_CFG_H_
 
-    /* add your code here */
-    
-    return result;
-}
+/* EasyLogger flash log plugin's using buffer mode */
+#define ELOG_FLASH_USING_BUF_MODE
+/* EasyLogger flash log plugin's RAM buffer size */
+#define ELOG_FLASH_BUF_SIZE                  /* @note you must define it for a value */
 
-/**
- * output log port interface
- *
- * @param log output of log
- * @param size log size
- */
-void elog_port_output(const char *log, size_t size) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * output lock
- */
-void elog_port_output_lock(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * output unlock
- */
-void elog_port_output_unlock(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * get current time interface
- *
- * @return current time
- */
-const char *elog_port_get_time(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * get current process name interface
- *
- * @return current process name
- */
-const char *elog_port_get_p_info(void) {
-    
-    /* add your code here */
-    
-}
-
-/**
- * get current thread name interface
- *
- * @return current thread name
- */
-const char *elog_port_get_t_info(void) {
-    
-    /* add your code here */
-    
-}
+#endif /* _ELOG_FLASH_CFG_H_ */

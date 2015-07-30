@@ -26,7 +26,7 @@
  * Created on: 2015-04-28
  */
 
-#include "elog.h"
+#include <elog.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -36,7 +36,7 @@ static EasyLogger elog;
 /* log buffer */
 static char log_buf[ELOG_BUF_SIZE] = { 0 };
 /* log tag */
-static const char *tag = "elog";
+static const char *log_tag = "elog";
 /* level output info */
 static const char *level_output_info[] = {
         "A/",
@@ -82,7 +82,7 @@ void elog_start(void) {
     /* enable output */
     elog_set_output_enabled(true);
     /* show version */
-    elog_i(tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
+    elog_i(log_tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
 }
 
 /**
@@ -323,7 +323,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         return;
     }
 
-    /* package CRLF */
+    /* package newline sign */
     if ((fmt_result > -1) && (fmt_result + log_len + newline_len <= ELOG_BUF_SIZE)) {
         log_len += fmt_result;
         log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);

@@ -29,18 +29,19 @@
 #ifndef __ELOG_FLASH_H__
 #define __ELOG_FLASH_H__
 
-#include "elog.h"
+#include <elog.h>
+#include "elog_flash_cfg.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* EasyLogger flash log plugin's using buffer mode */
-#define ELOG_FLASH_USING_BUF_MODE
-/* EasyLogger flash log plugin's RAM buffer size */
-#define ELOG_FLASH_BUF_SIZE                  1024
+#if !defined(ELOG_FLASH_BUF_SIZE)
+    #error "Please configure RAM buffer size (in elog_flash_cfg.h)"
+#endif
+
 /* EasyLogger flash log plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "0.07.28"
+#define ELOG_FLASH_SW_VERSION                "0.07.30"
 
 /* elog_flash.c */
 ElogErrCode elog_flash_init(void);
