@@ -1,4 +1,4 @@
-# stm32f10x RT-Thread Demo
+# stm32f10x RT-Thread demo
 
 ---
 

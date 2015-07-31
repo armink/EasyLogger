@@ -22,13 +22,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: windows demo.
- * Created on: 2015-07-30
+ * Function: non-os stm32f10x demo.
+ * Created on: 2015-07-31
  */
-
+ 
+#include "bsp.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 #include "elog.h"
 
 #define log_a(...) elog_a("main.test.a", __VA_ARGS__)
@@ -40,9 +40,10 @@
 
 static void test_elog(void);
 
-int main(void) {
-    /* close printf buffer */
-    setbuf(stdout, NULL);
+int main(void){
+        
+    BSP_Init();
+    
     /* initialize EasyLogger */
     elog_init();
     /* set EasyLogger log format */
@@ -50,11 +51,11 @@ int main(void) {
     elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
     elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
     elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-    elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-    elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+    elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
+    elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
     /* start EasyLogger */
     elog_start();
-
+    
     /* dynamic set enable or disable for output logs (true or false) */
 //    elog_set_output_enabled(false);
     /* dynamic set output logs's level (from ELOG_LVL_ASSERT to ELOG_LVL_VERBOSE) */
@@ -64,25 +65,28 @@ int main(void) {
     /* dynamic set output logs's filter for keyword */
 //    elog_set_filter_kw("Hello");
 
-    /* test logger output */
-    test_elog();
-
-	return EXIT_SUCCESS;
+    while(1) {
+      /* test logger output */
+      test_elog();
+      LED_RUN_ON;
+      delay(10000000);
+      LED_RUN_OFF;
+      delay(10000000);      
+    }
+    
+    return 0;
 }
 
 /**
  * EasyLogger demo
  */
 void test_elog(void) {
-    while(true) {
-        /* test log output for all level */
-        log_a("Hello EasyLogger!");
-        log_e("Hello EasyLogger!");
-        log_w("Hello EasyLogger!");
-        log_i("Hello EasyLogger!");
-        log_d("Hello EasyLogger!");
-        log_v("Hello EasyLogger!");
-//        elog_raw("Hello EasyLogger!");
-        Sleep(5000);
-    }
+    /* test log output for all level */
+    log_a("Hello EasyLogger!");
+    log_e("Hello EasyLogger!");
+    log_w("Hello EasyLogger!");
+    log_i("Hello EasyLogger!");
+    log_d("Hello EasyLogger!");
+    log_v("Hello EasyLogger!");
+//    elog_raw("Hello EasyLogger!");
 }
