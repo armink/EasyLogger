@@ -21,10 +21,10 @@
 
 这里我在`components\easylogger\plugins\flash\elog_flash_cfg.h`配置开启缓冲模式，此时只有缓冲区满了才会向Flash中写入。
 
--1、elog_flash read：读取存储在Flash中的所有日志；
+- 1、elog_flash read：读取存储在Flash中的所有日志；
  - 1.1、elog_flash read xxxx：读取最近保存的xxxx字节大小的日志；
--2、elog_flash flush：立刻将缓冲区中的所有日志保存至Flash中（注意：只有开启的了缓冲功能才会有效）；
--3、elog_flash clean：清空Flash中的所有已保存日志，此时缓冲区的日志也将被清空。
+- 2、elog_flash flush：立刻将缓冲区中的所有日志保存至Flash中（注意：只有开启的了缓冲功能才会有效）；
+- 3、elog_flash clean：清空Flash中的所有已保存日志，此时缓冲区的日志也将被清空。
 
 ## 3、文件（夹）说明
 
