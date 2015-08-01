@@ -297,7 +297,9 @@
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\..\app\inc</state>
           <state>$PROJ_DIR$\..\components\rtt_uart</state>
+          <state>$PROJ_DIR$\..\components\easyflash\inc</state>
           <state>$PROJ_DIR$\..\components\easylogger\inc</state>
+          <state>$PROJ_DIR$\..\components\easylogger\plugins\flash</state>
           <state>$PROJ_DIR$\..\components\others</state>
           <state>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\RT-Thread-1.2.2\include</state>
@@ -307,6 +309,7 @@
           <state>$PROJ_DIR$\..\Libraries\CMSIS_EWARM\Include</state>
           <state>$PROJ_DIR$\..\Libraries\CMSIS_EWARM\CM3\DeviceSupport\ST\STM32F10x</state>
           <state>$PROJ_DIR$\..\..\..\..\..\easylogger\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\easylogger\plugins\flash</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -952,7 +955,49 @@
   <group>
     <name>components</name>
     <group>
+      <name>easyflash</name>
+      <group>
+        <name>port</name>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\port\ef_port.c</name>
+        </file>
+      </group>
+      <group>
+        <name>src</name>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\src\easyflash.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\src\ef_env.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\src\ef_env_wl.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\src\ef_iap.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\src\ef_log.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\components\easyflash\src\ef_utils.c</name>
+        </file>
+      </group>
+    </group>
+    <group>
       <name>easylogger</name>
+      <group>
+        <name>plugins</name>
+        <group>
+          <name>flash</name>
+          <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\easylogger\plugins\flash\elog_flash.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\components\easylogger\plugins\flash\elog_flash_port.c</name>
+          </file>
+        </group>
+      </group>
       <group>
         <name>port</name>
         <file>

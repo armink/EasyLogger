@@ -22,49 +22,50 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: It is an head file for flash log plugin. You can see all be called functions.
- * Created on: 2015-06-05
+ * Function: Portable interface for EasyLogger's flash log pulgin.
+ * Created on: 2015-07-28
  */
 
-#ifndef __ELOG_FLASH_H__
-#define __ELOG_FLASH_H__
+#include "elog_flash.h"
+#include <rthw.h>
+#include <rtthread.h>
 
-#include <elog.h>
-#include <elog_flash_cfg.h>
+static struct rt_semaphore flash_log_lock;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * EasyLogger flash log pulgin port initialize
+ *
+ * @return result
+ */
+ElogErrCode elog_flash_port_init(void) {
+    ElogErrCode result = ELOG_NO_ERR;
 
-#if !defined(ELOG_FLASH_BUF_SIZE)
-    #error "Please configure RAM buffer size (in elog_flash_cfg.h)"
-#endif
+    rt_sem_init(&flash_log_lock, "elog flash lock", 1, RT_IPC_FLAG_PRIO);
 
-/* EasyLogger flash log plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "0.07.30"
-
-/* elog_flash.c */
-ElogErrCode elog_flash_init(void);
-void elog_flash_outout(size_t pos, size_t size);
-void elog_flash_outout_all(void);
-void elog_flash_outout_recent(size_t size);
-void elog_flash_set_filter(uint8_t level,const char *tag,const char *keyword);
-void elog_flash_write(const char *log, size_t size);
-void elog_flash_clean(void);
-void elog_flash_lock_enabled(bool enabled);
-
-#ifdef ELOG_FLASH_USING_BUF_MODE
-void elog_flash_flush(void);
-#endif
-
-/* elog_flash_port.c */
-ElogErrCode elog_flash_port_init(void);
-void elog_flash_port_output(const char *log, size_t size);
-void elog_flash_port_lock(void);
-void elog_flash_port_unlock(void);
-
-#ifdef __cplusplus
+    return result;
 }
-#endif
 
-#endif /* __ELOG_FLASH_H__ */
+/**
+ * output flash saved log port interface
+ *
+ * @param log flash saved log
+ * @param size log size
+ */
+void elog_flash_port_output(const char *log, size_t size) {
+    /* output to terminal */
+    rt_kprintf("%.*s", size, log);
+}
+
+/**
+ * flash log lock
+ */
+void elog_flash_port_lock(void) {
+    rt_sem_take(&flash_log_lock, RT_WAITING_FOREVER);
+}
+
+/**
+ * flash log unlock
+ */
+void elog_flash_port_unlock(void) {
+    rt_sem_release(&flash_log_lock);
+}

@@ -4,7 +4,7 @@
 
 # 1. 介绍
 
-EasyLogger是一款超轻量级(ROM<1.6K, RAM<0.3K)、高性能的C日志库，非常适合对资源敏感的软件项目，例如：IoT产品、可穿戴设备、智能家居等等。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展。
+[EasyLogger](https://github.com/armink/EasyLogger)是一款超轻量级(ROM<1.6K, RAM<0.3K)、高性能的C日志库，非常适合对资源敏感的软件项目，例如：IoT产品、可穿戴设备、智能家居等等。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展。
 
 ## 1.1 主要特性
 
@@ -71,7 +71,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.4 输出格式
 
-输出格式支持：级别、时间、标签、进程信息、线程信息、文件路径、行号、方法名
+输出格式支持：级别、时间、标签、进程信息、线程信息、文件路径、行号、方法名。每种优先级别可以独立设置输出格式。
 
 > 注：默认为 **RAW格式**，RAW格式日志不支持标签过滤
 
@@ -88,13 +88,19 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger核心功能。
 
+- Demo路径：`demo`
+- API文档：`docs\zh\api.md`
+- 移植文档：即将发布……
+
 ![easylogger](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/EasyLoggerDemo.gif)
 
-> 注：以上内容对应的API，可以打开[思维导图](http://naotu.baidu.com/viewshare.html?shareId=ausqm3j44f4k)看到更清晰的逻辑。
-
-### 2.6.2 Flash Log
+### 2.6.2 Flash Log（将日志保存到Flash中）
 
 下图过程为通过控制台输出日志，并将输出的日志存储到Flash中。重启再读取上次保存的日志，最后清空Flash日志。
+
+- Demo路径：`demo\os\rt-thread\stm32f10x`
+- API文档：`docs\zh\api.md`
+- 移植文档：即将发布……
 
 ![FlashLog](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/LogDemo.gif)
 

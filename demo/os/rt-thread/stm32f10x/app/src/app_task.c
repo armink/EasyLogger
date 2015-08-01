@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "bsp.h"
-#include "elog.h"
+#include "elog_flash.h"
+#include "easyflash.h"
 #include "finsh.h"
 #include "shell.h"
 #include "cpuusage.h"
@@ -88,8 +89,8 @@ static void test_elog(void) {
 void sys_init_thread(void* parameter){
 	set_system_status(SYSTEM_STATUS_INIT);
 
-    /* EasyLogger initialization */
-    if (elog_init() == ELOG_NO_ERR) {
+    /* initialize EasyFlash and EasyLogger */
+    if ((easyflash_init() == EF_NO_ERR)&&(elog_init() == ELOG_NO_ERR)) {
         /* set enabled format */
         elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL & ~ELOG_FMT_P_INFO);
         elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
@@ -99,6 +100,8 @@ void sys_init_thread(void* parameter){
         elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_P_INFO));
         /* set EasyLogger assert hook */
         elog_assert_set_hook(elog_user_assert_hook);
+        /* initialize EasyLogger Flash plugin */
+        elog_flash_init();
         /* start EasyLogger */
         elog_start();
         /* set hardware exception hook */
@@ -116,18 +119,26 @@ void sys_init_thread(void* parameter){
 }
 
 static void elog_user_assert_hook(const char* ex, const char* func, size_t line) {
+    /* disable logger output lock */
     elog_output_lock_enabled(false);
-//    elog_flash_lock_enabled(false);
-    elog_a("elog", "(%s) has assert failed at %s:%ld.", ex, func, line);
-//    elog_flash_flush();
+    /* disable flash plugin lock */
+    elog_flash_lock_enabled(false);
+    /* output logger assert information */
+    elog_a("elog", "(%s) has assert failed at %s:%ld.\n", ex, func, line);
+    /* write all buffered log to flash */
+    elog_flash_flush();
     while(1);
 }
 
 static void rtt_user_assert_hook(const char* ex, const char* func, rt_size_t line) {
+    /* disable logger output lock */
     elog_output_lock_enabled(false);
-//    elog_flash_lock_enabled(false);
+    /* disable flash plugin lock */
+    elog_flash_lock_enabled(false);
+    /* output rtt assert information */
     elog_a("rtt", "(%s) has assert failed at %s:%ld.\n", ex, func, line);
-//    elog_flash_flush();
+    /* write all buffered log to flash */
+    elog_flash_flush();
     while(1);
 }
 
@@ -144,8 +155,10 @@ static rt_err_t exception_hook(void *context) {
     };
     struct exception_stack_frame *exception_stack = (struct exception_stack_frame *) context;
 
+    /* disable logger output lock */
     elog_output_lock_enabled(false);
-    //elog_flash_lock_enabled(false);
+    /* disable flash plugin lock */
+    elog_flash_lock_enabled(false);
 
     elog_e("hw_fault", "psr: 0x%08x", exception_stack->psr);
     elog_e("hw_fault", " pc: 0x%08x", exception_stack->pc);
@@ -157,7 +170,8 @@ static rt_err_t exception_hook(void *context) {
     elog_e("hw_fault", "r00: 0x%08x", exception_stack->r0);
     elog_e("hw_fault", "hard fault on thread: %s", rt_thread_self()->name);
 
-   //elog_flash_flush();
+    /* write all buffered log to flash */
+    elog_flash_flush();
 
     return RT_EOK;
 }

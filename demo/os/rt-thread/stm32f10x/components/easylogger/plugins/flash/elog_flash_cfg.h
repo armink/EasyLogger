@@ -22,49 +22,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: It is an head file for flash log plugin. You can see all be called functions.
- * Created on: 2015-06-05
+ * Function: It is the configure head file for this flash log plugin.
+ * Created on: 2015-07-30
  */
 
-#ifndef __ELOG_FLASH_H__
-#define __ELOG_FLASH_H__
+#ifndef _ELOG_FLASH_CFG_H_
+#define _ELOG_FLASH_CFG_H_
 
-#include <elog.h>
-#include <elog_flash_cfg.h>
+/* EasyLogger flash log plugin's using buffer mode */
+#define ELOG_FLASH_USING_BUF_MODE
+/* EasyLogger flash log plugin's RAM buffer size */
+#define ELOG_FLASH_BUF_SIZE                  1024
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if !defined(ELOG_FLASH_BUF_SIZE)
-    #error "Please configure RAM buffer size (in elog_flash_cfg.h)"
-#endif
-
-/* EasyLogger flash log plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "0.07.30"
-
-/* elog_flash.c */
-ElogErrCode elog_flash_init(void);
-void elog_flash_outout(size_t pos, size_t size);
-void elog_flash_outout_all(void);
-void elog_flash_outout_recent(size_t size);
-void elog_flash_set_filter(uint8_t level,const char *tag,const char *keyword);
-void elog_flash_write(const char *log, size_t size);
-void elog_flash_clean(void);
-void elog_flash_lock_enabled(bool enabled);
-
-#ifdef ELOG_FLASH_USING_BUF_MODE
-void elog_flash_flush(void);
-#endif
-
-/* elog_flash_port.c */
-ElogErrCode elog_flash_port_init(void);
-void elog_flash_port_output(const char *log, size_t size);
-void elog_flash_port_lock(void);
-void elog_flash_port_unlock(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __ELOG_FLASH_H__ */
+#endif /* _ELOG_FLASH_CFG_H_ */

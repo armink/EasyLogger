@@ -9,7 +9,7 @@
 #include <stm32f10x_conf.h>
 #include <finsh.h>
 #include "cpuusage.h"
-#include "elog.h"
+#include "elog_flash.h"
 
 static void reboot(uint8_t argc, char **argv) {
     NVIC_SystemReset();
@@ -77,3 +77,30 @@ static void elog_kw(uint8_t argc, char **argv) {
     }
 }
 MSH_CMD_EXPORT(elog_kw, Set EasyLogger filter keyword);
+
+static void elog_flash(uint8_t argc, char **argv) {
+    if (argc >= 2) {
+        if (!strcmp(argv[1], "read")) {
+            if (argc >= 3) {
+                elog_flash_outout_recent(atol(argv[2]));
+            }else {
+                elog_flash_outout_all();
+            }
+        } else if (!strcmp(argv[1], "clean")) {
+            elog_flash_clean();
+        } else if (!strcmp(argv[1], "flush")) {
+
+#ifdef ELOG_FLASH_USING_BUF_MODE
+            elog_flash_flush();
+#else
+            rt_kprintf("EasyLogger flash log buffer mode is not open.\n");
+#endif
+
+        } else {
+            rt_kprintf("Please input elog_flash {<read>, <clean>, <flush>}.\n");
+        }
+    } else {
+        rt_kprintf("Please input elog_flash {<read>, <clean>, <flush>}.\n");
+    }
+}
+MSH_CMD_EXPORT(elog_flash, EasyLogger <read> <clean> <flush> flash log);

@@ -26,7 +26,8 @@
  * Created on: 2015-04-28
  */
 
-#include "elog.h"
+#include <elog.h>
+#include <elog_flash.h>
 #include <rthw.h>
 #include <rtthread.h>
 
@@ -54,7 +55,8 @@ ElogErrCode elog_port_init(void) {
 void elog_port_output(const char *log, size_t size) {
     /* output to terminal */
     rt_kprintf("%.*s", size, log);
-    //TODO output to flash
+    /* output to flash */
+    elog_flash_write(log, size);
 }
 
 /**

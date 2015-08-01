@@ -15,8 +15,8 @@ OverrideDefaultClocks=0
 CpuClock=72000000
 ClockAutoDetect=0
 ClockWanted=2000000
-JtagSpeed=2250000
-Prescaler=32
+JtagSpeed=2000000
+Prescaler=36
 TimeStampPrescIndex=0
 TimeStampPrescData=0
 PcSampCYCTAP=1
@@ -28,7 +28,7 @@ ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
 [DebugChecksum]
-Checksum=-1118035218
+Checksum=-483865419
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
