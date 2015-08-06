@@ -22,11 +22,13 @@
 
 ## 1.2 插件
 
-- 1. Flash Log：使用[EasyFlash](https://github.com/armink/EasyFlash)库提供的无缝接口，可以把日志直接存储在Flash中。
+- 1、Flash：使用[EasyFlash](https://github.com/armink/EasyFlash)库提供的Flash操作接口，可以把日志直接存储在Flash中。
+- 2、File（正在开发）：支持文件转档、软件运行时动态加载配置文件等与文件日志输出相关功能。
+- 3、敬请期待……
 
 ## 1.3 Star & Fork
 
-后续我还会提供更多插件。也非常欢迎大家设计、开发更多实用插件和功能，一起来完善EasyLogger **([Github](https://github.com/armink/EasyLogger)|[OSChina](http://git.oschina.net/armink/EasyLogger)|[Coding](https://coding.net/u/armink/p/EasyLogger/git))** ，同时把它推广给更多有需要的朋友。
+后续我还会提供更多插件。也非常欢迎大家设计、开发更多实用插件和功能，一起来完善EasyLogger **([Github](https://github.com/armink/EasyLogger)|[OSChina](http://git.oschina.net/armink/EasyLogger)|[Coding](https://coding.net/u/armink/p/EasyLogger/git))** 。如果觉得这个开源项目很赞，可以点击[项目主页](https://github.com/armink/EasyLogger) 右上角的**Star**，同时把它推荐给更多有需要的朋友。
 
 # 2. 使用
 
@@ -55,19 +57,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.3 输出过滤
 
-#### 2.3.1 过滤级别
-
-默认过滤级别为5(详细)，用户可以任意设置。在设置高优先级后，低优先级的日志将不会输出。例如：设置当前过滤的优先级为3(警告)，则只会输出优先级别为警告、错误、断言的日志。
-
-#### 2.3.2 过滤标签
-
-默认过滤标签为空字符串("")，即不过滤。当前输出日志的标签会与过滤标签做字符串匹配，日志的标签包含过滤标签，则该输出该日志。例如：设置过滤标签为WiFi，则系统中包含WiFi字样标签的（WiFi.BSP、WiFi.Protocol、Setting.WiFi）日志都会被输出。
-
-#### 2.3.3 过滤关键词
-
-默认过滤关键词为空字符串("")，即不过滤。检索当前输出日志中是否包含该关键词，包含则允许输出。
-
-> 注：对于配置较低的MCU建议不开启关键词过滤（默认为不过滤），增加关键字过滤将会在很大程度上减低日志的输出效率。实际上过滤关键词功能交给上位机做会更轻松，所以后期的跨平台日志助手开发完成后，就无需该功能。
+支持按照**级别、标签及关键词**进行过滤。日志内容较多时，使用过滤功能可以更快定位日志，保证日志的可读性。更多的过滤功能设置方法及细节请阅读[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)文档
 
 ### 2.4 输出格式
 
@@ -88,9 +78,9 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger核心功能。
 
-- Demo路径：`demo`
-- API文档：`docs\zh\api.md`
-- 移植文档：即将发布……
+- Demo路径：[`\demo\os\rt-thread\stm32f10x\`](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x)
+- API文档：[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)
+- 移植文档：[`\docs\zh\port\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/kernel.md)
 
 ![easylogger](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/EasyLoggerDemo.gif)
 
@@ -98,21 +88,25 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 下图过程为通过控制台输出日志，并将输出的日志存储到Flash中。重启再读取上次保存的日志，最后清空Flash日志。
 
-- Demo路径：`demo\os\rt-thread\stm32f10x`
-- API文档：`docs\zh\api.md`
-- 移植文档：即将发布……
+- Demo路径：[`\demo\os\rt-thread\stm32f10x\`](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x)
+- API文档：[`\docs\zh\api\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/flash.md)
+- 移植文档：[`\docs\zh\port\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/flash.md)
 
 ![FlashLog](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/LogDemo.gif)
 
-# 3. 后期
+# 3. 文档
+
+具体内容参考[`\docs\zh\`](https://github.com/armink/EasyLogger/tree/master/docs/zh)下的文件。务必保证在 **阅读文档** 后再移植使用。
+
+# 4. 后期
 
 - 1、~~Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，~~并具有历史日检索的功能；
-- 2、文件转档：文件系统下支持文件按容量转档，按时间区分；
-- 3、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也可以放到异步输出中去；
-- 4、配置文件：文件系统下的配置文件；
-- 5、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等，计划使用[NW.js](http://www.oschina.net/p/nwjs)框架；
+- 2、配置文件：文件系统下的配置文件；
+- 3、文件转档：文件系统下支持文件按容量转档，按时间区分；
+- 4、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等。前端：[HTML5](https://zh.wikipedia.org/wiki/HTML5) + [Bootstrap](https://github.com/twbs/bootstrap) + [AngularJS](https://angularjs.org/) + [NW.js](http://www.oschina.net/p/nwjs)，后端：[Rust](https://github.com/rust-lang/rust) + [iron](https://github.com/iron/iron) + [rust-websocket](https://github.com/cyderize/rust-websocket) + [serial-rs](https://github.com/dcuddeback/serial-rs)；
+- 5、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也可以放到异步输出中去；
 - 6、Arduino：增加Arduino lib，并提供其Demo；
 
-# 4. 许可
+# 5. 许可
 
 MIT Copyright (c) armink.ztl@gmail.com
