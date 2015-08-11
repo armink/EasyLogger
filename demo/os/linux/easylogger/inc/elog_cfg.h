@@ -29,14 +29,14 @@
 #ifndef _ELOG_CFG_H_
 #define _ELOG_CFG_H_
 
-/* setting static output log level */
-#define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
 /* enable log output. default open this macro */
 #define ELOG_OUTPUT_ENABLE
-/* output line number max length */
-#define ELOG_LINE_NUM_MAX_LEN                5
+/* setting static output log level */
+#define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
 /* log buffer size */
 #define ELOG_BUF_SIZE                        512
+/* output line number max length */
+#define ELOG_LINE_NUM_MAX_LEN                5
 /* output filter's tag max length */
 #define ELOG_FILTER_TAG_MAX_LEN              16
 /* output filter's keyword max length */

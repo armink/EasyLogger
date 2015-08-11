@@ -67,7 +67,7 @@ int main(void) {
     /* test logger output */
     test_elog();
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
 
 /**
