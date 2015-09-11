@@ -92,7 +92,7 @@ void elog_flash_port_unlock(void)
 每次使用前，务必核心功能都已经初始化完成，再调用`elog_flash_init()`方法对Flash插件进行初始化，保证初始化没问题后，再调用`elog_start()`方法启动EasyLogger，最后就可以使用Flash插件自带的API方法进行测试。如果使用的RT-Thread的Demo，则可以按照[这里的命令要求](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x#22-flash-log将日志保存到flash中)，接上finsh串口，输入finsh命令即可测试。
 
 摘取自STM32平台下RT-Thread Demo中的初始化过程（[点击查看全部](https://github.com/armink/EasyLogger/blob/master/demo/os/rt-thread/stm32f10x/app/src/app_task.c)）：
-```
+```c
 /* 初始化EasyFlash及EasyLogger */
 if ((easyflash_init() == EF_NO_ERR)&&(elog_init() == ELOG_NO_ERR)) {
     /* 设置日志格式 */
