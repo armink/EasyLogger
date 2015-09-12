@@ -73,7 +73,7 @@ EfErrCode ef_log_init(void) {
  * Find the log store start address and end address.
  * It's like a ring buffer which implement by flash.
  * The flash log area has two state when find start address and end address.
- *                        state 1                                state 2
+ *                       state 1                                state 2
  *                   |============|                         |============|
  * log area start--> |############| <-- start address       |############| <-- end address
  *                   |############|                         |   empty    |

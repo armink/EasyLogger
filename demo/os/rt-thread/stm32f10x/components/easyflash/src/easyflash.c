@@ -31,8 +31,8 @@
  * This all Backup Area Flash storage index. All used flash area configure is under here.
  * |----------------------------|   Storage Size
  * | Environment variables area |   ENV area size @see ENV_AREA_SIZE
- * |      1.system section      |   ENV_SYSTEM_SIZE
- * |      2:data section        |   ENV_AREA_SIZE - ENV_SYSTEM_SIZE
+ * |      1.system section      |   ENV system section size
+ * |      2:data section        |   ENV_AREA_SIZE - ENV system section size
  * |----------------------------|
  * |      Saved log area        |   Log area size @see LOG_AREA_SIZE
  * |----------------------------|

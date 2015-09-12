@@ -142,11 +142,16 @@ uint32_t ef_find_sec_using_end_addr(uint32_t addr, size_t sec_size) {
                 }
                 /* all sector counts finish */
                 if (continue_ff == sec_size - start) {
+                    /* must be word alignment */
+                    if (start % 4 != 0) {
+                        start = (start / 4 + 1) * 4;
+                    }
                     break;
                 }
             }
         }
     }
+    /* calculate current flash sector using end address */
     if ((start == 0) && (continue_ff == sec_size)) {
         /* from 0 to sec_size all sector is 0xFF, so the sector is empty */
         return addr;

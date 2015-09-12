@@ -51,7 +51,7 @@ extern "C" {
     #error "Please configure backup area start address (in ef_cfg.h)"
 #endif
 
-#if !defined(EF_USING_ENV)
+#if !defined(EF_ERASE_MIN_SIZE)
     #error "Please configure minimum size of flash erasure (in ef_cfg.h)"
 #endif
 
@@ -67,7 +67,7 @@ if (!(EXPR))                                                                  \
     while (1);                                                                \
 }
 /* EasyFlash software version number */
-#define EF_SW_VERSION                "1.07.29"
+#define EF_SW_VERSION                "1.09.12"
 
 typedef struct _eflash_env{
     char *key;
