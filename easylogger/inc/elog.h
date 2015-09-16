@@ -74,7 +74,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.07.30"
+#define ELOG_SW_VERSION                      "0.09.16"
 
 /* EasyLogger assert for developer. */
 #define ELOG_ASSERT(EXPR)                                                     \
@@ -189,6 +189,8 @@ void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_
 #if ELOG_OUTPUT_LVL == ELOG_LVL_VERBOSE
 #define elog_verbose(tag, ...) \
         elog_output(ELOG_LVL_VERBOSE, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+#else
+#define elog_verbose(tag, ...)
 #endif
 
 #endif /* ELOG_OUTPUT_ENABLE */
