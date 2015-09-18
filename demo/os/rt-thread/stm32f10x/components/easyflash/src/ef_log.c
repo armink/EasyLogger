@@ -173,7 +173,12 @@ static void find_start_and_end_addr(void) {
                     log_start_addr = log_area_start_addr;
                     cur_using_sec_addr = log_area_start_addr + cur_size;
                 } else {
-                    /* state 1 or 2*/
+                    /* like state 2 when the sector is the last one */
+                    if (cur_size + EF_ERASE_MIN_SIZE >= LOG_AREA_SIZE) {
+                        cur_log_sec_state = 2;
+                        log_start_addr = log_area_start_addr + cur_size;
+                        cur_using_sec_addr = log_area_start_addr + cur_size - EF_ERASE_MIN_SIZE;
+                    }
                 }
                 break;
             case FLASH_SECTOR_FULL:
