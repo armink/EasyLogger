@@ -44,7 +44,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.2 输出级别
 
-参考Android Logcat，级别最高为0(Assert)，最小为5(Verbose)。
+参考Android Logcat，级别最高为0(Assert)，最低为5(Verbose)。
 
 ```
 0.[A]：断言(Assert)
@@ -57,7 +57,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.3 输出过滤
 
-支持按照**级别、标签及关键词**进行过滤。日志内容较多时，使用过滤功能可以更快定位日志，保证日志的可读性。更多的过滤功能设置方法及细节请阅读[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)文档
+支持按照 **级别、标签及关键词** 进行过滤。日志内容较多时，使用过滤功能可以更快定位日志，保证日志的可读性。更多的过滤功能设置方法及细节请阅读[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)文档
 
 ### 2.4 输出格式
 
@@ -82,7 +82,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 - API文档：[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)
 - 移植文档：[`\docs\zh\port\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/kernel.md)
 
-![easylogger](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/EasyLoggerDemo.gif)
+![easylogger](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/zh/images/EasyLoggerDemo.gif)
 
 ### 2.6.2 Flash Log（将日志保存到Flash中）
 
@@ -92,7 +92,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 - API文档：[`\docs\zh\api\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/flash.md)
 - 移植文档：[`\docs\zh\port\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/flash.md)
 
-![FlashLog](http://git.oschina.net/Armink/EasyLogger/raw/master/docs/zh/images/LogDemo.gif)
+![FlashLog](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/zh/images/LogDemo.gif)
 
 # 3. 文档
 
