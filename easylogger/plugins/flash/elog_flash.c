@@ -66,7 +66,7 @@ ElogErrCode elog_flash_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
     /* buffer size must be word alignment */
-    ELOG_ASSERT(ELOG_FLASH_BUF_SIZE % 4 == 0)
+    ELOG_ASSERT(ELOG_FLASH_BUF_SIZE % 4 == 0);
 
 #ifdef ELOG_FLASH_USING_BUF_MODE
     /* initialize current flash log buffer write position */

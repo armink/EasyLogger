@@ -74,9 +74,10 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "0.09.16"
+#define ELOG_SW_VERSION                      "1.05.13"
 
 /* EasyLogger assert for developer. */
+#ifdef ELOG_ASSERT_ENABLE
 #define ELOG_ASSERT(EXPR)                                                     \
 if (!(EXPR))                                                                  \
 {                                                                             \
@@ -87,6 +88,9 @@ if (!(EXPR))                                                                  \
         elog_assert_hook(#EXPR, __FUNCTION__, __LINE__);                      \
     }                                                                         \
 }
+#else
+#define ELOG_ASSERT(EXPR)                    ((void)0);
+#endif
 
 /* all formats index */
 typedef enum {
