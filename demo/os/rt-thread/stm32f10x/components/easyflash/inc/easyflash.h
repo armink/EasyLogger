@@ -67,9 +67,9 @@ if (!(EXPR))                                                                  \
     while (1);                                                                \
 }
 /* EasyFlash software version number */
-#define EF_SW_VERSION                "1.09.16"
+#define EF_SW_VERSION                "2.08.26"
 
-typedef struct _eflash_env{
+typedef struct _ef_env{
     char *key;
     char *value;
 }ef_env, *ef_env_t;
@@ -86,10 +86,10 @@ typedef enum {
 
 /* the flash sector current status */
 typedef enum {
-    FLASH_SECTOR_EMPTY,
-    FLASH_SECTOR_USING,
-    FLASH_SECTOR_FULL,
-}FlashSecrorStatus;
+    EF_SECTOR_EMPTY,
+    EF_SECTOR_USING,
+    EF_SECTOR_FULL,
+}EfSecrorStatus;
 
 /* easyflash.c */
 EfErrCode easyflash_init(void);
@@ -127,7 +127,7 @@ size_t ef_log_get_used_size(void);
 
 /* ef_utils.c */
 uint32_t ef_calc_crc32(uint32_t crc, const void *buf, size_t size);
-FlashSecrorStatus ef_get_sector_status(uint32_t addr, size_t sec_size);
+EfSecrorStatus ef_get_sector_status(uint32_t addr, size_t sec_size);
 uint32_t ef_find_sec_using_end_addr(uint32_t addr, size_t sec_size);
 
 /* ef_port.c */

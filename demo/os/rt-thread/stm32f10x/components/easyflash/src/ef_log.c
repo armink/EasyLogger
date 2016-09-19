@@ -94,7 +94,7 @@ EfErrCode ef_log_init(void) {
  */
 static void find_start_and_end_addr(void) {
     size_t cur_size = 0;
-    FlashSecrorStatus cur_sec_status, last_sec_status;
+    EfSecrorStatus cur_sec_status, last_sec_status;
     uint32_t cur_using_sec_addr = 0;
     /* all status sector counts */
     size_t empty_sec_counts = 0, using_sec_counts = 0, full_sector_counts = 0;
@@ -112,15 +112,15 @@ static void find_start_and_end_addr(void) {
         cur_sec_status = ef_get_sector_status(log_area_start_addr + cur_size, EF_ERASE_MIN_SIZE);
         /* compare last and current status */
         switch (last_sec_status) {
-        case FLASH_SECTOR_EMPTY: {
+        case EF_SECTOR_EMPTY: {
             switch (cur_sec_status) {
-            case FLASH_SECTOR_EMPTY:
+            case EF_SECTOR_EMPTY:
                 break;
-            case FLASH_SECTOR_USING:
+            case EF_SECTOR_USING:
                 EF_DEBUG("Error: Log area error! Now will clean all log area.\n");
                 ef_log_clean();
                 return;
-            case FLASH_SECTOR_FULL:
+            case EF_SECTOR_FULL:
                 EF_DEBUG("Error: Log area error! Now will clean all log area.\n");
                 ef_log_clean();
                 return;
@@ -128,19 +128,19 @@ static void find_start_and_end_addr(void) {
             empty_sec_counts++;
             break;
         }
-        case FLASH_SECTOR_USING: {
+        case EF_SECTOR_USING: {
             switch (cur_sec_status) {
-            case FLASH_SECTOR_EMPTY:
+            case EF_SECTOR_EMPTY:
                 /* like state 1 */
                 cur_log_sec_state = 1;
                 log_start_addr = log_area_start_addr;
                 cur_using_sec_addr = log_area_start_addr + cur_size - EF_ERASE_MIN_SIZE;
                 break;
-            case FLASH_SECTOR_USING:
+            case EF_SECTOR_USING:
                 EF_DEBUG("Error: Log area error! Now will clean all log area.\n");
                 ef_log_clean();
                 return;
-            case FLASH_SECTOR_FULL:
+            case EF_SECTOR_FULL:
                 /* like state 2 */
                 cur_log_sec_state = 2;
                 log_start_addr = log_area_start_addr + cur_size;
@@ -150,9 +150,9 @@ static void find_start_and_end_addr(void) {
             using_sec_counts++;
             break;
         }
-        case FLASH_SECTOR_FULL: {
+        case EF_SECTOR_FULL: {
             switch (cur_sec_status) {
-            case FLASH_SECTOR_EMPTY:
+            case EF_SECTOR_EMPTY:
                 /* like state 1 */
                 if (cur_log_sec_state == 2) {
                     EF_DEBUG("Error: Log area error! Now will clean all log area.\n");
@@ -166,7 +166,7 @@ static void find_start_and_end_addr(void) {
                     cur_using_sec_addr = log_area_start_addr + cur_size - EF_ERASE_MIN_SIZE;
                 }
                 break;
-            case FLASH_SECTOR_USING:
+            case EF_SECTOR_USING:
                 if(total_sec_num <= 2) {
                     /* like state 1 */
                     cur_log_sec_state = 1;
@@ -181,7 +181,7 @@ static void find_start_and_end_addr(void) {
                     }
                 }
                 break;
-            case FLASH_SECTOR_FULL:
+            case EF_SECTOR_FULL:
                 break;
             }
             full_sector_counts++;
@@ -192,11 +192,11 @@ static void find_start_and_end_addr(void) {
     }
 
     /* the last sector status counts */
-    if (cur_sec_status == FLASH_SECTOR_EMPTY) {
+    if (cur_sec_status == EF_SECTOR_EMPTY) {
         empty_sec_counts++;
-    } else if (cur_sec_status == FLASH_SECTOR_USING) {
+    } else if (cur_sec_status == EF_SECTOR_USING) {
         using_sec_counts++;
-    } else if (cur_sec_status == FLASH_SECTOR_FULL) {
+    } else if (cur_sec_status == EF_SECTOR_FULL) {
         full_sector_counts++;
     }
 

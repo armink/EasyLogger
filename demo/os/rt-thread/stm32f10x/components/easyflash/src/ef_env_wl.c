@@ -192,7 +192,6 @@ EfErrCode ef_env_set_default(void){
  * @return ENV start address in flash
  */
 static uint32_t get_env_start_addr(void) {
-    EF_ASSERT(env_start_addr);
     return env_start_addr;
 }
 /**

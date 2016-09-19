@@ -188,10 +188,8 @@ EfErrCode ef_env_set_default(void){
  */
 static uint32_t get_env_system_addr(void) {
 #ifndef EF_ENV_USING_PFS_MODE
-    EF_ASSERT(env_start_addr);
     return env_start_addr;
 #else
-    EF_ASSERT(cur_load_area_addr);
     return cur_load_area_addr;
 #endif
 }
@@ -306,8 +304,6 @@ static EfErrCode write_env(const char *key, const char *value) {
 static char *find_env(const char *key) {
     char *env_start, *env_end, *env, *found_env = NULL;
     size_t key_len = strlen(key), env_len;
-
-    EF_ASSERT(env_start_addr);
 
     if (*key == NULL) {
         EF_INFO("Flash ENV name must be not empty!\n");

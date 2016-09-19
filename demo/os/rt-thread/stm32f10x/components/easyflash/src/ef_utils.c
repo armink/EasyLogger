@@ -106,15 +106,15 @@ uint32_t ef_calc_crc32(uint32_t crc, const void *buf, size_t size)
  *
  * @return the flash sector current status
  */
-FlashSecrorStatus ef_get_sector_status(uint32_t addr, size_t sec_size) {
+EfSecrorStatus ef_get_sector_status(uint32_t addr, size_t sec_size) {
     uint32_t cur_using_addr = ef_find_sec_using_end_addr(addr, sec_size);
     /* get current status by current using address */
-    if (cur_using_addr == addr) {
-        return FLASH_SECTOR_EMPTY;
-    } else if (cur_using_addr < addr + sec_size - 4) {
-        return FLASH_SECTOR_USING;
+    if (cur_using_addr == 0 || cur_using_addr == addr - 4) {
+        return EF_SECTOR_EMPTY;
+    } else if (cur_using_addr == addr + sec_size - 4) {
+        return EF_SECTOR_FULL;
     } else {
-        return FLASH_SECTOR_FULL;
+        return EF_SECTOR_USING;
     }
 }
 
@@ -127,37 +127,38 @@ FlashSecrorStatus ef_get_sector_status(uint32_t addr, size_t sec_size) {
  * @return current flash sector using end address
  */
 uint32_t ef_find_sec_using_end_addr(uint32_t addr, size_t sec_size) {
-    size_t start, continue_ff;
-    /* counts continuous 0xFF */
-    for (start = 0; start < sec_size; start++) {
-        if (*(uint8_t *) (addr + start) == 0xFF) {
-            /* make sure it is not the last byte */
-            if (start < sec_size - 1) {
-                /* start counts */
-                for (continue_ff = 1; continue_ff < sec_size - start; continue_ff++) {
-                    if (*(uint8_t *) (addr + start + continue_ff) != 0xFF) {
-                        start += continue_ff;
-                        break;
-                    }
-                }
-                /* all sector counts finish */
-                if (continue_ff == sec_size - start) {
-                    /* must be word alignment */
-                    if (start % 4 != 0) {
-                        start = (start / 4 + 1) * 4;
-                    }
-                    break;
-                }
+/* read section data buffer size */
+#define READ_BUF_SIZE                32
+
+    uint32_t start = addr, continue_ff = 0, read_buf_size = 0, i;
+    uint8_t buf[READ_BUF_SIZE];
+
+    EF_ASSERT(READ_BUF_SIZE % 4 == 0);
+    /* counts continuous 0xFF which is end of sector */
+    while (start < addr + sec_size) {
+        if (start + READ_BUF_SIZE < addr + sec_size) {
+            read_buf_size = READ_BUF_SIZE;
+        } else {
+            read_buf_size = addr + sec_size - start;
+        }
+        ef_port_read(start, (uint32_t *)buf, read_buf_size);
+        for (i = 0; i < read_buf_size; i++) {
+            if (buf[i] == 0xFF) {
+                continue_ff++;
+            } else {
+                continue_ff = 0;
             }
         }
+        start += read_buf_size;
     }
     /* calculate current flash sector using end address */
-    if ((start == 0) && (continue_ff == sec_size)) {
+    if (continue_ff == sec_size) {
         /* from 0 to sec_size all sector is 0xFF, so the sector is empty */
-        return addr;
-    } else if (start < sec_size) {
-        /* form start to sec_size all area is 0xFF, so it's used part of the sector */
-        return addr + start;
+        return addr >= 4 ? addr - 4 : 0;
+    } else if (continue_ff >= 4) {
+        /* form end_addr - 4 to sec_size length all area is 0xFF, so it's used part of the sector.
+         * the address must be word alignment. */
+        return (addr + sec_size - continue_ff) * 4 / 4 - 4;
     } else {
         /* all sector not has continuous 0xFF, alignment by word */
         return addr + sec_size - 4;
