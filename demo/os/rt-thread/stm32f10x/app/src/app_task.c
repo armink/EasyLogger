@@ -172,6 +172,7 @@ static rt_err_t exception_hook(void *context) {
 
     /* write all buffered log to flash */
     elog_flash_flush();
+	while(1);
 
     return RT_EOK;
 }
