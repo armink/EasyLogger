@@ -41,13 +41,13 @@ extern "C" {
 #endif
 
 /* EasyLogger flash log plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "0.07.30"
+#define ELOG_FLASH_SW_VERSION                "1.10.11"
 
 /* elog_flash.c */
 ElogErrCode elog_flash_init(void);
-void elog_flash_outout(size_t pos, size_t size);
-void elog_flash_outout_all(void);
-void elog_flash_outout_recent(size_t size);
+void elog_flash_output(size_t pos, size_t size);
+void elog_flash_output_all(void);
+void elog_flash_output_recent(size_t size);
 void elog_flash_set_filter(uint8_t level,const char *tag,const char *keyword);
 void elog_flash_write(const char *log, size_t size);
 void elog_flash_clean(void);

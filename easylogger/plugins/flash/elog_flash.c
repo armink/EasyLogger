@@ -89,7 +89,7 @@ ElogErrCode elog_flash_init(void) {
  *        Maximum index is log used flash total size - 1.
  * @param size
  */
-void elog_flash_outout(size_t index, size_t size) {
+void elog_flash_output(size_t index, size_t size) {
     /* 128 bytes buffer */
     uint32_t buf[32] = { 0 };
     size_t log_total_size = ef_log_get_used_size();
@@ -134,8 +134,8 @@ void elog_flash_outout(size_t index, size_t size) {
 /**
  * Read and output all log which saved in flash.
  */
-void elog_flash_outout_all(void) {
-    elog_flash_outout(0, ef_log_get_used_size());
+void elog_flash_output_all(void) {
+    elog_flash_output(0, ef_log_get_used_size());
 }
 
 /**
@@ -143,12 +143,12 @@ void elog_flash_outout_all(void) {
  *
  * @param size recent log size
  */
-void elog_flash_outout_recent(size_t size) {
+void elog_flash_output_recent(size_t size) {
     size_t max_size = ef_log_get_used_size();
     if (size > max_size) {
         log_i("The output size is out of bound. The max size is %d.", max_size);
     } else {
-        elog_flash_outout(max_size - size, size);
+        elog_flash_output(max_size - size, size);
     }
 }
 

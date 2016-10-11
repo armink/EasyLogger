@@ -124,9 +124,9 @@ static void elog_flash(uint8_t argc, char **argv) {
     if (argc >= 2) {
         if (!strcmp(argv[1], "read")) {
             if (argc >= 3) {
-                elog_flash_outout_recent(atol(argv[2]));
+                elog_flash_output_recent(atol(argv[2]));
             }else {
-                elog_flash_outout_all();
+                elog_flash_output_all();
             }
         } else if (!strcmp(argv[1], "clean")) {
             elog_flash_clean();
