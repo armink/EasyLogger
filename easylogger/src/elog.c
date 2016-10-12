@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -329,8 +329,9 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);
 
     } else {
+        log_len = ELOG_BUF_SIZE;
         /* copy newline sign */
-        strcpy(log_buf - newline_len, ELOG_NEWLINE_SIGN);
+        strcpy(log_buf + ELOG_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
     }
 
     /* output log */
