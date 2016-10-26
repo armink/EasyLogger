@@ -26,6 +26,7 @@
  * Created on: 2015-04-28
  */
 
+#include "color.h"
 #include <elog.h>
 #include <string.h>
 #include <stdarg.h>
@@ -48,6 +49,8 @@ static const char *level_output_info[] = {
 };
 /* the output lock enable or disable. default is enable */
 static bool output_lock_enabled = true;
+/* the log text color enable or disable. default is enable */
+static bool text_color_enabled = true;
 /* the output is locked before enable. */
 static bool output_is_locked_before_enable = false;
 /* the output is locked before disable. */
@@ -95,6 +98,24 @@ void elog_set_output_enabled(bool enabled) {
 
     elog.output_enabled = enabled;
 }
+
+/**
+ * set log text color enable or disable
+ * 
+ * @param enabled TRUE: enable FALSE:disable
+ */
+ void elog_set_text_color_enabled(bool enabled) {
+	 text_color_enabled = enabled;
+ }
+ 
+ /**
+  * get log text color enable status
+  *
+  * @return enable or disable
+  */
+  bool elog_get_text_color_enabled(void) {
+	  return text_color_enabled;
+  }
 
 /**
  * get output is enable or disable
@@ -240,6 +261,37 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 
     /* lock output */
     output_lock();
+	
+	/* add Escape Sequence start sign and color info*/
+	if(text_color_enabled) {
+		log_len += elog_strcpy(log_len, log_buf + log_len, ESC_START);
+		char *color = NULL;
+		switch(level)
+		{
+			case ELOG_LVL_ASSERT:
+				color = (char*) COLOR_ASSERT;
+				break;
+			case ELOG_LVL_ERROR:
+				color = (char*) COLOR_ERROR;
+				break;
+			case ELOG_LVL_WARN:
+				color = (char*) COLOR_WARN;
+				break;
+			case ELOG_LVL_INFO:
+				color = (char*) COLOR_INFO;
+				break;
+			case ELOG_LVL_DEBUG:
+				color = (char*) COLOR_DEBUG;
+				break;
+			case ELOG_LVL_VERBOSE:
+				color = (char*) COLOR_VERBOSE;
+				break;
+			default:
+				;
+		}
+		log_len += elog_strcpy(log_len, log_buf + log_len, color);
+	}
+	
     /* package level info */
     if (get_fmt_enabled(level, ELOG_FMT_LVL)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, level_output_info[level]);
@@ -334,6 +386,11 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         strcpy(log_buf + ELOG_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
     }
 
+    /* add Escape Sequence end sign */
+	if(text_color_enabled) {
+		log_len += elog_strcpy(log_len, log_buf + log_len, ESC_END);
+	}
+	
     /* output log */
     elog_port_output(log_buf, log_len);
 
