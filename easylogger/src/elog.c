@@ -26,6 +26,7 @@
  * Created on: 2015-04-28
  */
 
+#include "color.h"
 #include <elog.h>
 #include <string.h>
 #include <stdarg.h>
@@ -240,6 +241,33 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 
     /* lock output */
     output_lock();
+	/* add Escape Sequence start sign and color info*/
+    log_len += elog_strcpy(log_len, log_buf + log_len, ESC_START);
+    char *color = NULL;
+    switch(level)
+    {
+        case ELOG_LVL_ASSERT:
+            color = (char*) COLOR_ASSERT;
+            break;
+        case ELOG_LVL_ERROR:
+            color = (char*) COLOR_ERROR;
+            break;
+        case ELOG_LVL_WARN:
+            color = (char*) COLOR_WARN;
+            break;
+        case ELOG_LVL_INFO:
+            color = (char*) COLOR_INFO;
+            break;
+        case ELOG_LVL_DEBUG:
+            color = (char*) COLOR_DEBUG;
+            break;
+        case ELOG_LVL_VERBOSE:
+            color = (char*) COLOR_VERBOSE;
+            break;
+        default:
+            ;
+    }
+    log_len += elog_strcpy(log_len, log_buf + log_len, color);
     /* package level info */
     if (get_fmt_enabled(level, ELOG_FMT_LVL)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, level_output_info[level]);
@@ -334,6 +362,9 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         strcpy(log_buf + ELOG_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
     }
 
+    /* add Escape Sequence end sign */
+    log_len += elog_strcpy(log_len, log_buf + log_len, ESC_END);
+	
     /* output log */
     elog_port_output(log_buf, log_len);
 
