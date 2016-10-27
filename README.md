@@ -14,6 +14,7 @@
 - 支持多种操作系统（[RT-Thread](http://www.rt-thread.org/)、UCOS、Linux、Windows...），也支持裸机平台；
 - 日志支持 **RAW格式** ；
 - 支持按 **标签**  、 **级别** 、 **关键词** 进行动态过滤；
+- 各级别日志支持不同颜色显示
 - 扩展性强，支持以插件形式扩展新功能。
 
 > 名词解释：
@@ -54,6 +55,12 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 4.[D]：调试(Debug)
 5.[V]：详细(Verbose)
 ```
+
+#### 2.2.1 设置不同的颜色及字体风格
+
+各个级别日志默认颜色效果如下。用户也可以根据自己的喜好，在 `elog_cfg.h` 对各个级别日志的颜色及字体风格进行单独设置。
+
+![TextColor](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/zh/images/TextColor.png)
 
 ### 2.3 输出过滤
 

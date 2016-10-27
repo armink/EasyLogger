@@ -245,6 +245,18 @@ void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_
 |:-----                                  |:----|
 |hook                                    |断言钩子方法|
 
+### 1.15 使能/失能日志颜色
+
+日志颜色功能是将各个级别日志按照颜色进行区分，默认颜色功能是关闭的。日志的颜色修改方法详见《EasyLogger 移植说明》中的 `设置参数` 章节。
+
+```
+void elog_set_text_color_enabled(bool enabled)
+```
+
+|参数                                    |描述|
+|:-----                                  |:----|
+|enabled                                 |true: 使能，false: 失能|
+
 ## 2、配置
 
-参照EasyLogger 移植说明（[`\docs\zh\port\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/kernel.md)）中的 `设置参数` 章节
+参照 《EasyLogger 移植说明》（[`\docs\zh\port\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/kernel.md)）中的 `设置参数` 章节

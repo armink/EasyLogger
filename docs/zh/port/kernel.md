@@ -26,7 +26,7 @@
 |\demo\non_os\stm32f10x\                |stm32f10x裸机的 demo|
 |\demo\os\linux\                        |linux平台 demo|
 |\demo\os\windows\                      |windows平台 demo|
-|\demo\os\rt-thread\stm32f10x\           |stm32f10x基于[RT-Thread](http://www.rt-thread.org/)的demo（包含Flash插件demo）|
+|\demo\os\rt-thread\stm32f10x\          |stm32f10x基于[RT-Thread](http://www.rt-thread.org/)的demo（包含Flash插件demo）|
 
 
 - 2、将`\easylogger\`（里面包含`inc`、`src`及`port`的那个）文件夹拷贝到项目中；
@@ -171,6 +171,20 @@ const char *elog_port_get_t_info(void)
 用户可以根据自己的使用场景自定义换行符，例如：`"\r\n"`，`"\n"`
 
 - 操作方法：修改`ELOG_NEWLINE_SIGN`宏对应值即可
+
+### 4.9 颜色
+
+每个级别的日志均有默认颜色。如果想修改，请先查看在 `elog.c` 的头部定义的各种颜色及字体风格，这里以修改 `VERBOSE` 级别日志来举例：
+
+首先选择前景色为白色，再选择背景色为黑色，最后字体风格为粗体
+
+那么最终的配置如下：
+
+```
+#define ELOG_COLOR_VERBOSE         (F_WHITE B_BLACK S_BOLD)
+```
+
+- 操作方法：增加并修改`ELOG_COLOR_VERBOSE`宏对应值即可，其他级别日志颜色的修改以此类推
 
 ## 5、测试验证
 
