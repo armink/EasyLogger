@@ -74,7 +74,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.05.13"
+#define ELOG_SW_VERSION                      "1.10.12"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -132,6 +132,8 @@ ElogErrCode elog_init(void);
 void elog_start(void);
 void elog_set_output_enabled(bool enabled);
 bool elog_get_output_enabled(void);
+void elog_set_text_color_enabled(bool enabled);
+bool elog_get_text_color_enabled(void);
 void elog_set_fmt(uint8_t level, size_t set);
 void elog_set_filter(uint8_t level, const char *tag, const char *keyword);
 void elog_set_filter_lvl(uint8_t level);
