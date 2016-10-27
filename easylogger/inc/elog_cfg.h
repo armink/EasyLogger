@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -45,5 +45,7 @@
 #define ELOG_FILTER_KW_MAX_LEN               /* @note you must define it for a value */
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    /* @note you must define it for a value */
+/* change the verbose(or others) level logs to not default color if you want */
+#define ELOG_COLOR_VERBOSE                   /* @note you must define it for a value */
 
 #endif /* _ELOG_CFG_H_ */

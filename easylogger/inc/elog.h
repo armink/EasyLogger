@@ -74,7 +74,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.10.12"
+#define ELOG_SW_VERSION                      "1.10.27"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -120,6 +120,10 @@ typedef struct {
     ElogFilter filter;
     size_t enabled_fmt_set[ELOG_LVL_TOTAL_NUM];
     bool output_enabled;
+    bool output_lock_enabled;
+    bool output_is_locked_before_enable;
+    bool output_is_locked_before_disable;
+    bool text_color_enabled;
 }EasyLogger, *EasyLogger_t;
 
 /* EasyLogger error code */
