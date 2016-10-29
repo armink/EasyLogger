@@ -145,6 +145,7 @@ void elog_start(void) {
     elog_set_output_enabled(true);
     /* show version */
     elog_i(log_tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
+    elog_i(log_tag, "You can get the latest version on https://github.com/armink/EasyLogger .");
 }
 
 /**
