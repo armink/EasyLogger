@@ -47,6 +47,7 @@
 #define F_CYAN                                        "36;"
 #define F_WHITE                                       "37;"
 /* output log background color */
+#define B_NULL
 #define B_BLACK                                       "40;"
 #define B_RED                                         "41;"
 #define B_GREEN                                       "42;"
@@ -62,22 +63,22 @@
 #define S_NORMAL                                      "22m"
 /* output log default color definition: [front color] + [background color] + [show style] */
 #ifndef ELOG_COLOR_ASSERT
-#define ELOG_COLOR_ASSERT      (F_MAGENTA B_BLACK S_NORMAL)
+#define ELOG_COLOR_ASSERT       (F_MAGENTA B_NULL S_NORMAL)
 #endif
 #ifndef ELOG_COLOR_ERROR
-#define ELOG_COLOR_ERROR           (F_RED B_BLACK S_NORMAL)
+#define ELOG_COLOR_ERROR            (F_RED B_NULL S_NORMAL)
 #endif
 #ifndef ELOG_COLOR_WARN
-#define ELOG_COLOR_WARN         (F_YELLOW B_BLACK S_NORMAL)
+#define ELOG_COLOR_WARN          (F_YELLOW B_NULL S_NORMAL)
 #endif
 #ifndef ELOG_COLOR_INFO
-#define ELOG_COLOR_INFO           (F_CYAN B_BLACK S_NORMAL)
+#define ELOG_COLOR_INFO            (F_CYAN B_NULL S_NORMAL)
 #endif
 #ifndef ELOG_COLOR_DEBUG
-#define ELOG_COLOR_DEBUG         (F_GREEN B_BLACK S_NORMAL)
+#define ELOG_COLOR_DEBUG          (F_GREEN B_NULL S_NORMAL)
 #endif
 #ifndef ELOG_COLOR_VERBOSE
-#define ELOG_COLOR_VERBOSE        (F_BLUE B_BLACK S_NORMAL)
+#define ELOG_COLOR_VERBOSE         (F_BLUE B_NULL S_NORMAL)
 #endif
 
 /* EasyLogger object */
@@ -144,7 +145,6 @@ void elog_start(void) {
     elog_set_output_enabled(true);
     /* show version */
     elog_i(log_tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
-    elog_i(log_tag, "You can get the latest version on https://github.com/armink/EasyLogger .");
 }
 
 /**
