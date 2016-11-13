@@ -45,5 +45,11 @@
 #define ELOG_FILTER_KW_MAX_LEN               16
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\n"
+/* enable asynchronous output mode */
+#define ELOG_ASYNC_OUTPUT_ENABLE
+/* buffer size for asynchronous output mode */
+#define ELOG_ASYNC_OUTPUT_BUF_SIZE           (LOG_LINE_BUF_SIZE * 100)
+/* asynchronous output mode using POSIX pthread implementation */
+#define ELOG_ASYNC_OUTPUT_USING_PTHREAD
 
 #endif /* _ELOG_CFG_H_ */

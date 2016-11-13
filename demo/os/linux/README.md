@@ -4,7 +4,7 @@
 
 ## 1、简介
 
-使用GCC编译。通过 `main.c` 的 `test_elog()` 方法来测试日志的输出。
+使用GCC编译。通过 `main.c` 的 `test_elog()` 方法来测试日志的输出。已在 `easylogger\inc\elog_cfg.h` 开启异步输出模式。
 
 ### 1.1、使用方法
 
