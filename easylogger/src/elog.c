@@ -31,6 +31,30 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#if !defined(ELOG_OUTPUT_LVL)
+    #error "Please configure static output log level (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_LINE_NUM_MAX_LEN)
+    #error "Please configure output line number max length (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_LINE_BUF_SIZE)
+    #error "Please configure buffer size for every line's log (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_FILTER_TAG_MAX_LEN)
+    #error "Please configure output filter's tag max length (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_FILTER_KW_MAX_LEN)
+    #error "Please configure output filter's keyword max length (in elog_cfg.h)"
+#endif
+
+#if !defined(ELOG_NEWLINE_SIGN)
+    #error "Please configure output newline sign (in elog_cfg.h)"
+#endif
+
 /**
  * CSI(Control Sequence Introducer/Initiator) sign
  * more information on https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -83,8 +107,8 @@
 
 /* EasyLogger object */
 static EasyLogger elog;
-/* log buffer */
-static char log_buf[ELOG_BUF_SIZE] = { 0 };
+/* every line log's buffer */
+static char log_buf[ELOG_LINE_BUF_SIZE] = { 0 };
 /* log tag */
 static const char *log_tag = "elog";
 /* level output info */
@@ -106,13 +130,14 @@ static const char *color_output_info[] = {
         [ELOG_LVL_VERBOSE] = ELOG_COLOR_VERBOSE,
 };
 
-
-static void output_lock(void);
-static void output_unlock(void);
 static bool get_fmt_enabled(uint8_t level, size_t set);
 
 /* EasyLogger assert hook */
 void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
+
+extern void elog_port_output(const char *log, size_t size);
+extern void elog_port_output_lock(void);
+extern void elog_port_output_unlock(void);
 
 /**
  * EasyLogger initialize.
@@ -120,10 +145,24 @@ void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
  * @return result
  */
 ElogErrCode elog_init(void) {
+    extern ElogErrCode elog_port_init(void);
+    extern ElogErrCode elog_async_init(void);
+
     ElogErrCode result = ELOG_NO_ERR;
 
     /* port initialize */
     result = elog_port_init();
+    if (result != ELOG_NO_ERR) {
+        return result;
+    }
+
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+    result = elog_async_init();
+    if (result != ELOG_NO_ERR) {
+        return result;
+    }
+#endif
+
     /* enable the output lock */
     elog_output_lock_enabled(true);
     /* output locked status initialize */
@@ -133,6 +172,7 @@ ElogErrCode elog_init(void) {
     elog_set_text_color_enabled(false);
     /* set level is ELOG_LVL_VERBOSE */
     elog_set_filter_lvl(ELOG_LVL_VERBOSE);
+
 
     return result;
 }
@@ -243,6 +283,30 @@ void elog_set_filter_kw(const char *keyword) {
 }
 
 /**
+ * lock output
+ */
+void elog_output_lock(void) {
+    if (elog.output_lock_enabled) {
+        elog_port_output_lock();
+        elog.output_is_locked_before_disable = true;
+    } else {
+        elog.output_is_locked_before_enable = true;
+    }
+}
+
+/**
+ * unlock output
+ */
+void elog_output_unlock(void) {
+    if (elog.output_lock_enabled) {
+        elog_port_output_unlock();
+        elog.output_is_locked_before_disable = false;
+    } else {
+        elog.output_is_locked_before_enable = false;
+    }
+}
+
+/**
  * output RAW format log
  *
  * @param format output format
@@ -250,6 +314,7 @@ void elog_set_filter_kw(const char *keyword) {
  */
 void elog_raw(const char *format, ...) {
     va_list args;
+    size_t log_len = 0;
     int fmt_result;
 
     /* check output enabled */
@@ -261,20 +326,27 @@ void elog_raw(const char *format, ...) {
     va_start(args, format);
 
     /* lock output */
-    output_lock();
+    elog_output_lock();
 
     /* package log data to buffer */
-    fmt_result = vsnprintf(log_buf, ELOG_BUF_SIZE, format, args);
+    fmt_result = vsnprintf(log_buf, ELOG_LINE_BUF_SIZE, format, args);
 
     /* output converted log */
-    if ((fmt_result > -1) && (fmt_result <= ELOG_BUF_SIZE)) {
-        /* output log */
-        elog_port_output(log_buf, fmt_result);
+    if ((fmt_result > -1) && (fmt_result <= ELOG_LINE_BUF_SIZE)) {
+        log_len = fmt_result;
     } else {
-        /* output log */
-        elog_port_output(log_buf, ELOG_BUF_SIZE);
+        log_len = ELOG_LINE_BUF_SIZE;
     }
-
+    /* output log */
+#if defined(ELOG_ASYNC_OUTPUT_ENABLE)
+    extern void elog_async_output(const char *log, size_t size);
+    elog_async_output(log_buf, log_len);
+#elif defined(ELOG_BUFF_OUTPUT_ENABLE)
+    extern void elog_buf_output(const char *log, size_t size);
+    elog_buf_output(log_buf, log_len);
+#else
+    elog_port_output(log_buf, log_len);
+#endif
     /* unlock output */
     elog_port_output_unlock();
 
@@ -295,6 +367,10 @@ void elog_raw(const char *format, ...) {
  */
 void elog_output(uint8_t level, const char *tag, const char *file, const char *func,
         const long line, const char *format, ...) {
+    extern const char *elog_port_get_time(void);
+    extern const char *elog_port_get_p_info(void);
+    extern const char *elog_port_get_t_info(void);
+
     size_t tag_len = strlen(tag), log_len = 0, newline_len = strlen(ELOG_NEWLINE_SIGN);
     char line_num[ELOG_LINE_NUM_MAX_LEN + 1] = { 0 };
     char tag_sapce[ELOG_FILTER_TAG_MAX_LEN / 2 + 1] = { 0 };
@@ -317,7 +393,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     /* args point to the first variable parameter */
     va_start(args, format);
     /* lock output */
-    output_lock();
+    elog_output_lock();
     /* add CSI start sign and color info */
     if (elog.text_color_enabled) {
         log_len += elog_strcpy(log_len, log_buf + log_len, CSI_START);
@@ -388,7 +464,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, ")");
     }
     /* package other log data to buffer. '\0' must be added in the end by vsnprintf. */
-    fmt_result = vsnprintf(log_buf + log_len, ELOG_BUF_SIZE - log_len - newline_len + 1, format, args);
+    fmt_result = vsnprintf(log_buf + log_len, ELOG_LINE_BUF_SIZE - log_len - newline_len + 1, format, args);
 
     va_end(args);
     /* add CSI end sign */
@@ -399,22 +475,30 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     if (!strstr(log_buf, elog.filter.keyword)) {
         //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
         /* unlock output */
-        output_unlock();
+        elog_output_unlock();
         return;
     }
     /* package newline sign */
-    if ((fmt_result > -1) && (fmt_result + log_len + newline_len <= ELOG_BUF_SIZE)) {
+    if ((fmt_result > -1) && (fmt_result + log_len + newline_len <= ELOG_LINE_BUF_SIZE)) {
         log_len += fmt_result;
         log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);
     } else {
-        log_len = ELOG_BUF_SIZE;
+        log_len = ELOG_LINE_BUF_SIZE;
         /* copy newline sign */
-        strcpy(log_buf + ELOG_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
+        strcpy(log_buf + ELOG_LINE_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
     }
     /* output log */
+#if defined(ELOG_ASYNC_OUTPUT_ENABLE)
+    extern void elog_async_output(const char *log, size_t size);
+    elog_async_output(log_buf, log_len);
+#elif defined(ELOG_BUFF_OUTPUT_ENABLE)
+    extern void elog_buf_output(const char *log, size_t size);
+    elog_buf_output(log_buf, log_len);
+#else
     elog_port_output(log_buf, log_len);
+#endif
     /* unlock output */
-    output_unlock();
+    elog_output_unlock();
 }
 
 /**
@@ -452,29 +536,6 @@ void elog_output_lock_enabled(bool enabled) {
             /* the output lock is locked before disable, and the lock will locking after enable */
             elog_port_output_unlock();
         }
-    }
-}
-
-/**
- * lock output
- */
-static void output_lock(void) {
-    if (elog.output_lock_enabled) {
-        elog_port_output_lock();
-        elog.output_is_locked_before_disable = true;
-    } else {
-        elog.output_is_locked_before_enable = true;
-    }
-}
-/**
- * unlock output
- */
-static void output_unlock(void) {
-    if (elog.output_lock_enabled) {
-        elog_port_output_unlock();
-        elog.output_is_locked_before_disable = false;
-    } else {
-        elog.output_is_locked_before_enable = false;
     }
 }
 

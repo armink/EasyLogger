@@ -38,30 +38,6 @@
 extern "C" {
 #endif
 
-#if !defined(ELOG_OUTPUT_LVL)
-    #error "Please configure static output log level (in elog_cfg.h)"
-#endif
-
-#if !defined(ELOG_LINE_NUM_MAX_LEN)
-    #error "Please configure output line number max length (in elog_cfg.h)"
-#endif
-
-#if !defined(ELOG_BUF_SIZE)
-    #error "Please configure log buffer size (in elog_cfg.h)"
-#endif
-
-#if !defined(ELOG_FILTER_TAG_MAX_LEN)
-    #error "Please configure output filter's tag max length (in elog_cfg.h)"
-#endif
-
-#if !defined(ELOG_FILTER_KW_MAX_LEN)
-    #error "Please configure output filter's keyword max length (in elog_cfg.h)"
-#endif
-
-#if !defined(ELOG_NEWLINE_SIGN)
-    #error "Please configure output newline sign (in elog_cfg.h)"
-#endif
-
 /* output log's level */
 #define ELOG_LVL_ASSERT                      0
 #define ELOG_LVL_ERROR                       1
@@ -74,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.10.29"
+#define ELOG_SW_VERSION                      "1.11.13"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -212,17 +188,14 @@ void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_
 #define elog_d(tag, ...)    elog_debug(tag, __VA_ARGS__)
 #define elog_v(tag, ...)    elog_verbose(tag, __VA_ARGS__)
 
+/* elog_buf.c */
+void elog_flush(void);
+
+/* elog_async.c */
+size_t elog_async_get_log(char *log, size_t size);
+
 /* elog_utils.c */
 size_t elog_strcpy(size_t cur_len, char *dst, const char *src);
-
-/* elog_port.c */
-ElogErrCode elog_port_init(void);
-void elog_port_output(const char *log, size_t size);
-void elog_port_output_lock(void);
-void elog_port_output_unlock(void);
-const char *elog_port_get_time(void);
-const char *elog_port_get_p_info(void);
-const char *elog_port_get_t_info(void);
 
 #ifdef __cplusplus
 }

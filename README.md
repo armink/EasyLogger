@@ -1,16 +1,18 @@
 # EasyLogger
 
+标签（空格分隔）： EasyLogger
+
 ---
 
 # 1. 介绍
 
-[EasyLogger](https://github.com/armink/EasyLogger)是一款超轻量级(ROM<1.6K, RAM<0.3K)、高性能的C日志库，非常适合对资源敏感的软件项目，例如：IoT产品、可穿戴设备、智能家居等等。相比log4c、zlog这些知名的C日志库，EasyLogger的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展。
+[EasyLogger](https://github.com/armink/EasyLogger) 是一款超轻量级(ROM<1.6K, RAM<0.3K)、高性能的 C/C++ 日志库，非常适合对资源敏感的软件项目，例如： IoT 产品、可穿戴设备、智能家居等等。相比 log4c、zlog 这些知名的 C/C++ 日志库， EasyLogger 的功能更加简单，提供给用户的接口更少，但上手会很快，更多实用功能支持以插件形式进行动态扩展。
 
 ## 1.1 主要特性
 
 - 支持用户自定义输出方式（例如：终端、文件、数据库、串口、485、Flash...）；
 - 日志内容可包含级别、时间戳、线程信息、进程信息等；
-- 日志输出被设计为线程安全的方式；
+- 日志输出被设计为线程安全的方式，并支持 **异步输出** 及 **缓冲输出** 模式；
 - 支持多种操作系统（[RT-Thread](http://www.rt-thread.org/)、UCOS、Linux、Windows...），也支持裸机平台；
 - 日志支持 **RAW格式** ；
 - 支持按 **标签**  、 **级别** 、 **关键词** 进行动态过滤；
@@ -23,19 +25,19 @@
 
 ## 1.2 插件
 
-- 1、Flash：使用[EasyFlash](https://github.com/armink/EasyFlash)库提供的Flash操作接口，可以把日志直接存储在Flash中。
+- 1、Flash：使用 [EasyFlash](https://github.com/armink/EasyFlash) 库提供的Flash操作接口，无需文件系统，直接将日志存储在 Flash 中。
 - 2、File（正在开发）：支持文件转档、软件运行时动态加载配置文件等与文件日志输出相关功能。
 - 3、敬请期待……
 
 ## 1.3 Star & Fork
 
-后续我还会提供更多插件。也非常欢迎大家设计、开发更多实用插件和功能，一起来完善EasyLogger **([Github](https://github.com/armink/EasyLogger)|[OSChina](http://git.oschina.net/armink/EasyLogger)|[Coding](https://coding.net/u/armink/p/EasyLogger/git))** 。如果觉得这个开源项目很赞，可以点击[项目主页](https://github.com/armink/EasyLogger) 右上角的**Star**，同时把它推荐给更多有需要的朋友。
+后续我还会提供更多插件。也非常欢迎大家设计、开发更多实用插件和功能，一起来完善 EasyLogger  **([Github](https://github.com/armink/EasyLogger)|[OSChina](http://git.oschina.net/armink/EasyLogger)|[Coding](https://coding.net/u/armink/p/EasyLogger/git))** 。如果觉得这个开源项目很赞，可以点击[项目主页](https://github.com/armink/EasyLogger) 右上角的 **Star** ，同时把它推荐给更多有需要的朋友。
 
 # 2. 使用
 
 ### 2.1 参数配置
 
-EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
+EasyLogger 拥有过滤方式、输出格式、输出开关这些属性。
 
 - 过滤方式支持按照标签、级别、关键词进行过滤；
 - 可以动态的开启/关闭日志的输出；
@@ -45,7 +47,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.2 输出级别
 
-参考Android Logcat，级别最高为0(Assert)，最低为5(Verbose)。
+参考 Android Logcat ，级别最高为 0(Assert) ，最低为 5(Verbose) 。
 
 ```
 0.[A]：断言(Assert)
@@ -56,7 +58,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 5.[V]：详细(Verbose)
 ```
 
-#### 2.2.1 设置不同的颜色及字体风格
+#### 2.2.1 输出缤纷多彩的日志
 
 各个级别日志默认颜色效果如下。用户也可以根据自己的喜好，在 `elog_cfg.h` 对各个级别日志的颜色及字体风格进行单独设置。
 
@@ -83,20 +85,20 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 
 ### 2.6.1 核心功能
 
-下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了EasyLogger核心功能。
+下图为在终端中输入命令来控制日志的输出及过滤器的设置，更加直观的展示了 EasyLogger 核心功能。
 
-- Demo路径：[`\demo\os\rt-thread\stm32f10x\`](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x)
-- API文档：[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)
+- Demo 路径：[`\demo\os\rt-thread\stm32f10x\`](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x)
+- API 文档：[`\docs\zh\api\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/kernel.md)
 - 移植文档：[`\docs\zh\port\kernel.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/kernel.md)
 
 ![easylogger](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/zh/images/EasyLoggerDemo.gif)
 
-### 2.6.2 Flash Log（将日志保存到Flash中）
+### 2.6.2 Flash Log（将日志保存到 Flash 中）
 
-下图过程为通过控制台输出日志，并将输出的日志存储到Flash中。重启再读取上次保存的日志，最后清空Flash日志。
+下图过程为通过控制台输出日志，并将输出的日志存储到 Flash 中。重启再读取上次保存的日志，最后清空 Flash 日志。
 
-- Demo路径：[`\demo\os\rt-thread\stm32f10x\`](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x)
-- API文档：[`\docs\zh\api\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/flash.md)
+- Demo 路径：[`\demo\os\rt-thread\stm32f10x\`](https://github.com/armink/EasyLogger/tree/master/demo/os/rt-thread/stm32f10x)
+- API 文档：[`\docs\zh\api\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/api/flash.md)
 - 移植文档：[`\docs\zh\port\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/flash.md)
 
 ![FlashLog](https://raw.githubusercontent.com/armink/EasyLogger/master/docs/zh/images/LogDemo.gif)
@@ -111,7 +113,7 @@ EasyLogger拥有过滤方式、输出格式、输出开关这些属性。
 - 2、配置文件：文件系统下的配置文件；
 - 3、文件转档：文件系统下支持文件按容量转档，按时间区分；
 - 4、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等。前端：[HTML5](https://zh.wikipedia.org/wiki/HTML5) + [Bootstrap](https://github.com/twbs/bootstrap) + [AngularJS](https://angularjs.org/) + [NW.js](http://www.oschina.net/p/nwjs)，后端：[Rust](https://github.com/rust-lang/rust) + [iron](https://github.com/iron/iron) + [rust-websocket](https://github.com/cyderize/rust-websocket) + [serial-rs](https://github.com/dcuddeback/serial-rs)；
-- 5、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也可以放到异步输出中去；
+- 5、~~异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也可以放到异步输出中去；~~
 - 6、Arduino：增加Arduino lib，并提供其Demo；
 
 # 5. 许可

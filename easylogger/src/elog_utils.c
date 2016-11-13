@@ -31,7 +31,7 @@
 /**
  * another copy string function
  *
- * @param cur_len current copied log length, max size is ELOG_BUF_SIZE
+ * @param cur_len current copied log length, max size is ELOG_LINE_BUF_SIZE
  * @param dst destination
  * @param src source
  *
@@ -41,7 +41,7 @@ size_t elog_strcpy(size_t cur_len, char *dst, const char *src) {
     const char *src_old = src;
     while (*src != 0) {
         /* make sure destination has enough space */
-        if (cur_len++ <= ELOG_BUF_SIZE) {
+        if (cur_len++ <= ELOG_LINE_BUF_SIZE) {
             *dst++ = *src++;
         } else {
             break;

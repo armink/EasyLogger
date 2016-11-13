@@ -68,17 +68,36 @@ void elog_start(void)
 **建议**：对于每个文件或者每个模块，可以重新覆盖定义上述日志输出宏定义，如下所示。这样的优点就是降低代码书写量，统一日志书写格式，代码可以做到尽可能少的依赖某个日志库，同时部分复用代码无需修改日志输出方法，可直接拷贝至其他模块或者其他项目，提高软件的可重用性。
 
 ```c
-//WiFi协议处理
-#define log_d(...) elog_d("wifi.proto", __VA_ARGS__)
-#define log_w(...) elog_w("wifi.proto", __VA_ARGS__)
-#define log_e(...) elog_e("wifi.proto", __VA_ARGS__)
+//WiFi协议处理(/wifi/proto.c)
+#define LOG_TAG    "wifi.proto"
+#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
+#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
+#define log_i(...) elog_i(LOG_TAG, __VA_ARGS__)
 
-//WiFi数据打包处理
-#define log_d(...) elog_d("wifi.package", __VA_ARGS__)
+#if WIFI_DEBUG
+    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
+#else
+    #define log_d(...)
+#endif
 
-//CAN命令解析
-#define log_d(...) elog_d("can.disp", __VA_ARGS__)
-#define log_e(...) elog_e("can.disp", __VA_ARGS__)
+//WiFi数据打包处理(/wifi/package.c)
+#define LOG_TAG    "wifi.package"
+
+#if WIFI_DEBUG
+    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
+#else
+    #define log_d(...)
+#endif
+
+//CAN命令解析(/can/disp.c)
+#define LOG_TAG    "can.disp"
+#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
+
+#if CAN_DEBUG
+    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
+#else
+    #define log_d(...)
+#endif
 
 ```
 ### 1.4 断言
@@ -256,6 +275,27 @@ void elog_set_text_color_enabled(bool enabled)
 |参数                                    |描述|
 |:-----                                  |:----|
 |enabled                                 |true: 使能，false: 失能|
+
+### 1.16 将缓冲区中的日志全部输出
+
+在缓冲输出模式下，执行此方法可以将缓冲区中的日志全部输出干净。
+
+```
+void elog_flush(void)
+```
+
+### 1.17 日志输出接口
+
+在异步输出模式下，如果用户没有启动 pthread 库，此时需要启用额外线程来实现日志的异步输出功能。使用此方法即可获取到异步输出缓冲区中的指定长度的日志。如果设定日志长度小于日志缓冲区中已存在日志长度，将只会返回已存在日志长度。
+
+```C
+size_t elog_async_get_log(char *log, size_t size)
+```
+
+|参数                                    |描述|
+|:-----                                  |:----|
+|log                                     |取出的日志内容|
+|size                                    |待取出的日志大小|
 
 ## 2、配置
 
