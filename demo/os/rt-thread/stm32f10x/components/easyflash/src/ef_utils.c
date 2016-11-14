@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyFlash Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -88,7 +88,7 @@ uint32_t ef_calc_crc32(uint32_t crc, const void *buf, size_t size)
 {
     const uint8_t *p;
 
-    p = buf;
+    p = (const uint8_t *)buf;
     crc = crc ^ ~0U;
 
     while (size--) {

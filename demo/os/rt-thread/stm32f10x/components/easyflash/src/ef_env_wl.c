@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyFlash Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -72,23 +72,25 @@ enum {
 };
 
 /* default ENV set, must be initialized by user */
-static ef_env const *default_env_set = NULL;
+static ef_env const *default_env_set;
 /* default ENV set size, must be initialized by user */
-static size_t default_env_set_size = NULL;
+static size_t default_env_set_size = 0;
 /* flash ENV data section size */
-static size_t env_data_section_size = NULL;
+static size_t env_data_section_size = 0;
 /* ENV ram cache */
 static uint32_t env_cache[ENV_USER_SETTING_SIZE / 4] = { 0 };
 /* ENV start address in flash */
-static uint32_t env_start_addr = NULL;
+static uint32_t env_start_addr = 0;
 /* current using data section address */
-static uint32_t cur_using_data_addr = NULL;
+static uint32_t cur_using_data_addr = 0;
 /* ENV ram cache has changed when ENV created, deleted and changed value. */
 static bool env_cache_changed = false;
+/* initialize OK flag */
+static bool init_ok = false;
 
 #ifdef EF_ENV_USING_PFS_MODE
 /* next save ENV area address */
-static uint32_t next_save_area_addr = NULL;
+static uint32_t next_save_area_addr = 0;
 #endif
 
 static uint32_t get_env_start_addr(void);
@@ -125,18 +127,18 @@ EfErrCode ef_env_init(ef_env const *default_env, size_t default_env_size) {
     EF_ASSERT(ENV_AREA_SIZE % 4 == 0);
     EF_ASSERT(default_env);
     EF_ASSERT(default_env_size < ENV_USER_SETTING_SIZE);
-    /* system section size is erase_min_size, so last part is data section */
-    env_data_section_size = ENV_AREA_SIZE - EF_ERASE_MIN_SIZE;
-    /* the ENV data section size should be an integral multiple of erase minimum size. */
-    EF_ASSERT(env_data_section_size % EF_ERASE_MIN_SIZE == 0);
 
 #ifndef EF_ENV_USING_PFS_MODE
-    EF_ASSERT(env_data_section_size >= ENV_USER_SETTING_SIZE);
+    /* system section size is erase_min_size, so last part is data section */
+    env_data_section_size = ENV_AREA_SIZE - EF_ERASE_MIN_SIZE;
 #else
-    /* it has double area when used power fail safeguard mode */
-    EF_ASSERT(env_data_section_size >= 2*ENV_USER_SETTING_SIZE);
-    EF_ASSERT((env_data_section_size / EF_ERASE_MIN_SIZE) % 2 == 0);
+    /* system section size is erase_min_size, so last part is data section */
+    env_data_section_size = ENV_AREA_SIZE / 2 - EF_ERASE_MIN_SIZE;
+    EF_ASSERT((ENV_AREA_SIZE / EF_ERASE_MIN_SIZE) % 2 == 0);
 #endif
+    EF_ASSERT(env_data_section_size >= ENV_USER_SETTING_SIZE);
+    /* the ENV data section size should be an integral multiple of erase minimum size. */
+    EF_ASSERT(env_data_section_size % EF_ERASE_MIN_SIZE == 0);
 
 
     env_start_addr = EF_START_ADDR;
@@ -145,7 +147,11 @@ EfErrCode ef_env_init(ef_env const *default_env, size_t default_env_size) {
 
     EF_DEBUG("ENV start address is 0x%08X, size is %d bytes.\n", EF_START_ADDR, ENV_AREA_SIZE);
 
-    ef_load_env();
+    result = ef_load_env();
+
+    if (result == EF_NO_ERR) {
+        init_ok = true;
+    }
 
     return result;
 }
@@ -181,7 +187,7 @@ EfErrCode ef_env_set_default(void){
     /* unlock the ENV cache */
     ef_port_env_unlock();
 
-    ef_save_env();
+    result = ef_save_env();
 
     return result;
 }
@@ -274,16 +280,7 @@ size_t ef_get_env_write_bytes(void) {
 #ifndef EF_ENV_USING_PFS_MODE
     return get_env_detail_end_addr() - get_env_start_addr();
 #else
-    if (get_cur_using_data_addr()
-            < get_env_start_addr() + EF_ERASE_MIN_SIZE + env_data_section_size / 2) {
-        /* current using is ENV area0 */
-        return EF_ERASE_MIN_SIZE + 2 * (get_env_detail_end_addr() - (get_env_start_addr()
-                +EF_ERASE_MIN_SIZE));
-    } else {
-        /* current using is ENV area1 */
-        return EF_ERASE_MIN_SIZE + 2 * (get_env_detail_end_addr() - (get_env_start_addr()
-                + EF_ERASE_MIN_SIZE + env_data_section_size / 2));
-    }
+    return EF_ERASE_MIN_SIZE + get_env_detail_end_addr() - get_cur_using_data_addr();
 #endif
 }
 
@@ -306,7 +303,7 @@ static EfErrCode write_env(const char *key, const char *value) {
         env_str_len = (env_str_len / 4 + 1) * 4;
     }
     /* check capacity of ENV  */
-    if (env_str_len + get_env_detail_size() >= ENV_USER_SETTING_SIZE) {
+    if (env_str_len + get_env_user_used_size() >= ENV_USER_SETTING_SIZE) {
         return EF_ENV_FULL;
     }
     /* calculate current ENV ram cache end address */
@@ -480,6 +477,11 @@ EfErrCode ef_set_env(const char *key, const char *value) {
     EfErrCode result = EF_NO_ERR;
     char *old_env, *old_value;
 
+    if(!init_ok) {
+        EF_INFO("ENV isn't initialize OK.\n");
+        return EF_ENV_INIT_FAILED;
+    }
+
     /* lock the ENV cache */
     ef_port_env_lock();
 
@@ -520,6 +522,11 @@ EfErrCode ef_set_env(const char *key, const char *value) {
 char *ef_get_env(const char *key) {
     char *env = NULL, *value = NULL;
 
+    if(!init_ok) {
+        EF_INFO("ENV isn't initialize OK.\n");
+        return NULL;
+    }
+
     /* find ENV */
     env = find_env(key);
 
@@ -543,6 +550,11 @@ void ef_print_env(void) {
     uint8_t j;
     char c;
 
+    if(!init_ok) {
+        EF_INFO("ENV isn't initialize OK.\n");
+        return;
+    }
+
     for (; env_cache_detail_addr < env_cache_end_addr; env_cache_detail_addr += 1) {
         for (j = 0; j < 4; j++) {
             c = (*env_cache_detail_addr) >> (8 * j);
@@ -561,15 +573,18 @@ void ef_print_env(void) {
 #else
     ef_print("\nENV size: %ld/%ld bytes, write bytes %ld/%ld, saved count: %ld, mode: wear leveling and power fail safeguard.\n",
             get_env_user_used_size(), ENV_USER_SETTING_SIZE, ef_get_env_write_bytes(),
-            ENV_AREA_SIZE, env_cache[ENV_PARAM_PART_INDEX_SAVED_COUNT]);
+            ENV_AREA_SIZE/2, env_cache[ENV_PARAM_PART_INDEX_SAVED_COUNT]);
 #endif
 }
 
 /**
  * Load flash ENV to ram.
+ *
+ * @return result
  */
 #ifndef EF_ENV_USING_PFS_MODE
-void ef_load_env(void) {
+EfErrCode ef_load_env(void) {
+    EfErrCode result = EF_NO_ERR;
     uint32_t *env_cache_bak, env_end_addr, using_data_addr;
 
     /* read current using data section address */
@@ -581,9 +596,10 @@ void ef_load_env(void) {
         /* initialize current using data section address */
         set_cur_using_data_addr(get_env_start_addr() + EF_ERASE_MIN_SIZE);
         /* save current using data section address to flash*/
-        save_cur_using_data_addr(get_cur_using_data_addr());
-        /* set default ENV */
-        ef_env_set_default();
+        if ((result = save_cur_using_data_addr(get_cur_using_data_addr())) == EF_NO_ERR) {
+            /* set default ENV */
+            result = ef_env_set_default();
+        }
     } else {
         /* set current using data section address */
         set_cur_using_data_addr(using_data_addr);
@@ -591,7 +607,13 @@ void ef_load_env(void) {
         ef_port_read(get_cur_using_data_addr() + ENV_PARAM_PART_INDEX_END_ADDR * 4, &env_end_addr, 4);
         /* if ENV end address has error, set default for ENV */
         if (env_end_addr > get_env_start_addr() + ENV_AREA_SIZE) {
-            ef_env_set_default();
+            /* initialize current using data section address */
+            set_cur_using_data_addr(get_env_start_addr() + EF_ERASE_MIN_SIZE);
+            /* save current using data section address to flash*/
+            if ((result = save_cur_using_data_addr(get_cur_using_data_addr())) == EF_NO_ERR) {
+                EF_INFO("Warning: ENV end address has error. Set it to default.\n");
+                result = ef_env_set_default();
+            }
         } else {
             /* set ENV detail part end address */
             set_env_detail_end_addr(env_end_addr);
@@ -605,34 +627,36 @@ void ef_load_env(void) {
             /* if ENV CRC32 check is fault, set default for it */
             if (!env_crc_is_ok()) {
                 EF_INFO("Warning: ENV CRC check failed. Set it to default.\n");
-                ef_env_set_default();
+                result = ef_env_set_default();
             }
         }
 
     }
+    return result;
 }
 #else
-void ef_load_env(void) {
+EfErrCode ef_load_env(void) {
+    EfErrCode result = EF_NO_ERR;
     /* ENV area0 current using address default value */
     uint32_t area0_default_cur_using_addr = get_env_start_addr() + EF_ERASE_MIN_SIZE;
     /* ENV area1 current using address default value */
-    uint32_t area1_default_cur_using_addr = area0_default_cur_using_addr + env_data_section_size / 2;
+    uint32_t area1_default_cur_using_addr = area0_default_cur_using_addr + ENV_AREA_SIZE / 2;
     uint32_t area0_cur_using_addr, area1_cur_using_addr, area0_end_addr, area1_end_addr;
     uint32_t area0_crc, area1_crc, area0_saved_count, area1_saved_count;
     bool area0_is_valid = true, area1_is_valid = true;
 
-    /* read ENV area0 and area1 current using address */
+    /* read ENV area0 and area1 current using data section address */
     ef_port_read(get_env_start_addr(), &area0_cur_using_addr, 4);
-    ef_port_read(get_env_start_addr() + 4, &area1_cur_using_addr, 4);
+    ef_port_read(get_env_start_addr() + ENV_AREA_SIZE / 2, &area1_cur_using_addr, 4);
     /* if ENV is not initialize or flash has dirty data, set it isn't valid */
     if ((area0_cur_using_addr == 0xFFFFFFFF)
-            || (area0_cur_using_addr > get_env_start_addr() + ENV_AREA_SIZE)
+            || (area0_cur_using_addr > get_env_start_addr() + ENV_AREA_SIZE / 2)
             || (area0_cur_using_addr < get_env_start_addr() + EF_ERASE_MIN_SIZE)) {
         area0_is_valid = false;
     }
     if ((area1_cur_using_addr == 0xFFFFFFFF)
             || (area1_cur_using_addr > get_env_start_addr() + ENV_AREA_SIZE)
-            || (area1_cur_using_addr < get_env_start_addr() + EF_ERASE_MIN_SIZE)) {
+            || (area1_cur_using_addr < get_env_start_addr() + ENV_AREA_SIZE / 2 + EF_ERASE_MIN_SIZE)) {
         area1_is_valid = false;
     }
     /* check area0 end address when it is valid */
@@ -694,24 +718,27 @@ void ef_load_env(void) {
     if (area0_is_valid) {
         /* current using data section address is area0 current using data section address */
         set_cur_using_data_addr(area0_cur_using_addr);
-        /* next save ENV area address is area1 current using address default value */
-        next_save_area_addr = area1_default_cur_using_addr;
+        /* next save ENV area address is area1 current using address value */
+        next_save_area_addr = area1_cur_using_addr;
         /* read all ENV from area0 */
         ef_port_read(area0_cur_using_addr, env_cache, area0_end_addr - area0_cur_using_addr);
     } else if (area1_is_valid) {
-        /* next save ENV area address is area0 current using address default value */
-        next_save_area_addr = area0_default_cur_using_addr;
+        /* already read data section and set_cur_using_data_addr above current code,
+         * so just set next save ENV area address is area0 current using address value */
+        next_save_area_addr = area0_cur_using_addr;
     } else {
         /* current using data section address is area1 current using address default value */
         set_cur_using_data_addr(area1_default_cur_using_addr);
         /* next save ENV area address default is area0 current using address default value */
         next_save_area_addr = area0_default_cur_using_addr;
         /* save current using data section address to flash*/
-        save_cur_using_data_addr(area0_default_cur_using_addr);
-        save_cur_using_data_addr(area1_default_cur_using_addr);
-        /* set the ENV to default */
-        ef_env_set_default();
+        if (((result = save_cur_using_data_addr(area0_default_cur_using_addr)) == EF_NO_ERR)
+                && ((result = save_cur_using_data_addr(area1_default_cur_using_addr)) == EF_NO_ERR)) {
+            /* set the ENV to default */
+            result = ef_env_set_default();
+        }
     }
+    return result;
 }
 #endif
 
@@ -722,6 +749,7 @@ EfErrCode ef_save_env(void) {
     EfErrCode result = EF_NO_ERR;
     uint32_t cur_using_addr_bak, move_offset_addr;
     size_t env_used_size = get_env_user_used_size();
+    uint32_t data_sec_end_addr;
 
     /* ENV ram cache has not changed don't need to save */
     if (!env_cache_changed) {
@@ -729,6 +757,7 @@ EfErrCode ef_save_env(void) {
     }
 
 #ifndef EF_ENV_USING_PFS_MODE
+    data_sec_end_addr = get_env_start_addr() + ENV_AREA_SIZE - 4;
     cur_using_addr_bak = get_cur_using_data_addr();
 #else
     cur_using_addr_bak = next_save_area_addr;
@@ -737,12 +766,18 @@ EfErrCode ef_save_env(void) {
     set_cur_using_data_addr(cur_using_addr_bak);
     /* change the ENV detail end address to next save area address */
     set_env_detail_end_addr(get_cur_using_data_addr() + env_used_size);
+    /* area0 or area1 */
+    if(get_cur_using_data_addr() < get_env_start_addr() + ENV_AREA_SIZE / 2) {
+        data_sec_end_addr = get_env_start_addr() + ENV_AREA_SIZE / 2 - 4;
+    } else {
+        data_sec_end_addr = get_env_start_addr() + ENV_AREA_SIZE - 4;
+    }
     /* ENV area saved count +1 */
     env_cache[ENV_PARAM_PART_INDEX_SAVED_COUNT]++;
 #endif
 
     /* wear leveling process, automatic move ENV to next available position */
-    while (get_cur_using_data_addr() + env_used_size < get_env_start_addr() + ENV_AREA_SIZE) {
+    while (get_cur_using_data_addr() + env_used_size < data_sec_end_addr) {
         /* calculate and cache CRC32 code */
         env_cache[ENV_PARAM_PART_INDEX_DATA_CRC] = calc_env_crc();
         /* erase ENV */
@@ -753,7 +788,8 @@ EfErrCode ef_save_env(void) {
             break;
         }
         case EF_ERASE_ERR: {
-            EF_INFO("Warning: Erased ENV fault!\n");
+            EF_INFO("Warning: Erased ENV fault! Start address is 0x%08X, size is %ld.\n",
+                    get_cur_using_data_addr(), env_used_size);
             EF_INFO("Moving ENV to next available position.\n");
             /* Calculate move offset address.
              * Current strategy is optimistic. It will offset the flash erasure minimum size.
@@ -774,7 +810,8 @@ EfErrCode ef_save_env(void) {
             break;
         }
         case EF_WRITE_ERR: {
-            EF_INFO("Warning: Saved ENV fault!\n");
+            EF_INFO("Warning: Saved ENV fault! Start address is 0x%08X, size is %ld.\n",
+                    get_cur_using_data_addr(), env_used_size);
             EF_INFO("Moving ENV to next available position.\n");
             /* Calculate move offset address.
              * Current strategy is optimistic. It will offset the flash erasure minimum size.
@@ -793,16 +830,14 @@ EfErrCode ef_save_env(void) {
         }
     }
 
-    if (get_cur_using_data_addr() + env_used_size < get_env_start_addr() + ENV_AREA_SIZE) {
+    if (get_cur_using_data_addr() + env_used_size < data_sec_end_addr) {
         /* current using data section address has changed, save it */
         if (get_cur_using_data_addr() != cur_using_addr_bak) {
-            save_cur_using_data_addr(get_cur_using_data_addr());
+            result = save_cur_using_data_addr(get_cur_using_data_addr());
         }
     } else {
         result = EF_ENV_FULL;
         EF_INFO("Error: The flash has no available space to save ENV.\n");
-        /* clear current using data section address on flash */
-        save_cur_using_data_addr(0xFFFFFFFF);
     }
 
     env_cache_changed = false;
@@ -858,11 +893,13 @@ static EfErrCode save_cur_using_data_addr(uint32_t cur_data_addr) {
         /* write current using data section address to flash */
         result = ef_port_write(get_env_start_addr(), &cur_data_addr, 4);
         if (result == EF_WRITE_ERR) {
-            EF_INFO("Error: Write system section fault!\n");
+            EF_INFO("Error: Write system section fault! Start address is 0x%08X, size is %ld.\n",
+                    get_env_start_addr(), 4);
             EF_INFO("Note: The ENV can not be used.\n");
         }
     } else {
-        EF_INFO("Error: Erased system section fault!\n");
+        EF_INFO("Error: Erased system section fault! Start address is 0x%08X, size is %ld.\n",
+                get_env_start_addr(), 4);
         EF_INFO("Note: The ENV can not be used\n");
     }
     return result;
@@ -870,30 +907,28 @@ static EfErrCode save_cur_using_data_addr(uint32_t cur_data_addr) {
 #else
 static EfErrCode save_cur_using_data_addr(uint32_t cur_data_addr) {
     EfErrCode result = EF_NO_ERR;
-    uint32_t cur_using_addr[2];
+    uint32_t cur_system_sec_addr;
 
-    /* read area0 and area1 current using data section address for backup */
-    ef_port_read(get_env_start_addr(), &cur_using_addr[0], 4);
-    ef_port_read(get_env_start_addr() + 4, &cur_using_addr[1], 4);
-
-    if (cur_data_addr < get_env_start_addr() + EF_ERASE_MIN_SIZE + env_data_section_size / 2){
-        /* current using data section is in ENV area0 */
-        cur_using_addr[0] = cur_data_addr;
+    if (cur_data_addr < get_env_start_addr() + ENV_AREA_SIZE / 2){
+        /* current using system section is in ENV area0 */
+        cur_system_sec_addr = get_env_start_addr();
     } else {
-        /* current using data section is in ENV area1 */
-        cur_using_addr[1] = cur_data_addr;
+        /* current using system section is in ENV area1 */
+        cur_system_sec_addr = get_env_start_addr() + ENV_AREA_SIZE / 2;
     }
     /* erase ENV system section */
-    result = ef_port_erase(get_env_start_addr(), 8);
+    result = ef_port_erase(cur_system_sec_addr, 4);
     if (result == EF_NO_ERR) {
         /* write area0 and area1 current using data section address to flash */
-        result = ef_port_write(get_env_start_addr(), cur_using_addr, 8);
+        result = ef_port_write(cur_system_sec_addr, &cur_data_addr, 4);
         if (result == EF_WRITE_ERR) {
-            EF_INFO("Error: Write system section fault!\n");
+            EF_INFO("Error: Write system section fault! Start address is 0x%08X, size is %ld.\n",
+                    cur_system_sec_addr, 4);
             EF_INFO("Note: The ENV can not be used.\n");
         }
     } else {
-        EF_INFO("Error: Erased system section fault!\n");
+        EF_INFO("Error: Erased system section fault! Start address is 0x%08X, size is %ld.\n",
+                cur_system_sec_addr, 4);
         EF_INFO("Note: The ENV can not be used\n");
     }
     return result;

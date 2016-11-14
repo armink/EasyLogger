@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyFlash Library.
  *
- * Copyright (c) 2014, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2014-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -67,7 +67,7 @@ if (!(EXPR))                                                                  \
     while (1);                                                                \
 }
 /* EasyFlash software version number */
-#define EF_SW_VERSION                "2.08.26"
+#define EF_SW_VERSION                "2.10.24"
 
 typedef struct _ef_env{
     char *key;
@@ -82,6 +82,7 @@ typedef enum {
     EF_ENV_NAME_ERR,
     EF_ENV_NAME_EXIST,
     EF_ENV_FULL,
+    EF_ENV_INIT_FAILED,
 } EfErrCode;
 
 /* the flash sector current status */
@@ -96,7 +97,7 @@ EfErrCode easyflash_init(void);
 
 #ifdef EF_USING_ENV
 /* ef_env.c ef_env_wl.c */
-void ef_load_env(void);
+EfErrCode ef_load_env(void);
 void ef_print_env(void);
 char *ef_get_env(const char *key);
 EfErrCode ef_set_env(const char *key, const char *value);

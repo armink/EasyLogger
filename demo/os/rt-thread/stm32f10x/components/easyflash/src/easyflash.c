@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyFlash Library.
  *
- * Copyright (c) 2014, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2014-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -46,14 +46,13 @@
  *       1.Normal mode: no more limitations
  *       2.Wear leveling mode: system section will used an flash section and the data section will used at least 2 flash sections
  *       3.Power fail safeguard mode: ENV area will has an backup. It is twice as normal mode.
- *       4.wear leveling and power fail safeguard mode: The system section will used an flash section.
- *         The data section is twice as wear leveling mode data section size.
+ *       4.wear leveling and power fail safeguard mode: The required capacity will be 2 times the total capacity in wear leveling mode.
  *       For example:
  *       The EF_ERASE_MIN_SIZE is 128K and the ENV_USER_SETTING_SIZE: 2K. The ENV_AREA_SIZE in different mode you can define
  *       1.Normal mode: 1*EF_ERASE_MIN_SIZE
- *       2.Wear leveling mode: 3*EF_ERASE_MIN_SIZE (It has 2 flash section to store ENV. So ENV can erase at least 200,000 times)
+ *       2.Wear leveling mode: 3*EF_ERASE_MIN_SIZE (It has 2 data section to store ENV. So ENV can erase at least 200,000 times)
  *       3.Power fail safeguard mode: 2*EF_ERASE_MIN_SIZE
- *       4.Wear leveling and power fail safeguard mode: 5*EF_ERASE_MIN_SIZE
+ *       4.Wear leveling and power fail safeguard mode: 6*EF_ERASE_MIN_SIZE
  * @note the log area size must be more than twice of EF_ERASE_MIN_SIZE
  */
 #include <easyflash.h>
@@ -98,6 +97,7 @@ EfErrCode easyflash_init(void) {
     } else {
         EF_DEBUG("EasyFlash V%s is initialize fail.\n", EF_SW_VERSION);
     }
+    EF_DEBUG("You can get the latest version on https://github.com/armink/EasyFlash .\n");
 
     return result;
 }
