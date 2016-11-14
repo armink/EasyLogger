@@ -1,7 +1,5 @@
 # EasyLogger
 
-标签（空格分隔）： EasyLogger
-
 ---
 
 # 1. 介绍
