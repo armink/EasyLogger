@@ -33,6 +33,12 @@
 
 static struct rt_semaphore output_lock;
 
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+static struct rt_semaphore output_notice;
+
+static void async_output(void *arg);
+#endif
+
 /**
  * EasyLogger port initialize
  *
@@ -42,6 +48,17 @@ ElogErrCode elog_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
     rt_sem_init(&output_lock, "elog lock", 1, RT_IPC_FLAG_PRIO);
+    
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+    rt_thread_t async_thread = NULL;
+    
+    rt_sem_init(&output_notice, "elog async", 0, RT_IPC_FLAG_PRIO);
+
+    async_thread = rt_thread_create("elog_async", async_output, NULL, 1024, RT_THREAD_PRIORITY_MAX - 1, 10);
+    if (async_thread) {
+        rt_thread_startup(async_thread);
+    }
+#endif
 
     return result;
 }
@@ -101,3 +118,28 @@ const char *elog_port_get_p_info(void) {
 const char *elog_port_get_t_info(void) {
     return rt_thread_self()->name;
 }
+
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+void elog_async_output_notice(void) {
+    rt_sem_release(&output_notice);
+}
+
+static void async_output(void *arg) {
+    size_t get_log_size = 0;
+    static char poll_get_buf[ELOG_LINE_BUF_SIZE - 4];
+
+    while(true) {
+        /* waiting log */
+        rt_sem_take(&output_notice, RT_WAITING_FOREVER);
+        /* polling gets and outputs the log */
+        while(true) {
+            get_log_size = elog_async_get_log(poll_get_buf, sizeof(poll_get_buf));
+            if (get_log_size) {
+                elog_port_output(poll_get_buf, get_log_size);
+            } else {
+                break;
+            }
+        }
+    }
+}
+#endif
