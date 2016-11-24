@@ -63,6 +63,8 @@ static pthread_t async_output_thread;
 
 /* Initialize OK flag */
 static bool init_ok = false;
+/* asynchronous output mode enabled flag */
+static bool is_enabled = false;
 /* asynchronous output mode's ring buffer */
 static char log_buf[ELOG_ASYNC_OUTPUT_BUF_SIZE] = { 0 };
 /* log ring buffer write index */
@@ -193,10 +195,14 @@ void elog_async_output(const char *log, size_t size) {
     extern void elog_async_output_notice(void);
     size_t put_size;
 
-    put_size = async_put_log(log, size);
-    /* notify output log thread */
-    if (put_size > 0) {
-        elog_async_output_notice();
+    if (is_enabled) {
+        put_size = async_put_log(log, size);
+        /* notify output log thread */
+        if (put_size > 0) {
+            elog_async_output_notice();
+        }
+    } else {
+        elog_port_output(log, size);
     }
 }
 
@@ -227,6 +233,16 @@ static void *async_output(void *arg) {
     return NULL;
 }
 #endif
+
+/**
+ * enable or disable asynchronous output mode
+ * the log will be output directly when mode is disabled
+ *
+ * @param enabled true: enabled, false: disabled
+ */
+void elog_async_enabled(bool enabled) {
+    is_enabled = enabled;
+}
 
 /**
  * asynchronous output mode initialize

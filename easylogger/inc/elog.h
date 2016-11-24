@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.11.13"
+#define ELOG_SW_VERSION                      "1.11.22"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -190,9 +190,11 @@ void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_
 
 /* elog_buf.c */
 void elog_flush(void);
+void elog_buf_enabled(bool enabled);
 
 /* elog_async.c */
 size_t elog_async_get_log(char *log, size_t size);
+void elog_async_enabled(bool enabled);
 
 /* elog_utils.c */
 size_t elog_strcpy(size_t cur_len, char *dst, const char *src);

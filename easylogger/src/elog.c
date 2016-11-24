@@ -173,7 +173,6 @@ ElogErrCode elog_init(void) {
     /* set level is ELOG_LVL_VERBOSE */
     elog_set_filter_lvl(ELOG_LVL_VERBOSE);
 
-
     return result;
 }
 
@@ -183,6 +182,13 @@ ElogErrCode elog_init(void) {
 void elog_start(void) {
     /* enable output */
     elog_set_output_enabled(true);
+
+#if defined(ELOG_ASYNC_OUTPUT_ENABLE)
+    elog_async_enabled(true);
+#elif defined(ELOG_BUF_OUTPUT_ENABLE)
+    elog_buf_enabled(true);
+#endif
+
     /* show version */
     elog_i(log_tag, "EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
     elog_i(log_tag, "You can get the latest version on https://github.com/armink/EasyLogger .");
@@ -341,7 +347,7 @@ void elog_raw(const char *format, ...) {
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
     extern void elog_async_output(const char *log, size_t size);
     elog_async_output(log_buf, log_len);
-#elif defined(ELOG_BUFF_OUTPUT_ENABLE)
+#elif defined(ELOG_BUF_OUTPUT_ENABLE)
     extern void elog_buf_output(const char *log, size_t size);
     elog_buf_output(log_buf, log_len);
 #else
@@ -491,7 +497,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
     extern void elog_async_output(const char *log, size_t size);
     elog_async_output(log_buf, log_len);
-#elif defined(ELOG_BUFF_OUTPUT_ENABLE)
+#elif defined(ELOG_BUF_OUTPUT_ENABLE)
     extern void elog_buf_output(const char *log, size_t size);
     elog_buf_output(log_buf, log_len);
 #else

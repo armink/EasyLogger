@@ -38,6 +38,8 @@
 static char log_buf[ELOG_BUF_OUTPUT_BUF_SIZE] = { 0 };
 /* log buffer current write size */
 static size_t buf_write_size = 0;
+/* buffered output mode enabled flag */
+static bool is_enabled = false;
 
 extern void elog_port_output(const char *log, size_t size);
 extern void elog_output_lock(void);
@@ -51,6 +53,11 @@ extern void elog_output_unlock(void);
  */
 void elog_buf_output(const char *log, size_t size) {
     size_t write_size = 0, write_index = 0;
+
+    if (!is_enabled) {
+        elog_port_output(log, size);
+        return;
+    }
 
     while (true) {
         if (buf_write_size + size > ELOG_BUF_OUTPUT_BUF_SIZE) {
@@ -83,5 +90,15 @@ void elog_flush(void) {
     buf_write_size = 0;
     /* unlock output */
     elog_output_unlock();
+}
+
+/**
+ * enable or disable buffered output mode
+ * the log will be output directly when mode is disabled
+ *
+ * @param enabled true: enabled, false: disabled
+ */
+void elog_buf_enabled(bool enabled) {
+    is_enabled = enabled;
 }
 #endif /* ELOG_BUF_OUTPUT_ENABLE */

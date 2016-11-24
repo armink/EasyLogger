@@ -121,6 +121,12 @@ void sys_init_thread(void* parameter){
 }
 
 static void elog_user_assert_hook(const char* ex, const char* func, size_t line) {
+
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+    /* disable async output */
+    elog_async_enabled(false);
+#endif
+
     /* disable logger output lock */
     elog_output_lock_enabled(false);
     /* disable flash plugin lock */
@@ -133,6 +139,12 @@ static void elog_user_assert_hook(const char* ex, const char* func, size_t line)
 }
 
 static void rtt_user_assert_hook(const char* ex, const char* func, rt_size_t line) {
+
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+    /* disable async output */
+    elog_async_enabled(false);
+#endif
+
     /* disable logger output lock */
     elog_output_lock_enabled(false);
     /* disable flash plugin lock */
