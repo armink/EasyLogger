@@ -352,11 +352,15 @@ EfErrCode ef_log_write(const uint32_t *log, size_t size) {
     /* must be call this function after initialize OK */
     EF_ASSERT(init_ok);
 
-    /* write address is after log end address  */
-    write_addr = log_end_addr + 4;
+    /* write address is after log end address when LOG AREA isn't empty */
+    if (log_start_addr != log_end_addr) {
+        write_addr = log_end_addr + 4;
+    } else {
+        write_addr = log_start_addr;
+    }
     /* write the already erased but not used area */
     writable_size = EF_ERASE_MIN_SIZE - ((write_addr - log_area_start_addr) % EF_ERASE_MIN_SIZE);
-    if (writable_size != EF_ERASE_MIN_SIZE) {
+    if ((writable_size != EF_ERASE_MIN_SIZE) || (log_start_addr == log_end_addr)) {
         if (size > writable_size) {
             result = ef_port_write(write_addr, log, writable_size);
             if (result != EF_NO_ERR) {
