@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.11.22"
+#define ELOG_SW_VERSION                      "1.11.24"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -99,7 +99,11 @@ typedef struct {
     bool output_lock_enabled;
     bool output_is_locked_before_enable;
     bool output_is_locked_before_disable;
+
+#ifdef ELOG_COLOR_ENABLE
     bool text_color_enabled;
+#endif
+
 }EasyLogger, *EasyLogger_t;
 
 /* EasyLogger error code */

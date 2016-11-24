@@ -55,6 +55,7 @@
     #error "Please configure output newline sign (in elog_cfg.h)"
 #endif
 
+#ifdef ELOG_COLOR_ENABLE
 /**
  * CSI(Control Sequence Introducer/Initiator) sign
  * more information on https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -104,6 +105,7 @@
 #ifndef ELOG_COLOR_VERBOSE
 #define ELOG_COLOR_VERBOSE         (F_BLUE B_NULL S_NORMAL)
 #endif
+#endif /* ELOG_COLOR_ENABLE */
 
 /* EasyLogger object */
 static EasyLogger elog;
@@ -120,6 +122,8 @@ static const char *level_output_info[] = {
         [ELOG_LVL_DEBUG]   = "D/",
         [ELOG_LVL_VERBOSE] = "V/",
 };
+
+#ifdef ELOG_COLOR_ENABLE
 /* color output info */
 static const char *color_output_info[] = {
         [ELOG_LVL_ASSERT]  = ELOG_COLOR_ASSERT,
@@ -129,6 +133,7 @@ static const char *color_output_info[] = {
         [ELOG_LVL_DEBUG]   = ELOG_COLOR_DEBUG,
         [ELOG_LVL_VERBOSE] = ELOG_COLOR_VERBOSE,
 };
+#endif /* ELOG_COLOR_ENABLE */
 
 static bool get_fmt_enabled(uint8_t level, size_t set);
 
@@ -168,8 +173,12 @@ ElogErrCode elog_init(void) {
     /* output locked status initialize */
     elog.output_is_locked_before_enable = false;
     elog.output_is_locked_before_disable = false;
+
+#ifdef ELOG_COLOR_ENABLE
     /* disable text color by default */
     elog_set_text_color_enabled(false);
+#endif
+
     /* set level is ELOG_LVL_VERBOSE */
     elog_set_filter_lvl(ELOG_LVL_VERBOSE);
 
@@ -205,6 +214,7 @@ void elog_set_output_enabled(bool enabled) {
     elog.output_enabled = enabled;
 }
 
+#ifdef ELOG_COLOR_ENABLE
 /**
  * set log text color enable or disable
  * 
@@ -222,6 +232,7 @@ void elog_set_text_color_enabled(bool enabled) {
 bool elog_get_text_color_enabled(void) {
     return elog.text_color_enabled;
 }
+#endif /* ELOG_COLOR_ENABLE */
 
 /**
  * get output is enable or disable
@@ -400,11 +411,15 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     va_start(args, format);
     /* lock output */
     elog_output_lock();
+
+#ifdef ELOG_COLOR_ENABLE
     /* add CSI start sign and color info */
     if (elog.text_color_enabled) {
         log_len += elog_strcpy(log_len, log_buf + log_len, CSI_START);
         log_len += elog_strcpy(log_len, log_buf + log_len, color_output_info[level]);
     }
+#endif
+
     /* package level info */
     if (get_fmt_enabled(level, ELOG_FMT_LVL)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, level_output_info[level]);
@@ -473,10 +488,14 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     fmt_result = vsnprintf(log_buf + log_len, ELOG_LINE_BUF_SIZE - log_len - newline_len + 1, format, args);
 
     va_end(args);
+
+#ifdef ELOG_COLOR_ENABLE
     /* add CSI end sign */
     if (elog.text_color_enabled) {
         log_len += elog_strcpy(log_len, log_buf + log_len + fmt_result, CSI_END);
     }
+#endif
+
     /* keyword filter */
     if (!strstr(log_buf, elog.filter.keyword)) {
         //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能

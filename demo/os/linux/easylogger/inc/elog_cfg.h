@@ -45,6 +45,8 @@
 #define ELOG_FILTER_KW_MAX_LEN               16
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\n"
+/* enable log color */
+#define ELOG_COLOR_ENABLE
 /* enable asynchronous output mode */
 #define ELOG_ASYNC_OUTPUT_ENABLE
 /* buffer size for asynchronous output mode */
