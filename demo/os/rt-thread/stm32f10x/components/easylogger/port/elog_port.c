@@ -133,7 +133,13 @@ static void async_output(void *arg) {
         rt_sem_take(&output_notice, RT_WAITING_FOREVER);
         /* polling gets and outputs the log */
         while(true) {
+
+#ifdef ELOG_ASYNC_LINE_OUTPUT
+            get_log_size = elog_async_get_line_log(poll_get_buf, sizeof(poll_get_buf));
+#else
             get_log_size = elog_async_get_log(poll_get_buf, sizeof(poll_get_buf));
+#endif
+
             if (get_log_size) {
                 elog_port_output(poll_get_buf, get_log_size);
             } else {

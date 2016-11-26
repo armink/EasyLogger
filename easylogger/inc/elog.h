@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.11.24"
+#define ELOG_SW_VERSION                      "1.11.25"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -129,6 +129,8 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 void elog_output_lock_enabled(bool enabled);
 extern void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
 void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_t line));
+int8_t elog_find_lvl(const char *log);
+const char *elog_find_tag(const char *log, uint8_t lvl, size_t *tag_len);
 
 #ifndef ELOG_OUTPUT_ENABLE
 
@@ -193,15 +195,17 @@ void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_
 #define elog_v(tag, ...)    elog_verbose(tag, __VA_ARGS__)
 
 /* elog_buf.c */
-void elog_flush(void);
 void elog_buf_enabled(bool enabled);
+void elog_flush(void);
 
 /* elog_async.c */
-size_t elog_async_get_log(char *log, size_t size);
 void elog_async_enabled(bool enabled);
+size_t elog_async_get_log(char *log, size_t size);
+size_t elog_async_get_line_log(char *log, size_t size);
 
 /* elog_utils.c */
 size_t elog_strcpy(size_t cur_len, char *dst, const char *src);
+size_t elog_cpyln(char *line, const char *log, size_t len);
 
 #ifdef __cplusplus
 }

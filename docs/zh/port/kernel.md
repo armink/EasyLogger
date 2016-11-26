@@ -174,7 +174,7 @@ const char *elog_port_get_t_info(void)
 
 ### 4.9 颜色
 
-> **注意** ：启用颜色功能需先定义 `ELOG_COLOR_ENABLE` 这个宏
+> **注意** ：启用颜色功能需先定义 `ELOG_COLOR_ENABLE`
 
 每个级别的日志均有默认颜色。如果想修改，请先查看在 `elog.c` 的头部定义的各种颜色及字体风格，这里以修改 `VERBOSE` 级别日志来举例：
 
@@ -199,7 +199,13 @@ const char *elog_port_get_t_info(void)
 - 默认大小：`(ELOG_LINE_BUF_SIZE * 10)` ，不定义此宏，将会自动按照默认值设置
 - 操作方法：修改`ELOG_ASYNC_OUTPUT_BUF_SIZE`宏对应值即可
 
-#### 4.10.2 启用 pthread 库
+#### 4.10.2 异步按行输出日志
+
+由于异步输出方式内部拥有缓冲区，所以直接输出缓冲区中积累的日志时，日志移植输出方法 (`elog_port_output`) 输出的日志将不会按照 **行日志** （以换行符结尾）的格式进行输出。这使得无法在移植输出方法中完成日志的分析处理。开启此功能后，将会最大限度保证移植输出方法每次输出的日志格式都为行日志。
+
+- 操作方法：开启、关闭`ELOG_ASYNC_LINE_OUTPUT`宏即可
+
+#### 4.10.3 启用 pthread 库
 
 异步输出模式默认是使用 POSIX 的 pthread 库来实现，用户的平台如果支持 pthread ，则可以开启此宏。对于一些缺少 pthread 的支持平台，可以关闭此宏，参考 `elog_async.c` 中关于日志异步输出线程的实现方式，自己动手实现此功能。
 
@@ -222,7 +228,7 @@ const char *elog_port_get_t_info(void)
 
 每次使用前，务必先执行`elog_init()`方法对EasyLogger库进行初始化，保证初始化没问题后，再设置输出格式、过滤级别、断言钩子等，最后记得调用`elog_start()`方法启动EasyLogger，否则EasyLogger将不会开始工作。启动后接上终端就即可日志的输出信息，可以参考并运行这里的[日志测试函数](https://github.com/armink/EasyLogger/blob/master/demo/os/windows/main.c#L76-L88)。如果出现错误或断言，需根据提示信息检查移植配置及接口。
 
-下面为常见初始化方式（[点击查看源码](https://github.com/armink/EasyLogger/blob/master/demo/os/windows/main.c#L44-L56)）
+下面为常见初始化方式（[点击查看源码](https://github.com/armink/EasyLogger/blob/master/demo/os/windows/main.c)）
 ```c
 /* close printf buffer */
 setbuf(stdout, NULL);

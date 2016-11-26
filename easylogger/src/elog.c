@@ -572,3 +572,79 @@ void elog_output_lock_enabled(bool enabled) {
 void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_t line)) {
     elog_assert_hook = hook;
 }
+
+/**
+ * find the log level
+ * @note make sure the log level is output on each format
+ *
+ * @param log log buffer
+ *
+ * @return log level, found failed will return -1
+ */
+int8_t elog_find_lvl(const char *log) {
+    ELOG_ASSERT(log);
+    /* make sure the log level is output on each format */
+    ELOG_ASSERT(elog.enabled_fmt_set[ELOG_LVL_ASSERT] & ELOG_FMT_LVL);
+    ELOG_ASSERT(elog.enabled_fmt_set[ELOG_LVL_ERROR] & ELOG_FMT_LVL);
+    ELOG_ASSERT(elog.enabled_fmt_set[ELOG_LVL_WARN] & ELOG_FMT_LVL);
+    ELOG_ASSERT(elog.enabled_fmt_set[ELOG_LVL_INFO] & ELOG_FMT_LVL);
+    ELOG_ASSERT(elog.enabled_fmt_set[ELOG_LVL_DEBUG] & ELOG_FMT_LVL);
+    ELOG_ASSERT(elog.enabled_fmt_set[ELOG_LVL_VERBOSE] & ELOG_FMT_LVL);
+
+#ifdef ELOG_COLOR_ENABLE
+    uint8_t i;
+    size_t csi_start_len = strlen(CSI_START);
+    for(i = 0; i < ELOG_LVL_TOTAL_NUM; i ++) {
+        if (!strncmp(color_output_info[i], log + csi_start_len, strlen(color_output_info[i]))) {
+            return i;
+        }
+    }
+    /* found failed */
+    return -1;
+#else
+    switch (log[0]) {
+    case 'A': return ELOG_LVL_ASSERT;
+    case 'E': return ELOG_LVL_ERROR;
+    case 'W': return ELOG_LVL_WARN;
+    case 'I': return ELOG_LVL_INFO;
+    case 'D': return ELOG_LVL_DEBUG;
+    case 'V': return ELOG_LVL_VERBOSE;
+    default: return -1;
+    }
+#endif
+}
+
+/**
+ * find the log tag
+ * @note make sure the log tag is output on each format
+ * @note the tag don't have space in it
+ *
+ * @param log log buffer
+ * @param lvl log level, you can get it by @see elog_find_lvl
+ * @param tag_len found tag length
+ *
+ * @return log tag, found failed will return NULL
+ */
+const char *elog_find_tag(const char *log, uint8_t lvl, size_t *tag_len) {
+    const char *tag = NULL, *tag_end = NULL;
+
+    ELOG_ASSERT(log);
+    ELOG_ASSERT(tag_len);
+    ELOG_ASSERT(lvl < ELOG_LVL_TOTAL_NUM);
+    /* make sure the log tag is output on each format */
+    ELOG_ASSERT(elog.enabled_fmt_set[lvl] & ELOG_FMT_TAG);
+
+#ifdef ELOG_COLOR_ENABLE
+    tag = log + strlen(CSI_START) + strlen(color_output_info[lvl]) + strlen(level_output_info[lvl]);
+#else
+    tag = log + strlen(level_output_info[lvl]);
+#endif
+    /* find the first space after tag */
+    if ((tag_end = memchr(tag, ' ', ELOG_FILTER_TAG_MAX_LEN)) != NULL) {
+        *tag_len = tag_end - tag;
+    } else {
+        tag = NULL;
+    }
+
+    return tag;
+}

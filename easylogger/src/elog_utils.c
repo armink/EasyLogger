@@ -27,6 +27,20 @@
  */
 
 #include <elog.h>
+#include <string.h>
+
+#define LOG_TAG    "elog.utils"
+#define assert     ELOG_ASSERT
+#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
+#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
+
+#ifdef ELOG_DEBUG
+    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
+    #define log_v(...) elog_v(LOG_TAG, __VA_ARGS__)
+#else
+    #define log_d(...)
+    #define log_v(...)
+#endif
 
 /**
  * another copy string function
@@ -39,6 +53,10 @@
  */
 size_t elog_strcpy(size_t cur_len, char *dst, const char *src) {
     const char *src_old = src;
+
+    assert(dst);
+    assert(src);
+
     while (*src != 0) {
         /* make sure destination has enough space */
         if (cur_len++ <= ELOG_LINE_BUF_SIZE) {
@@ -48,4 +66,29 @@ size_t elog_strcpy(size_t cur_len, char *dst, const char *src) {
         }
     }
     return src - src_old;
+}
+
+/**
+ * Copy line log split by newline sign. It will copy all log when the newline sign isn't find.
+ *
+ * @param line line log buffer
+ * @param log origin log buffer
+ * @param len origin log buffer length
+ *
+ * @return copy size
+ */
+size_t elog_cpyln(char *line, const char *log, size_t len) {
+    size_t newline_len = strlen(ELOG_NEWLINE_SIGN), copy_size = 0;
+
+    assert(log);
+    assert(line);
+
+    while (len--) {
+        *line++ = *log++;
+        copy_size++;
+        if (copy_size >= newline_len && !strncmp(log - newline_len, ELOG_NEWLINE_SIGN, newline_len)) {
+            break;
+        }
+    }
+    return copy_size;
 }
