@@ -80,8 +80,8 @@ size_t elog_strcpy(size_t cur_len, char *dst, const char *src) {
 size_t elog_cpyln(char *line, const char *log, size_t len) {
     size_t newline_len = strlen(ELOG_NEWLINE_SIGN), copy_size = 0;
 
-    assert(log);
     assert(line);
+    assert(log);
 
     while (len--) {
         *line++ = *log++;
@@ -91,4 +91,26 @@ size_t elog_cpyln(char *line, const char *log, size_t len) {
         }
     }
     return copy_size;
+}
+
+/**
+ * This function will copy memory content from source address to destination
+ * address.
+ *
+ * @param dst the address of destination memory
+ * @param src  the address of source memory
+ * @param count the copied length
+ *
+ * @return the address of destination memory
+ */
+void *elog_memcpy(void *dst, const void *src, size_t count) {
+    char *tmp = (char *) dst, *s = (char *) src;
+
+    assert(dst);
+    assert(src);
+
+    while (count--)
+        *tmp++ = *s++;
+
+    return dst;
 }

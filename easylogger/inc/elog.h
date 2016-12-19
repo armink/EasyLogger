@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "1.11.25"
+#define ELOG_SW_VERSION                      "1.12.19"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -206,6 +206,7 @@ size_t elog_async_get_line_log(char *log, size_t size);
 /* elog_utils.c */
 size_t elog_strcpy(size_t cur_len, char *dst, const char *src);
 size_t elog_cpyln(char *line, const char *log, size_t len);
+void *elog_memcpy(void *dst, const void *src, size_t count);
 
 #ifdef __cplusplus
 }
