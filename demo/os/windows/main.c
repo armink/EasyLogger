@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -26,19 +26,12 @@
  * Created on: 2015-07-30
  */
 
+#define LOG_TAG    "main"
+
+#include <elog.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "elog.h"
-
-#define LOG_TAG    "main"
-#define assert     ELOG_ASSERT
-#define log_a(...) elog_a(LOG_TAG, __VA_ARGS__)
-#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
-#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
-#define log_i(...) elog_i(LOG_TAG, __VA_ARGS__)
-#define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-#define log_v(...) elog_v(LOG_TAG, __VA_ARGS__)
 
 static void test_elog(void);
 

@@ -25,20 +25,13 @@
  * Function: non-os stm32f10x demo.
  * Created on: 2015-07-31
  */
- 
-#include "bsp.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include "elog.h"
 
 #define LOG_TAG    "main"
-#define assert     ELOG_ASSERT
-#define log_a(...) elog_a(LOG_TAG, __VA_ARGS__)
-#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
-#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
-#define log_i(...) elog_i(LOG_TAG, __VA_ARGS__)
-#define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-#define log_v(...) elog_v(LOG_TAG, __VA_ARGS__)
+
+#include <elog.h>
+#include <bsp.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 static void test_elog(void);
 

@@ -189,6 +189,14 @@ EfErrCode ef_env_set_default(void){
 
     result = ef_save_env();
 
+#ifdef EF_ENV_USING_PFS_MODE
+    /* reset other PFS area's data */
+    if (result == EF_NO_ERR) {
+        env_cache_changed = true;
+        result = ef_save_env();
+    }
+#endif
+
     return result;
 }
 

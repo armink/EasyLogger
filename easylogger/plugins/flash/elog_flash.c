@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -26,18 +26,13 @@
  * Created on: 2015-06-05
  */
 
+#define LOG_TAG    "elog.flash"
+
 #include "elog_flash.h"
 #include <easyflash.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define log_a(...) elog_a("elog.flash", __VA_ARGS__)
-#define log_e(...) elog_e("elog.flash", __VA_ARGS__)
-#define log_w(...) elog_w("elog.flash", __VA_ARGS__)
-#define log_i(...) elog_i("elog.flash", __VA_ARGS__)
-#define log_d(...) elog_d("elog.flash", __VA_ARGS__)
-#define log_v(...) elog_v("elog.flash", __VA_ARGS__)
 
 #ifdef ELOG_FLASH_USING_BUF_MODE
 /* flash log buffer */

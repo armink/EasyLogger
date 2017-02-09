@@ -10,7 +10,7 @@
 
 ### 1.1 初始化
 
-初始化的EasyLogger的核心功能，初始化后才可以使用下面的API。
+初始化的 EasyLogger 的核心功能，初始化后才可以使用下面的API。
 
 ```
 ElogErrCode elog_init(void)
@@ -40,26 +40,32 @@ void elog_start(void)
 
 #### 1.3.1 输出基本日志
 
-所有级别的日志输出方法如下，每种级别都有一种简写方式，用户可以自行选择。
+所有级别的日志输出方法如下，每种级别都有两种简化方式，用户可以自行选择。
 
 ```c
 #define elog_assert(tag, ...) 
-#define elog_a(tag, ...) //简写
+#define elog_a(tag, ...) //简化方式1，每次需填写 LOG_TAG
+#define log_a(...)       //简化方式2，LOG_TAG 已经在文件顶部定义，使用前无需填写 LOG_TAG
 
 #define elog_error(tag, ...)
 #define elog_e(tag, ...)
+#define log_a(...)
 
 #define elog_warn(tag, ...)
 #define elog_w(tag, ...)
+#define log_a(...)
 
 #define elog_info(tag, ...)
 #define elog_i(tag, ...)
+#define log_a(...)
 
 #define elog_debug(tag, ...)
 #define elog_d(tag, ...)
+#define log_a(...)
 
 #define elog_verbose(tag, ...)
 #define elog_v(tag, ...)
+#define log_a(...)
 ```
 
 |参数                                    |描述|
@@ -67,43 +73,55 @@ void elog_start(void)
 |tag                                     |日志标签|
 |...                                     |不定参格式，与`printf`入参一致，放入将要输出日志|
 
-**建议**：对于每个文件或者每个模块，可以重新覆盖定义上述日志输出宏定义，如下所示。这样的优点就是降低代码书写量，统一日志书写格式，代码可以做到尽可能少的依赖某个日志库，同时部分复用代码无需修改日志输出方法，可直接拷贝至其他模块或者其他项目，提高软件的可重用性。
+**技巧一** ：对于每个源代码文件，可以在引用 `elog.h` 上方，根据模块的不同功能，定义不同的日志标签，如下所示，这样既可直接使用 `log_x` 这类无需输入标签的简化方式 API 。
 
 ```c
-//WiFi协议处理(/wifi/proto.c)
+//WiFi 协议处理(位于 /wifi/proto.c 源代码文件)
 #define LOG_TAG    "wifi.proto"
-#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
-#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
-#define log_i(...) elog_i(LOG_TAG, __VA_ARGS__)
 
-#if WIFI_DEBUG
-    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-#else
-    #define log_d(...)
-#endif
+#include <elog.h>
 
-//WiFi数据打包处理(/wifi/package.c)
-#define LOG_TAG    "wifi.package"
-
-#if WIFI_DEBUG
-    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-#else
-    #define log_d(...)
-#endif
-
-//CAN命令解析(/can/disp.c)
-#define LOG_TAG    "can.disp"
-#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
-
-#if CAN_DEBUG
-    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-#else
-    #define log_d(...)
-#endif
-
+log_e("我是 wifi.proto 日志");
 ```
 
-#### 1.3.2 输出RAW格式日志
+```C
+//WiFi 数据打包处理(位于 /wifi/package.c 源代码文件)
+#define LOG_TAG    "wifi.package"
+
+#include <elog.h>
+
+log_w("我是 wifi.package 日志");
+```
+
+```C
+//CAN 命令解析(位于 /can/disp.c 源代码文件)
+#define LOG_TAG    "can.disp"
+
+#include <elog.h>
+
+log_w("我是 can.disp 日志");
+```
+
+**技巧二** ：为了实现按照模块、子模块作用域来限制日志输出级别的功能，可以按照下面的方式，在模块的头文件中定义以下宏定义：
+
+```C
+/**
+ * Log default configuration for EasyLogger.
+ * NOTE: Must defined before including the <elog.h>
+ */
+#if !defined(LOG_TAG)
+    #define LOG_TAG                    "xx"
+#endif
+#undef LOG_LVL
+#if defined(XX_LOG_LVL)
+    #define LOG_LVL                    XX_LOG_LVL
+#endif
+```
+
+XX 是模块名称的缩写，该段内容务必定义在 `elog.h` 之前，否则失效；这样做的 **好处** 是，如果模块内的源文件没有定义 TAG ，则会自动引用该段内容中的定义的 TAG 。同时可以在 头文件中可以配置 `XX_LOG_LVL` ，这样只会输出比这个优先级高或相等级别的日志。当然 XX_LOG_LVL 这个宏也可以不定义，此时会输出全部级别的日志，定义为 ASSERT 级别，就只剩断言信息了。
+此时我们就能够实现 **源文件->子模块->模块->EasyLogger全局** 对于其中任何环节的日志配置及控制。调试时想要查看其中任何环节的日志，或者调整其中的某个环节日志级别，都会非常轻松，极大的提高了调试的灵活性及效率。
+
+#### 1.3.2 输出 RAW 格式日志
 
 ```
 void elog_raw(const char *format, ...)
@@ -121,6 +139,7 @@ EasyLogger自带的断言，可以直接用户软件，在断言表达式不成�
 
 ```
 #define ELOG_ASSERT(EXPR)
+#define assert(EXPR)   //简化形式
 ```
 
 |参数                                    |描述|
@@ -173,13 +192,15 @@ void elog_output_lock_enabled(bool enabled)
 ```c
 /* EasyLogger断言钩子方法 */
 static void elog_user_assert_hook(const char* ex, const char* func, size_t line) {
+    /* 失能异步输出方式（异步输出模块自带方法） */
+    elog_async_enabled(false);
     /* 失能日志输出锁 */
     elog_output_lock_enabled(false);
-    /* 失能EasyLogger的Flash插件自带同步锁（Flash插件自带方法） */
+    /* 失能 EasyLogger 的 Flash 插件自带同步锁（Flash 插件自带方法） */
     elog_flash_lock_enabled(false);
     /* 输出断言信息 */
     elog_a("elog", "(%s) has assert failed at %s:%ld.\n", ex, func, line);
-    /* 将缓冲区中所有日志保存至Flash（Flash插件自带方法） */
+    /* 将缓冲区中所有日志保存至 Flash （Flash 插件自带方法） */
     elog_flash_flush();
     while(1);
 }
@@ -363,7 +384,7 @@ size_t elog_async_get_log(char *log, size_t size)
 
 #### 1.9.3 在异步输出模式下获取行日志（以换行符结尾）
 
-异步模式下获取行日志与 1.9.2 中的直接获取日志功能类似，只不过这里所获取到的日志内容，必须为为 **行日志** （以换行符结尾）格式，为后续的日志按行分析功能提供便利。如果设定日志长度小于日志缓冲区中已存在日志长度，将只会返回日志缓冲区中行日志的长度。如果缓冲区中不存在行日志，将不能保证返回的日志格式是行日志。
+异步模式下获取行日志与 1.9.2 中的直接获取日志功能类似，只不过这里所获取到的日志内容，必须为 **行日志** （以换行符结尾）格式，为后续的日志按行分析功能提供便利。如果设定日志长度小于日志缓冲区中已存在日志长度，将只会返回日志缓冲区中行日志的长度。如果缓冲区中不存在行日志，将不能保证返回的日志格式是行日志。
 
 ```C
 size_t elog_async_get_line_log(char *log, size_t size)

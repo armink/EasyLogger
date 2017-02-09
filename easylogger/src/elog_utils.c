@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -28,19 +28,6 @@
 
 #include <elog.h>
 #include <string.h>
-
-#define LOG_TAG    "elog.utils"
-#define assert     ELOG_ASSERT
-#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
-#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
-
-#ifdef ELOG_DEBUG
-    #define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-    #define log_v(...) elog_v(LOG_TAG, __VA_ARGS__)
-#else
-    #define log_d(...)
-    #define log_v(...)
-#endif
 
 /**
  * another copy string function

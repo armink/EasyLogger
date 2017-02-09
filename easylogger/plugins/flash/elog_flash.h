@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 /* EasyLogger flash log plugin's software version number */
-#define ELOG_FLASH_SW_VERSION                "1.12.19"
+#define ELOG_FLASH_SW_VERSION                "V2.0.0"
 
 /* elog_flash.c */
 ElogErrCode elog_flash_init(void);

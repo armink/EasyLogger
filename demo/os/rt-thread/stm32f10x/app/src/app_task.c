@@ -1,14 +1,16 @@
-#include "app_task.h"
+#define LOG_TAG    "main"
+
+#include <app_task.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "bsp.h"
-#include "elog_flash.h"
-#include "easyflash.h"
-#include "finsh.h"
-#include "shell.h"
-#include "cpuusage.h"
-#include "delay_conf.h"
-#include "utils.h"
+#include <bsp.h>
+#include <elog_flash.h>
+#include <easyflash.h>
+#include <finsh.h>
+#include <shell.h>
+#include <cpuusage.h>
+#include <delay_conf.h>
+#include <utils.h>
 
 #ifdef __CC_ARM
 extern int Image$$RW_IRAM1$$ZI$$Limit;
@@ -17,15 +19,6 @@ extern int Image$$RW_IRAM1$$ZI$$Limit;
 #else
 extern int __bss_end;
 #endif
-
-#define LOG_TAG    "main"
-#define assert     ELOG_ASSERT
-#define log_a(...) elog_a(LOG_TAG, __VA_ARGS__)
-#define log_e(...) elog_e(LOG_TAG, __VA_ARGS__)
-#define log_w(...) elog_w(LOG_TAG, __VA_ARGS__)
-#define log_i(...) elog_i(LOG_TAG, __VA_ARGS__)
-#define log_d(...) elog_d(LOG_TAG, __VA_ARGS__)
-#define log_v(...) elog_v(LOG_TAG, __VA_ARGS__)
 
 #define thread_sys_monitor_prio                30
 
