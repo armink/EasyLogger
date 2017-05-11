@@ -79,7 +79,7 @@ ElogErrCode elog_flash_init(void) {
 /**
  * Read and output log which saved in flash.
  *
- * @param index index for saved log.
+ * @param index index for saved log. @note It will auto word alignment.
  *        Minimum index is 0.
  *        Maximum index is log used flash total size - 1.
  * @param size
@@ -88,35 +88,34 @@ void elog_flash_output(size_t index, size_t size) {
     /* 128 bytes buffer */
     uint32_t buf[32] = { 0 };
     size_t log_total_size = ef_log_get_used_size();
-    size_t buf_szie = sizeof(buf);
+    size_t buf_size = sizeof(buf);
     size_t read_size = 0, read_overage_size = 0;
 
+    /* word alignment for index */
+    index = index / 4 * 4;
     if (index + size > log_total_size) {
         log_i("The output position and size is out of bound. The max size is %d.", log_total_size);
         return;
     }
-
     /* must be call this function after initialize OK */
     ELOG_ASSERT(init_ok);
     /* lock flash log buffer */
     log_buf_lock();
-    /* Output all flash saved log. It will use filter */
+    /* output all flash saved log. It will use filter */
     while (true) {
-        if (index + read_size + buf_szie < log_total_size) {
-            ef_log_read(index + read_size, buf, buf_szie);
-            elog_flash_port_output((const char*)buf, buf_szie);
-            read_size += buf_szie;
+        if (read_size + buf_size < size) {
+            ef_log_read(index + read_size, buf, buf_size);
+            elog_flash_port_output((const char*)buf, buf_size);
+            read_size += buf_size;
         } else {
             /* flash read is word alignment */
-            if ((log_total_size - index - read_size) % 4 == 0) {
+            if ((size - read_size) % 4 == 0) {
                 read_overage_size = 0;
             } else {
-                read_overage_size = 4 - ((log_total_size - index - read_size) % 4);
+                read_overage_size = 4 - ((size - read_size) % 4);
             }
-            ef_log_read(index + read_size - read_overage_size, buf,
-                    log_total_size - index - read_size + read_overage_size);
-            elog_flash_port_output((const char*) buf + read_overage_size,
-                    log_total_size - index - read_size);
+            ef_log_read(index + read_size, buf, size - read_size + read_overage_size);
+            elog_flash_port_output((const char*) buf + read_overage_size, size - read_size);
             /* output newline sign */
             elog_flash_port_output(ELOG_NEWLINE_SIGN, strlen(ELOG_NEWLINE_SIGN));
             break;
@@ -140,6 +139,11 @@ void elog_flash_output_all(void) {
  */
 void elog_flash_output_recent(size_t size) {
     size_t max_size = ef_log_get_used_size();
+
+    if (size == 0) {
+        return;
+    }
+
     if (size > max_size) {
         log_i("The output size is out of bound. The max size is %d.", max_size);
     } else {
