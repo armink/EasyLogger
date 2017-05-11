@@ -1,4 +1,4 @@
-# EasyLogger Flash插件 API 说明
+# EasyLogger Flash 插件 API 说明
 
 ---
 
@@ -20,10 +20,10 @@ ElogErrCode elog_flash_init(void)
 
 ### 1.2 输出Flash中指定位置存储的日志
 
-日志的输出方式取决用户的移植接口`elog_flash_port_output`的实现，具体参考Flash插件移植说明（[`\docs\zh\port\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/flash.md)）。首页Demo中是输出到控制台的方式。
+日志的输出方式取决用户的移植接口`elog_flash_port_putput`的实现，具体参考Flash插件移植说明（[`\docs\zh\port\flash.md`](https://github.com/armink/EasyLogger/blob/master/docs/zh/port/flash.md)）。首页Demo中是输出到控制台的方式。
 
 ```
-void elog_flash_outout(size_t pos, size_t size)
+void elog_flash_output(size_t pos, size_t size)
 ```
 
 |参数                                    |描述|
@@ -34,13 +34,13 @@ void elog_flash_outout(size_t pos, size_t size)
 ### 1.3 输出Flash中存储的所有日志
 
 ```
-void elog_flash_outout_all(void)
+void elog_flash_output_all(void)
 ```
 
 ### 1.4 输出Flash中最近存储的日志
 
 ```
-void elog_flash_outout_recent(size_t size)
+void elog_flash_output_recent(size_t size)
 ```
 
 |参数                                    |描述|
