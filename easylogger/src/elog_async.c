@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2016, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2016-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -30,9 +30,6 @@
 #include <string.h>
 
 #ifdef ELOG_ASYNC_OUTPUT_ENABLE
-#if !defined(ELOG_ASYNC_OUTPUT_BUF_SIZE)
-    #error "Please configure buffer size for asynchronous output mode (in elog_cfg.h)"
-#endif
 
 #ifdef ELOG_ASYNC_OUTPUT_USING_PTHREAD
 #include <pthread.h>
@@ -59,14 +56,28 @@
 static sem_t output_notice;
 /* asynchronous output pthread thread */
 static pthread_t async_output_thread;
-#endif
+#endif /* ELOG_ASYNC_OUTPUT_USING_PTHREAD */
+
+/* the highest output level for async mode, other level will sync output */
+#ifdef ELOG_ASYNC_OUTPUT_LVL
+#define OUTPUT_LVL                               ELOG_ASYNC_OUTPUT_LVL
+#else
+#define OUTPUT_LVL                               ELOG_LVL_ASSERT
+#endif /* ELOG_ASYNC_OUTPUT_LVL */
+
+/* buffer size for asynchronous output mode */
+#ifdef ELOG_ASYNC_OUTPUT_BUF_SIZE
+#define OUTPUT_BUF_SIZE                          ELOG_ASYNC_OUTPUT_BUF_SIZE
+#else
+#define OUTPUT_BUF_SIZE                          (ELOG_LINE_BUF_SIZE * 10)
+#endif /* ELOG_ASYNC_OUTPUT_BUF_SIZE */
 
 /* Initialize OK flag */
 static bool init_ok = false;
 /* asynchronous output mode enabled flag */
 static bool is_enabled = false;
 /* asynchronous output mode's ring buffer */
-static char log_buf[ELOG_ASYNC_OUTPUT_BUF_SIZE] = { 0 };
+static char log_buf[OUTPUT_BUF_SIZE] = { 0 };
 /* log ring buffer write index */
 static size_t write_index = 0;
 /* log ring buffer read index */
@@ -90,9 +101,9 @@ static size_t elog_async_get_buf_used(void) {
         return write_index - read_index;
     } else {
         if (!buf_is_full && !buf_is_empty) {
-            return ELOG_ASYNC_OUTPUT_BUF_SIZE - (read_index - write_index);
+            return OUTPUT_BUF_SIZE - (read_index - write_index);
         } else if (buf_is_full) {
-            return ELOG_ASYNC_OUTPUT_BUF_SIZE;
+            return OUTPUT_BUF_SIZE;
         } else {
             return 0;
         }
@@ -105,7 +116,7 @@ static size_t elog_async_get_buf_used(void) {
  * @return remain space
  */
 static size_t async_get_buf_space(void) {
-    return ELOG_ASYNC_OUTPUT_BUF_SIZE - elog_async_get_buf_used();
+    return OUTPUT_BUF_SIZE - elog_async_get_buf_used();
 }
 
 /**
@@ -131,14 +142,14 @@ static size_t async_put_log(const char *log, size_t size) {
         buf_is_full = true;
     }
 
-    if (write_index + size < ELOG_ASYNC_OUTPUT_BUF_SIZE) {
+    if (write_index + size < OUTPUT_BUF_SIZE) {
         memcpy(log_buf + write_index, log, size);
         write_index += size;
     } else {
-        memcpy(log_buf + write_index, log, ELOG_ASYNC_OUTPUT_BUF_SIZE - write_index);
-        memcpy(log_buf, log + ELOG_ASYNC_OUTPUT_BUF_SIZE - write_index,
-                size - (ELOG_ASYNC_OUTPUT_BUF_SIZE - write_index));
-        write_index += size - ELOG_ASYNC_OUTPUT_BUF_SIZE;
+        memcpy(log_buf + write_index, log, OUTPUT_BUF_SIZE - write_index);
+        memcpy(log_buf, log + OUTPUT_BUF_SIZE - write_index,
+                size - (OUTPUT_BUF_SIZE - write_index));
+        write_index += size - OUTPUT_BUF_SIZE;
     }
 
     buf_is_empty = false;
@@ -173,14 +184,14 @@ size_t elog_async_get_line_log(char *log, size_t size) {
         size = used;
     }
 
-    if (read_index + size < ELOG_ASYNC_OUTPUT_BUF_SIZE) {
+    if (read_index + size < OUTPUT_BUF_SIZE) {
         cpy_log_size = elog_cpyln(log, log_buf + read_index, size);
         read_index += cpy_log_size;
     } else {
-        cpy_log_size = elog_cpyln(log, log_buf + read_index, ELOG_ASYNC_OUTPUT_BUF_SIZE - read_index);
-        if (cpy_log_size == ELOG_ASYNC_OUTPUT_BUF_SIZE - read_index) {
+        cpy_log_size = elog_cpyln(log, log_buf + read_index, OUTPUT_BUF_SIZE - read_index);
+        if (cpy_log_size == OUTPUT_BUF_SIZE - read_index) {
             cpy_log_size += elog_cpyln(log + cpy_log_size, log_buf, size - cpy_log_size);
-            read_index += cpy_log_size - ELOG_ASYNC_OUTPUT_BUF_SIZE;
+            read_index += cpy_log_size - OUTPUT_BUF_SIZE;
         } else {
             read_index += cpy_log_size;
         }
@@ -224,14 +235,14 @@ size_t elog_async_get_log(char *log, size_t size) {
         buf_is_empty = true;
     }
 
-    if (read_index + size < ELOG_ASYNC_OUTPUT_BUF_SIZE) {
+    if (read_index + size < OUTPUT_BUF_SIZE) {
         memcpy(log, log_buf + read_index, size);
         read_index += size;
     } else {
-        memcpy(log, log_buf + read_index, ELOG_ASYNC_OUTPUT_BUF_SIZE - read_index);
-        memcpy(log + ELOG_ASYNC_OUTPUT_BUF_SIZE - read_index, log_buf,
-                size - (ELOG_ASYNC_OUTPUT_BUF_SIZE - read_index));
-        read_index += size - ELOG_ASYNC_OUTPUT_BUF_SIZE;
+        memcpy(log, log_buf + read_index, OUTPUT_BUF_SIZE - read_index);
+        memcpy(log + OUTPUT_BUF_SIZE - read_index, log_buf,
+                size - (OUTPUT_BUF_SIZE - read_index));
+        read_index += size - OUTPUT_BUF_SIZE;
     }
 
     buf_is_full = false;
@@ -243,16 +254,20 @@ __exit:
 }
 #endif /* ELOG_ASYNC_LINE_OUTPUT */
 
-void elog_async_output(const char *log, size_t size) {
+void elog_async_output(uint8_t level, const char *log, size_t size) {
     /* this function must be implement by user when ELOG_ASYNC_OUTPUT_USING_PTHREAD is not defined */
     extern void elog_async_output_notice(void);
     size_t put_size;
 
     if (is_enabled) {
-        put_size = async_put_log(log, size);
-        /* notify output log thread */
-        if (put_size > 0) {
-            elog_async_output_notice();
+        if (level >= OUTPUT_LVL) {
+            put_size = async_put_log(log, size);
+            /* notify output log thread */
+            if (put_size > 0) {
+                elog_async_output_notice();
+            }
+        } else {
+            elog_port_output(log, size);
         }
     } else {
         elog_port_output(log, size);

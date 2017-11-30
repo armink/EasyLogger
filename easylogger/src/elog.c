@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -355,8 +355,9 @@ void elog_raw(const char *format, ...) {
     }
     /* output log */
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
-    extern void elog_async_output(const char *log, size_t size);
-    elog_async_output(log_buf, log_len);
+    extern void elog_async_output(uint8_t level, const char *log, size_t size);
+    /* raw log will using assert level */
+    elog_async_output(ELOG_LVL_ASSERT, log_buf, log_len);
 #elif defined(ELOG_BUF_OUTPUT_ENABLE)
     extern void elog_buf_output(const char *log, size_t size);
     elog_buf_output(log_buf, log_len);
@@ -364,7 +365,7 @@ void elog_raw(const char *format, ...) {
     elog_port_output(log_buf, log_len);
 #endif
     /* unlock output */
-    elog_port_output_unlock();
+    elog_output_unlock();
 
     va_end(args);
 }
@@ -513,8 +514,8 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     }
     /* output log */
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
-    extern void elog_async_output(const char *log, size_t size);
-    elog_async_output(log_buf, log_len);
+    extern void elog_async_output(uint8_t level, const char *log, size_t size);
+    elog_async_output(level, log_buf, log_len);
 #elif defined(ELOG_BUF_OUTPUT_ENABLE)
     extern void elog_buf_output(const char *log, size_t size);
     elog_buf_output(log_buf, log_len);
