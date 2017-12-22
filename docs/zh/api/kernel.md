@@ -49,23 +49,23 @@ void elog_start(void)
 
 #define elog_error(tag, ...)
 #define elog_e(tag, ...)
-#define log_a(...)
+#define log_e(...)
 
 #define elog_warn(tag, ...)
 #define elog_w(tag, ...)
-#define log_a(...)
+#define log_w(...)
 
 #define elog_info(tag, ...)
 #define elog_i(tag, ...)
-#define log_a(...)
+#define log_i(...)
 
 #define elog_debug(tag, ...)
 #define elog_d(tag, ...)
-#define log_a(...)
+#define log_d(...)
 
 #define elog_verbose(tag, ...)
 #define elog_v(tag, ...)
-#define log_a(...)
+#define log_v(...)
 ```
 
 |参数                                    |描述|
