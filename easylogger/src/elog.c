@@ -404,7 +404,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     if (level > elog.filter.level) {
         return;
     } else if (!strstr(tag, elog.filter.tag)) { /* tag filter */
-        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
+        //TODO 鍙互鑰冭檻閲囩敤KMP鍙婃湸绱犳ā寮忓尮閰嶅瓧绗︿覆锛屾彁鍗囨�ц兘
         return;
     }
     /* args point to the first variable parameter */
@@ -478,7 +478,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         }
         /* package thread info */
         if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
-            //TODO snprintf资源占用可能较高，待优化
+            //TODO snprintf璧勬簮鍗犵敤鍙兘杈冮珮锛屽緟浼樺寲
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
         }
@@ -498,7 +498,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 
     /* keyword filter */
     if (!strstr(log_buf, elog.filter.keyword)) {
-        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
+        //TODO 鍙互鑰冭檻閲囩敤KMP鍙婃湸绱犳ā寮忓尮閰嶅瓧绗︿覆锛屾彁鍗囨�ц兘
         /* unlock output */
         elog_output_unlock();
         return;
@@ -510,7 +510,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     } else {
         log_len = ELOG_LINE_BUF_SIZE;
         /* copy newline sign */
-        strcpy(log_buf + ELOG_LINE_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
+        strcpy(log_buf + ELOG_LINE_BUF_SIZE -1 - newline_len, ELOG_NEWLINE_SIGN);
     }
     /* output log */
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
