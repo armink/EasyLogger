@@ -510,7 +510,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     } else {
         log_len = ELOG_LINE_BUF_SIZE;
         /* copy newline sign */
-        strcpy(log_buf + ELOG_LINE_BUF_SIZE - newline_len, ELOG_NEWLINE_SIGN);
+        strcpy(log_buf + ELOG_LINE_BUF_SIZE - (newline_len + 1), ELOG_NEWLINE_SIGN);
     }
     /* output log */
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
