@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -497,11 +497,19 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
 #endif
 
     /* keyword filter */
-    if (!strstr(log_buf, elog.filter.keyword)) {
-        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
-        /* unlock output */
-        elog_output_unlock();
-        return;
+    if (elog.filter.keyword[0] != '\0') {
+        /* add string end sign */
+        if (fmt_result > -1)
+        {
+            log_buf[log_len + fmt_result] = '\0';
+        }
+
+        if (!strstr(log_buf, elog.filter.keyword))
+        {
+            /* unlock output */
+            elog_output_unlock();
+            return;
+        }
     }
     /* package newline sign */
     if ((fmt_result > -1) && (fmt_result + log_len + newline_len <= ELOG_LINE_BUF_SIZE)) {
