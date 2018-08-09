@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2018, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "2.0.2"
+#define ELOG_SW_VERSION                      "2.0.3"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE

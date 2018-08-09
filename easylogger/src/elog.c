@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015-2016, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2018, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -485,41 +485,52 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, ")");
     }
     /* package other log data to buffer. '\0' must be added in the end by vsnprintf. */
-    fmt_result = vsnprintf(log_buf + log_len, ELOG_LINE_BUF_SIZE - log_len - newline_len + 1, format, args);
+    fmt_result = vsnprintf(log_buf + log_len, ELOG_LINE_BUF_SIZE - log_len, format, args);
 
     va_end(args);
-
-#ifdef ELOG_COLOR_ENABLE
-    /* add CSI end sign */
-    if (elog.text_color_enabled) {
-        log_len += elog_strcpy(log_len, log_buf + log_len + fmt_result, CSI_END);
+    /* calculate log length */
+    if ((log_len + fmt_result <= ELOG_LINE_BUF_SIZE) && (fmt_result > -1)) {
+        log_len += fmt_result;
+    } else {
+        /* using max length */
+        log_len = ELOG_LINE_BUF_SIZE;
     }
-#endif
-
+    /* overflow check and reserve some space for CSI end sign and newline sign */
+#ifdef ELOG_COLOR_ENABLE
+    if (log_len + (sizeof(CSI_END) - 1) + newline_len > ELOG_LINE_BUF_SIZE) {
+        /* using max length */
+        log_len = ELOG_LINE_BUF_SIZE;
+        /* reserve some space for CSI end sign */
+        log_len -= (sizeof(CSI_END) - 1);
+#else
+    if (log_len + newline_len > ELOG_LINE_BUF_SIZE) {
+        /* using max length */
+        log_len = ELOG_LINE_BUF_SIZE;
+#endif /* ELOG_COLOR_ENABLE */
+        /* reserve some space for newline sign */
+        log_len -= newline_len;
+    }
     /* keyword filter */
     if (elog.filter.keyword[0] != '\0') {
         /* add string end sign */
-        if (fmt_result > -1)
-        {
-            log_buf[log_len + fmt_result] = '\0';
-        }
-
-        if (!strstr(log_buf, elog.filter.keyword))
-        {
+        log_buf[log_len] = '\0';
+        /* find the keyword */
+        if (!strstr(log_buf, elog.filter.keyword)) {
             /* unlock output */
             elog_output_unlock();
             return;
         }
     }
-    /* package newline sign */
-    if ((fmt_result > -1) && (fmt_result + log_len + newline_len <= ELOG_LINE_BUF_SIZE)) {
-        log_len += fmt_result;
-        log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);
-    } else {
-        log_len = ELOG_LINE_BUF_SIZE;
-        /* copy newline sign */
-        strcpy(log_buf + ELOG_LINE_BUF_SIZE - (newline_len + 1), ELOG_NEWLINE_SIGN);
+
+#ifdef ELOG_COLOR_ENABLE
+    /* add CSI end sign */
+    if (elog.text_color_enabled) {
+        log_len += elog_strcpy(log_len, log_buf + log_len, CSI_END);
     }
+#endif
+
+    /* package newline sign */
+    log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);
     /* output log */
 #if defined(ELOG_ASYNC_OUTPUT_ENABLE)
     extern void elog_async_output(uint8_t level, const char *log, size_t size);
