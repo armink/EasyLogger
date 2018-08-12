@@ -107,12 +107,12 @@ EasyLogger 拥有过滤方式、输出格式、输出开关这些属性。
 
 # 4. 后期
 
-- [x] 1、Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，并具有历史日检索的功能；
-- [ ] 2、配置文件：文件系统下的配置文件；
-- [ ] 3、文件转档：文件系统下支持文件按容量转档，按时间区分；
-- [ ] 4、日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等。前端：[HTML5](https://zh.wikipedia.org/wiki/HTML5) + [Bootstrap](https://github.com/twbs/bootstrap) + [AngularJS](https://angularjs.org/) + [NW.js](http://www.oschina.net/p/nwjs)，后端：[Rust](https://github.com/rust-lang/rust) + [iron](https://github.com/iron/iron) + [rust-websocket](https://github.com/cyderize/rust-websocket) + [serial-rs](https://github.com/dcuddeback/serial-rs)；
-- [x] 5、异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也可以放到异步输出中去；
-- [ ] 6、Arduino：增加Arduino lib，并提供其Demo；
+- [x] Flash存储：在[EasyFlash](https://github.com/armink/EasyFlash)中增加日志存储、读取功能，让EasyLogger与其无缝对接。使日志可以更加容易的存储在 **非文件系统** 中，并具有历史日志检索的功能；
+- [ ] 配置文件：文件系统下的配置文件；
+- [ ] 文件转档：文件系统下支持文件按容量转档，按时间区分；
+- [ ] 日志助手：开发跨平台的日志助手，兼容Linux、Windows、Mac系统，打开助手即可查看、过滤（支持正则表达式）、排序、保存日志等。前端：[HTML5](https://zh.wikipedia.org/wiki/HTML5) + [Bootstrap](https://github.com/twbs/bootstrap) + [AngularJS](https://angularjs.org/) + [NW.js](http://www.oschina.net/p/nwjs)，后端：[Rust](https://github.com/rust-lang/rust) + [iron](https://github.com/iron/iron) + [rust-websocket](https://github.com/cyderize/rust-websocket) + [serial-rs](https://github.com/dcuddeback/serial-rs)；
+- [x] 异步输出：目前日志输出与用户代码之间是同步的方式，这种方式虽然软件简单，也不存在日志覆盖的问题。但在输出速度较低的平台下，会由于增加日志功能，而降低软件运行速度。所以后期会增加 **异步输出** 方式，关键字过滤也可以放到异步输出中去；
+- [ ] Arduino：增加Arduino lib，并提供其Demo；
 
 # 5. 许可
 
