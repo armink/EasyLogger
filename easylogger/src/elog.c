@@ -404,7 +404,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     if (level > elog.filter.level) {
         return;
     } else if (!strstr(tag, elog.filter.tag)) { /* tag filter */
-        //TODO ���Կ��ǲ���KMP������ģʽƥ���ַ�������������
+        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
         return;
     }
     /* args point to the first variable parameter */
@@ -478,7 +478,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         }
         /* package thread info */
         if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
-            //TODO snprintf��Դռ�ÿ��ܽϸߣ����Ż�
+            //TODO snprintf资源占用可能较高，待优化
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
         }
