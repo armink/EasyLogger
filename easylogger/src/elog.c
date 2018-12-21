@@ -404,7 +404,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     if (level > elog.filter.level) {
         return;
     } else if (!strstr(tag, elog.filter.tag)) { /* tag filter */
-        //TODO ¿ÉÒÔ¿¼ÂÇ²ÉÓÃKMP¼°ÆÓËØÄ£Ê½Æ¥Åä×Ö·û´®£¬ÌáÉýÐÔÄÜ
+        //TODO ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½Ç²ï¿½ï¿½ï¿½KMPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½Æ¥ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         return;
     }
     /* args point to the first variable parameter */
@@ -478,7 +478,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         }
         /* package thread info */
         if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
-            //TODO snprintf×ÊÔ´Õ¼ÓÃ¿ÉÄÜ½Ï¸ß£¬´ýÓÅ»¯
+            //TODO snprintfï¿½ï¿½Ô´Õ¼ï¿½Ã¿ï¿½ï¿½Ü½Ï¸ß£ï¿½ï¿½ï¿½ï¿½Å»ï¿½
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
         }
@@ -666,4 +666,90 @@ const char *elog_find_tag(const char *log, uint8_t lvl, size_t *tag_len) {
     }
 
     return tag;
+}
+
+/**
+ * dump the hex format data to log
+ *
+ * @param name name for hex object, it will show on log header
+ * @param width hex number for every line, such as: 16, 32
+ * @param buf hex buffer
+ * @param size buffer size
+ */
+void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size)
+{
+#define __is_print(ch)       ((unsigned int)((ch) - ' ') < 127u - ' ')
+
+    uint16_t i, j;
+    uint16_t log_len = 0;
+    char dump_string[8] = {0};
+    int fmt_result;
+
+    if (!elog.output_enabled) {
+        return;
+    }
+
+    /* lock output */
+    elog_output_lock();
+
+    for (i = 0; i < size; i += width)
+    {
+        /* package header */
+        fmt_result = snprintf(log_buf, ELOG_LINE_BUF_SIZE, "D/HEX %s: %04X-%04X: ", name, i, i + width);
+        /* calculate log length */
+        if ((fmt_result > -1) && (fmt_result <= ELOG_LINE_BUF_SIZE))
+        {
+            log_len = fmt_result;
+        }
+        else
+        {
+            log_len = ELOG_LINE_BUF_SIZE;
+        }
+        /* dump hex */
+        for (j = 0; j < width; j++)
+        {
+            if (i + j < size)
+            {
+                snprintf(dump_string, sizeof(dump_string), "%02X ", buf[i + j]);
+            }
+            else
+            {
+                strncpy(dump_string, "   ", sizeof(dump_string));
+            }
+            log_len += elog_strcpy(log_len, log_buf + log_len, dump_string);
+            if ((j + 1) % 8 == 0)
+            {
+                log_len += elog_strcpy(log_len, log_buf + log_len, " ");
+            }
+        }
+        log_len += elog_strcpy(log_len, log_buf + log_len, "  ");
+        /* dump char for hex */
+        for (j = 0; j < width; j++)
+        {
+            if (i + j < size)
+            {
+                snprintf(dump_string, sizeof(dump_string), "%c", __is_print(buf[i + j]) ? buf[i + j] : '.');
+                log_len += elog_strcpy(log_len, log_buf + log_len, dump_string);
+            }
+        }
+        /* overflow check and reserve some space for newline sign */
+        if (log_len + strlen(ELOG_NEWLINE_SIGN) > ELOG_LINE_BUF_SIZE)
+        {
+            log_len = ELOG_LINE_BUF_SIZE - strlen(ELOG_NEWLINE_SIGN);
+        }
+        /* package newline sign */
+        log_len += elog_strcpy(log_len, log_buf + log_len, ELOG_NEWLINE_SIGN);
+        /* do log output */
+#if defined(ELOG_ASYNC_OUTPUT_ENABLE)
+        extern void elog_async_output(uint8_t level, const char *log, size_t size);
+        elog_async_output(ELOG_LVL_DEBUG, log_buf, log_len);
+#elif defined(ELOG_BUF_OUTPUT_ENABLE)
+        extern void elog_buf_output(const char *log, size_t size);
+    elog_buf_output(log_buf, log_len);
+#else
+        elog_port_output(log_buf, log_len);
+#endif
+    }
+    /* unlock output */
+    elog_output_unlock();
 }
