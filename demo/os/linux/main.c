@@ -72,6 +72,13 @@ int main(void) {
  * EasyLogger demo
  */
 void test_elog(void) {
+    uint8_t buf[256]= {0};
+    int i = 0;
+
+    for (i = 0; i < sizeof(buf); i++)
+    {
+        buf[i] = i;
+    }
     while(true) {
         /* test log output for all level */
         log_a("Hello EasyLogger!");
@@ -81,6 +88,7 @@ void test_elog(void) {
         log_d("Hello EasyLogger!");
         log_v("Hello EasyLogger!");
 //        elog_raw("Hello EasyLogger!");
+        elog_hexdump("test", 16, buf, sizeof(buf));
         sleep(5);
     }
 }
