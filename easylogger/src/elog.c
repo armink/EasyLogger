@@ -689,6 +689,14 @@ void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size)
         return;
     }
 
+   /* level filter */
+    if (ELOG_LVL_DEBUG > elog.filter.level) {
+        return;
+    } else if (!strstr(name, elog.filter.tag)) { /* tag filter */
+        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
+        return;
+    }
+ 
     /* lock output */
     elog_output_lock();
 
