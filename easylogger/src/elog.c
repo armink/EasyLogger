@@ -404,7 +404,6 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     if (level > elog.filter.level) {
         return;
     } else if (!strstr(tag, elog.filter.tag)) { /* tag filter */
-        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
         return;
     }
     /* args point to the first variable parameter */
@@ -478,7 +477,6 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         }
         /* package thread info */
         if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
-            //TODO snprintf资源占用可能较高，待优化
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
         }
@@ -689,60 +687,47 @@ void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size)
         return;
     }
 
-   /* level filter */
+    /* level filter */
     if (ELOG_LVL_DEBUG > elog.filter.level) {
         return;
     } else if (!strstr(name, elog.filter.tag)) { /* tag filter */
-        //TODO 可以考虑采用KMP及朴素模式匹配字符串，提升性能
         return;
     }
  
     /* lock output */
     elog_output_lock();
 
-    for (i = 0; i < size; i += width)
-    {
+    for (i = 0; i < size; i += width) {
         /* package header */
         fmt_result = snprintf(log_buf, ELOG_LINE_BUF_SIZE, "D/HEX %s: %04X-%04X: ", name, i, i + width);
         /* calculate log length */
-        if ((fmt_result > -1) && (fmt_result <= ELOG_LINE_BUF_SIZE))
-        {
+        if ((fmt_result > -1) && (fmt_result <= ELOG_LINE_BUF_SIZE)) {
             log_len = fmt_result;
-        }
-        else
-        {
+        } else {
             log_len = ELOG_LINE_BUF_SIZE;
         }
         /* dump hex */
-        for (j = 0; j < width; j++)
-        {
-            if (i + j < size)
-            {
+        for (j = 0; j < width; j++) {
+            if (i + j < size) {
                 snprintf(dump_string, sizeof(dump_string), "%02X ", buf[i + j]);
-            }
-            else
-            {
+            } else {
                 strncpy(dump_string, "   ", sizeof(dump_string));
             }
             log_len += elog_strcpy(log_len, log_buf + log_len, dump_string);
-            if ((j + 1) % 8 == 0)
-            {
+            if ((j + 1) % 8 == 0) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
             }
         }
         log_len += elog_strcpy(log_len, log_buf + log_len, "  ");
         /* dump char for hex */
-        for (j = 0; j < width; j++)
-        {
-            if (i + j < size)
-            {
+        for (j = 0; j < width; j++) {
+            if (i + j < size) {
                 snprintf(dump_string, sizeof(dump_string), "%c", __is_print(buf[i + j]) ? buf[i + j] : '.');
                 log_len += elog_strcpy(log_len, log_buf + log_len, dump_string);
             }
         }
         /* overflow check and reserve some space for newline sign */
-        if (log_len + strlen(ELOG_NEWLINE_SIGN) > ELOG_LINE_BUF_SIZE)
-        {
+        if (log_len + strlen(ELOG_NEWLINE_SIGN) > ELOG_LINE_BUF_SIZE) {
             log_len = ELOG_LINE_BUF_SIZE - strlen(ELOG_NEWLINE_SIGN);
         }
         /* package newline sign */
