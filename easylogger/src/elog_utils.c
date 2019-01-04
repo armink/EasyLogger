@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015-2017, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2018, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ size_t elog_strcpy(size_t cur_len, char *dst, const char *src) {
 
     while (*src != 0) {
         /* make sure destination has enough space */
-        if (cur_len++ <= ELOG_LINE_BUF_SIZE) {
+        if (cur_len++ < ELOG_LINE_BUF_SIZE) {
             *dst++ = *src++;
         } else {
             break;
