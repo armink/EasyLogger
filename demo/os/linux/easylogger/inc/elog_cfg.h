@@ -31,6 +31,8 @@
 
 /* enable log output. default open this macro */
 #define ELOG_OUTPUT_ENABLE
+/* enable log write file. default open this macro */
+#define ELOG_FILE_ENABLE
 /* setting static output log level */
 #define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
 /* enable assert check */
