@@ -12,8 +12,8 @@
 
 ## 2、文件（夹）说明
 
-`easylogger\port\elog_port.c` 移植参考文件
-`easylogger\plugins\file\elog_file_port.c` File Log功能移植参考文件
+- `easylogger\port\elog_port.c` 移植参考文件
+- `easylogger\plugins\file\elog_file_port.c` File Log功能移植参考文件
 ## 3、其他功能
 
 可以打开 `main.c` 中的部分注释，来测试以下功能。
