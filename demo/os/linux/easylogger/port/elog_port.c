@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <time.h>
 
+#include <elog_file.h>
 static pthread_mutex_t output_lock;
 
 /**
@@ -43,6 +44,10 @@ ElogErrCode elog_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
     pthread_mutex_init(&output_lock, NULL);
+
+#ifdef ELOG_FILE_ENABLE
+    elog_file_init();
+#endif
 
     return result;
 }
@@ -56,6 +61,10 @@ ElogErrCode elog_port_init(void) {
 void elog_port_output(const char *log, size_t size) {
     /* output to terminal */
     printf("%.*s", size, log);
+#ifdef ELOG_FILE_ENABLE
+    /* write the file */
+    elog_file_write(log, size);
+#endif 
 }
 
 /**
