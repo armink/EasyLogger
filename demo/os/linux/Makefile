@@ -1,9 +1,12 @@
 CC = cc
-INCLUDE = -I./easylogger/plugins/file -I./easylogger/inc  -I../../../easylogger/inc
+
+ROOTPATH=../../..
+INCLUDE = -I./easylogger/inc  -I./easylogger/plugins/ -I$(ROOTPATH)/easylogger/plugins/ -I$(ROOTPATH)/easylogger/inc
 LIB=-lpthread
 
 OBJ += $(patsubst %.c, %.o, $(wildcard *.c))
-OBJ += $(patsubst %.c, %.o, $(wildcard ../../../easylogger/src/*.c))
+OBJ += $(patsubst %.c, %.o, $(wildcard $(ROOTPATH)/easylogger/src/*.c))
+OBJ += $(patsubst %.c, %.o, $(wildcard $(ROOTPATH)/easylogger/plugins/file/elog_file.c))
 OBJ += $(patsubst %.c, %.o, $(wildcard easylogger/port/*.c))
 OBJ += $(patsubst %.c, %.o, $(wildcard easylogger/plugins/file/*.c))
 

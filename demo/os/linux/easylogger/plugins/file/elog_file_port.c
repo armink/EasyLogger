@@ -1,3 +1,31 @@
+/*
+ * This file is part of the EasyLogger Library.
+ *
+ * Copyright (c) 2015-2019, Qintl, <qintl_linux@163.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * 'Software'), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Function:  Portable interface for EasyLogger's file log pulgin.
+ * Created on: 2019-01-05
+ */
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -7,9 +35,10 @@
 
 #include <unistd.h>
 
-#include "elog_file.h"
-#include "elog_file_cfg.h"
+#include <file/elog_file.h>
+#include <file/elog_file_cfg.h>
 
+#define ELOG_FILE_SEM_KEY   ((key_t)0x19910612)
 #ifdef _SEM_SEMUN_UNDEFINED
 union semun {
     int              val;    /* Value for SETVAL */
@@ -20,18 +49,12 @@ union semun {
 };
 #endif
 
-#define likely(x) __builtin_expect(!!(x), 1)
-#define unlikely(x) __builtin_expect(!!(x), 0)
-
-static FILE *fp;
-static int fd;
 static int semid = -1;
 static struct sembuf const up = {0, 1, SEM_UNDO};
 static struct sembuf const down = {0, -1, SEM_UNDO};
 
 static void lock_init(void);
 static int lock_open(void);
-static inline int file_size(void); 
 /**
  * EasyLogger flile log pulgin port initialize
  *
@@ -40,49 +63,54 @@ static inline int file_size(void);
 ElogErrCode elog_file_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
-    fp = fopen(ELOG_FILE_NAME, "a+");
-    if (unlikely(!fp))
-        goto __exit;
-
     lock_init();
 
-    fd = fileno(fp);
-__exit:
     return result;
 }
 
 /**
- * output file saved log port interface
- *
- * @param log file saved log
- * @param size log size
- */
-void elog_file_port_write(const char *log, size_t size) {
-    if(unlikely(file_size() >= ELOG_FILE_MAX_SIZE))
-        return ;
+ *  46  * flush file cache 
+ *   47  */
+void inline elog_file_port_flush_cache(Elog_File *file)
+{
+    fflush(file->fp);
+    fsync(file->fd);
+}
 
-    fwrite(log, size, 1, fp);
-    fdatasync(fd);
+/**
+ * get file size 
+ */
+size_t inline elog_file_port_get_size(Elog_File *file)
+{
+    struct stat statbuf;      
+
+    statbuf.st_size = 0;
+    stat(file->name, &statbuf);  
+
+    return statbuf.st_size;   
 }
 
 /**
  * file log lock
  */
-void elog_file_port_lock(void) {
+void inline elog_file_port_lock(void)
+{
     semid == -1 ? -1 : semop(semid, (struct sembuf *)&down, 1);
 }
 
 /**
  * file log unlock
  */
-void elog_file_port_unlock(void) {
+void inline elog_file_port_unlock(void)
+{
     semid == -1 ? -1 : semop(semid, (struct sembuf *)&up, 1);
 }
 /**
  * file log deinit
  */
-void elog_file_port_deinit(void) {
-    fclose(fp);
+void elog_file_port_deinit(void)
+{
+
 }
 
 /**
@@ -152,16 +180,3 @@ static int lock_open(void)
 err:
     return -1;
 }
-
-/**
- * gets the file size 
- */
-static inline int file_size()  
-{  
-    struct stat statbuf;  
-
-    statbuf.st_size = 0;
-    stat(ELOG_FILE_NAME, &statbuf);  
-
-    return statbuf.st_size;  
-}  
