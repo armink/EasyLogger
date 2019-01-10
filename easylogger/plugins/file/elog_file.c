@@ -26,6 +26,7 @@
  * Created on: 2019-01-05
  */
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -35,10 +36,11 @@
 #include <file/elog_file_cfg.h>
 /* initialize OK flag */
 static bool init_ok = false;
-static Elog_File file;
+static FILE *fp;
+static int fd;
+static Elog_File_Cfg file;
 
-static void elog_file_config_init(Elog_File *file);
-static void elog_file_config_deinit(void);
+static void elog_file_config_init(Elog_File_Cfg *file);
 
 ElogErrCode elog_file_init(void) 
 {
@@ -47,6 +49,13 @@ ElogErrCode elog_file_init(void)
         goto __exit;
 
     elog_file_config_init(&file);
+
+    fp = fopen(file.name, "a+");
+    if (fp)
+        fd = fileno(fp);
+    else
+        fd = -1;
+
     elog_file_port_init();
 
     init_ok = true;
@@ -58,15 +67,21 @@ void elog_file_write(const char *log, size_t size)
 {
     ELOG_ASSERT(init_ok);
     ELOG_ASSERT(log);
+    struct stat statbuf;
 
-    if (unlikely(elog_file_port_get_size(&file) > file.max_size))
+    statbuf.st_size = 0;
+    fstat(fd, &statbuf);
+
+
+    if (unlikely(statbuf.st_size > file.max_size))
         return ;
 
     elog_file_port_lock();
 
-    fwrite(log, size, 1, file.fp);
+    fwrite(log, size, 1, fp);
 #ifdef ELOG_FILE_FLUSH_CAHCE_ENABLE
-    elog_file_port_flush_cache(&file);
+    fflush(fp);
+    fsync(fd);
 #endif 
 
     elog_file_port_unlock();
@@ -76,24 +91,12 @@ void elog_file_deinit(void)
 {
     ELOG_ASSERT(init_ok);
 
-    elog_file_config_deinit();
     elog_file_port_deinit();
+    fclose(fp);
 }
 
-static void elog_file_config_init(Elog_File *file)
+static void elog_file_config_init(Elog_File_Cfg *file)
 {
     file->name = ELOG_FILE_NAME;
     file->max_size = ELOG_FILE_MAX_SIZE;
-    file->fp = fopen(file->name, "a+");
-#ifdef linux
-    if (file->fp)
-        file->fd = fileno(file->fp);
-    else
-        file->fd = -1;
-#endif
-}
-
-static void elog_file_config_deinit(void)
-{
-    fclose(file.fp);
 }

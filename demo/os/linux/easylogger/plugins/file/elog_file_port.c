@@ -69,28 +69,6 @@ ElogErrCode elog_file_port_init(void) {
 }
 
 /**
- *  46  * flush file cache 
- *   47  */
-void inline elog_file_port_flush_cache(Elog_File *file)
-{
-    fflush(file->fp);
-    fsync(file->fd);
-}
-
-/**
- * get file size 
- */
-size_t inline elog_file_port_get_size(Elog_File *file)
-{
-    struct stat statbuf;      
-
-    statbuf.st_size = 0;
-    stat(file->name, &statbuf);  
-
-    return statbuf.st_size;   
-}
-
-/**
  * file log lock
  */
 void inline elog_file_port_lock(void)

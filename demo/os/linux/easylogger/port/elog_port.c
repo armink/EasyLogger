@@ -32,7 +32,9 @@
 #include <unistd.h>
 #include <time.h>
 
+#ifdef ELOG_FILE_ENABLE
 #include <file/elog_file.h>
+#endif
 static pthread_mutex_t output_lock;
 
 /**
