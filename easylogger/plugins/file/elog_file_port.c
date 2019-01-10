@@ -38,28 +38,8 @@ ElogErrCode elog_file_port_init(void)
     ElogErrCode result = ELOG_NO_ERR;
 
     /* add your code here */
-    
+
     return result;
-}
-
-/**
- * flush file cache 
- */
-void elog_file_port_flush_cache(Elog_File *file) {
-
-    /* add your code here */
-
-}
-
-/**
- * get file current size 
- */
-size_t elog_file_port_get_size(Elog_File *file)
-{
-
-    /* add your code here */
-
-    return 0;   
 }
 
 /**
@@ -79,6 +59,7 @@ void elog_file_port_unlock(void) {
     /* add your code here */
 
 }
+
 /**
  * file log deinit
  */

@@ -34,33 +34,31 @@
 
 #include <file/elog_file.h>
 #include <file/elog_file_cfg.h>
+
 /* initialize OK flag */
 static bool init_ok = false;
-static FILE *fp;
-static int fd;
-static Elog_File_Cfg file;
+static FILE *fp = NULL;
+static int fd = -1;
+static ElogFileCfg local_cfg;
 
-static void elog_file_config_init(Elog_File_Cfg *file);
-
-ElogErrCode elog_file_init(void) 
+ElogErrCode elog_file_init(void)
 {
     ElogErrCode result = ELOG_NO_ERR;
+    ElogFileCfg cfg;
+
     if (init_ok)
         goto __exit;
 
-    elog_file_config_init(&file);
-
-    fp = fopen(file.name, "a+");
-    if (fp)
-        fd = fileno(fp);
-    else
-        fd = -1;
-
     elog_file_port_init();
+
+    cfg.name = ELOG_FILE_NAME;
+    cfg.max_size = ELOG_FILE_MAX_SIZE;
+
+    elog_file_config(&cfg);
 
     init_ok = true;
 __exit:
-    return result;	
+    return result;
 }
 
 void elog_file_write(const char *log, size_t size)
@@ -72,17 +70,17 @@ void elog_file_write(const char *log, size_t size)
     statbuf.st_size = 0;
     fstat(fd, &statbuf);
 
-
-    if (unlikely(statbuf.st_size > file.max_size))
-        return ;
+    if (unlikely(statbuf.st_size > local_cfg.max_size))
+        return;
 
     elog_file_port_lock();
 
     fwrite(log, size, 1, fp);
+
 #ifdef ELOG_FILE_FLUSH_CAHCE_ENABLE
     fflush(fp);
     fsync(fd);
-#endif 
+#endif
 
     elog_file_port_unlock();
 }
@@ -95,8 +93,22 @@ void elog_file_deinit(void)
     fclose(fp);
 }
 
-static void elog_file_config_init(Elog_File_Cfg *file)
+void elog_file_config(ElogFileCfg *cfg)
 {
-    file->name = ELOG_FILE_NAME;
-    file->max_size = ELOG_FILE_MAX_SIZE;
+    if (fp) {
+        fclose(fp);
+    }
+
+    elog_file_port_lock();
+
+    local_cfg.name = cfg->name;
+    local_cfg.max_size = cfg->max_size;
+
+    fp = fopen(local_cfg.name, "a+");
+    if (fp)
+        fd = fileno(fp);
+    else
+        fd = -1;
+
+    elog_file_port_unlock();
 }
