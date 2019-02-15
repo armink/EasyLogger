@@ -49,12 +49,14 @@ extern "C" {
 typedef struct {
     char *name;              /* file name */
     size_t max_size;         /* file max size */
+    int max_rotate;          /* max rotate file count */
 } ElogFileCfg;
 
 /* elog_file.c */
 ElogErrCode elog_file_init(void);
 void elog_file_write(const char *log, size_t size);
 void elog_file_config(ElogFileCfg *cfg);
+void elog_file_rotate(void);
 void elog_file_deinit(void);
 
 /* elog_file_port.c */

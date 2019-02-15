@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <file/elog_file.h>
 #include <file/elog_file_cfg.h>
@@ -53,6 +55,7 @@ ElogErrCode elog_file_init(void)
 
     cfg.name = ELOG_FILE_NAME;
     cfg.max_size = ELOG_FILE_MAX_SIZE;
+    cfg.max_rotate = ELOG_FILE_MAX_ROTATE;
 
     elog_file_config(&cfg);
 
@@ -70,8 +73,13 @@ void elog_file_write(const char *log, size_t size)
     statbuf.st_size = 0;
     fstat(fd, &statbuf);
 
-    if (unlikely(statbuf.st_size > local_cfg.max_size))
-        return;
+    if (unlikely(statbuf.st_size > local_cfg.max_size)) {
+        if (local_cfg.max_rotate > 0) {
+            elog_file_rotate();
+        } else {
+            return;
+        }
+    }
 
     elog_file_port_lock();
 
@@ -103,6 +111,42 @@ void elog_file_config(ElogFileCfg *cfg)
 
     local_cfg.name = cfg->name;
     local_cfg.max_size = cfg->max_size;
+    local_cfg.max_rotate = cfg->max_rotate;
+
+    fp = fopen(local_cfg.name, "a+");
+    if (fp)
+        fd = fileno(fp);
+    else
+        fd = -1;
+
+    elog_file_port_unlock();
+}
+
+void elog_file_rotate(void)
+{
+    if (local_cfg.max_rotate <= 0) return;
+
+    elog_file_port_lock();
+
+    if (fp) {
+        fclose(fp);
+        fp = NULL;
+    }
+
+    /* mv xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0 */
+    size_t base = strlen(local_cfg.name);
+    char* oldpath = (char*)malloc(base + 10); // use c99 variable length array or alloca(3) instead?
+    char* newpath = (char*)malloc(base + 10);
+    memcpy(oldpath, local_cfg.name, base);
+    memcpy(newpath, local_cfg.name, base);
+    int n;
+    for (n = local_cfg.max_rotate - 1; n >= 0; --n) {
+        sprintf(oldpath + base, n ? ".%d" : "", n-1);
+        sprintf(newpath + base, ".%d", n);
+        rename(oldpath, newpath);
+    }
+    free(oldpath);
+    free(newpath);
 
     fp = fopen(local_cfg.name, "a+");
     if (fp)
