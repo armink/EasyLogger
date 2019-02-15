@@ -56,7 +56,6 @@ typedef struct {
 ElogErrCode elog_file_init(void);
 void elog_file_write(const char *log, size_t size);
 void elog_file_config(ElogFileCfg *cfg);
-void elog_file_rotate(void);
 void elog_file_deinit(void);
 
 /* elog_file_port.c */

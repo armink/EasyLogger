@@ -64,6 +64,52 @@ __exit:
     return result;
 }
 
+/*
+ * rotate the log file xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0
+ *
+ * it will return true when rotate successfully
+ */
+static bool elog_file_rotate(void)
+{
+#define SUFFIX_LEN                     10
+    /* mv xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0 */
+    size_t base = strlen(local_cfg.name);
+    char *oldpath = NULL, *newpath = NULL;
+    int n;
+    FILE *fp_bak = fp;
+
+    oldpath = (char *) malloc(base + SUFFIX_LEN);
+    newpath = (char *) malloc(base + SUFFIX_LEN);
+
+    if (oldpath == NULL || newpath == NULL) {
+        return false;
+    }
+
+    memcpy(oldpath, local_cfg.name, base);
+    memcpy(newpath, local_cfg.name, base);
+
+    for (n = local_cfg.max_rotate - 1; n >= 0; --n) {
+        snprintf(oldpath + base, SUFFIX_LEN, n ? ".%d" : "", n - 1);
+        snprintf(newpath + base, SUFFIX_LEN, ".%d", n);
+        rename(oldpath, newpath);
+    }
+    free(oldpath);
+    free(newpath);
+
+    fp = fopen(local_cfg.name, "a+");
+    if (fp) {
+        if (fp_bak) {
+            fclose(fp_bak);
+        }
+        fd = fileno(fp);
+        return true;
+    } else {
+        fp = fp_bak;
+        fd = -1;
+        return false;
+    }
+}
+
 void elog_file_write(const char *log, size_t size)
 {
     ELOG_ASSERT(init_ok);
@@ -71,17 +117,19 @@ void elog_file_write(const char *log, size_t size)
     struct stat statbuf;
 
     statbuf.st_size = 0;
+
+    elog_file_port_lock();
+
     fstat(fd, &statbuf);
 
     if (unlikely(statbuf.st_size > local_cfg.max_size)) {
-        if (local_cfg.max_rotate > 0) {
-            elog_file_rotate();
-        } else {
+        /* rotate the log file */
+        if (local_cfg.max_rotate <= 0 || !elog_file_rotate()) {
+            /* not enabled rotate or rotate failed */
+            elog_file_port_unlock();
             return;
         }
     }
-
-    elog_file_port_lock();
 
     fwrite(log, size, 1, fp);
 
@@ -112,41 +160,6 @@ void elog_file_config(ElogFileCfg *cfg)
     local_cfg.name = cfg->name;
     local_cfg.max_size = cfg->max_size;
     local_cfg.max_rotate = cfg->max_rotate;
-
-    fp = fopen(local_cfg.name, "a+");
-    if (fp)
-        fd = fileno(fp);
-    else
-        fd = -1;
-
-    elog_file_port_unlock();
-}
-
-void elog_file_rotate(void)
-{
-    if (local_cfg.max_rotate <= 0) return;
-
-    elog_file_port_lock();
-
-    if (fp) {
-        fclose(fp);
-        fp = NULL;
-    }
-
-    /* mv xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0 */
-    size_t base = strlen(local_cfg.name);
-    char* oldpath = (char*)malloc(base + 10); // use c99 variable length array or alloca(3) instead?
-    char* newpath = (char*)malloc(base + 10);
-    memcpy(oldpath, local_cfg.name, base);
-    memcpy(newpath, local_cfg.name, base);
-    int n;
-    for (n = local_cfg.max_rotate - 1; n >= 0; --n) {
-        sprintf(oldpath + base, n ? ".%d" : "", n-1);
-        sprintf(newpath + base, ".%d", n);
-        rename(oldpath, newpath);
-    }
-    free(oldpath);
-    free(newpath);
 
     fp = fopen(local_cfg.name, "a+");
     if (fp)
