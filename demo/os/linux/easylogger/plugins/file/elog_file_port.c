@@ -115,7 +115,7 @@ static void lock_init(void)
         sembuf.sem_op = 1;
         sembuf.sem_flg = 0;
 
-        rc = semop(semid, &sembuf, 1);
+        rc = semop(id, &sembuf, 1);
         if (rc == -1)
             goto __exit;
     }
