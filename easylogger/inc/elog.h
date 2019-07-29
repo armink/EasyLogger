@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "2.1.0"
+#define ELOG_SW_VERSION                      "2.1.99"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
