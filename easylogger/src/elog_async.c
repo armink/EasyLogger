@@ -283,8 +283,6 @@ static void *async_output(void *arg) {
     size_t get_log_size = 0;
     static char poll_get_buf[ELOG_ASYNC_POLL_GET_LOG_BUF_SIZE];
 
-    ELOG_ASSERT(init_ok);
-
     while(true) {
         /* waiting log */
         sem_wait(&output_notice);

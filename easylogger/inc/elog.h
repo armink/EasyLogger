@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015-2018, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2019, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ extern "C" {
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "2.0.3"
+#define ELOG_SW_VERSION                      "2.1.99"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -69,12 +69,12 @@ extern "C" {
 #endif
 
 #ifndef ELOG_OUTPUT_ENABLE
-    #define elog_a(tag, ...)
-    #define elog_e(tag, ...)
-    #define elog_w(tag, ...)
-    #define elog_i(tag, ...)
-    #define elog_d(tag, ...)
-    #define elog_v(tag, ...)
+    #define elog_assert(tag, ...)
+    #define elog_error(tag, ...)
+    #define elog_warn(tag, ...)
+    #define elog_info(tag, ...)
+    #define elog_debug(tag, ...)
+    #define elog_verbose(tag, ...)
 #else /* ELOG_OUTPUT_ENABLE */
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_ASSERT
         #define elog_assert(tag, ...) \

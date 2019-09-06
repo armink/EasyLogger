@@ -49,6 +49,7 @@ extern "C" {
 typedef struct {
     char *name;              /* file name */
     size_t max_size;         /* file max size */
+    int max_rotate;          /* max rotate file count */
 } ElogFileCfg;
 
 /* elog_file.c */

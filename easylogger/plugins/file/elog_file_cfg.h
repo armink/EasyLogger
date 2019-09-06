@@ -35,4 +35,7 @@
 /* EasyLogger file log plugin's using file max size */
 #define ELOG_FILE_MAX_SIZE             /* @note you must define it for a value */
 
+/* EasyLogger file log plugin's using max rotate file count */
+#define ELOG_FILE_MAX_ROTATE           /* @note you must define it for a value */
+
 #endif /* _ELOG_FILE_CFG_H_ */
