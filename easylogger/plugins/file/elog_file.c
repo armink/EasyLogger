@@ -65,25 +65,35 @@ __exit:
 }
 
 /*
- * rotate the log file xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0
- *
- * it will return true when rotate successfully
+ * Reopen file
  */
-static bool elog_file_rotate(void)
+static bool elog_file_reopen(void)
+{
+    FILE *tmp_fp;
+
+    tmp_fp = fopen(local_cfg.name, "a+");
+    if (tmp_fp) {
+        if (fp)
+            fclose(fp);
+
+        fp = tmp_fp;
+        fd = fileno(fp);
+        return true;
+    }
+
+    return false;
+}
+
+/*
+ * rotate the log file xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0
+ */
+static void elog_file_rotate(void)
 {
 #define SUFFIX_LEN                     10
     /* mv xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0 */
-    size_t base = strlen(local_cfg.name);
-    char *oldpath = NULL, *newpath = NULL;
     int n;
-    FILE *fp_bak = fp;
-
-    oldpath = (char *) malloc(base + SUFFIX_LEN);
-    newpath = (char *) malloc(base + SUFFIX_LEN);
-
-    if (oldpath == NULL || newpath == NULL) {
-        return false;
-    }
+    char oldpath[256], newpath[256];
+    size_t base = strlen(local_cfg.name);
 
     memcpy(oldpath, local_cfg.name, base);
     memcpy(newpath, local_cfg.name, base);
@@ -93,21 +103,22 @@ static bool elog_file_rotate(void)
         snprintf(newpath + base, SUFFIX_LEN, ".%d", n);
         rename(oldpath, newpath);
     }
-    free(oldpath);
-    free(newpath);
+}
 
-    fp = fopen(local_cfg.name, "a+");
-    if (fp) {
-        if (fp_bak) {
-            fclose(fp_bak);
-        }
-        fd = fileno(fp);
-        return true;
-    } else {
-        fp = fp_bak;
-        fd = -1;
+/*
+ * Check if it needed retate
+ */
+static bool elog_file_retate_check(void)
+{
+    struct stat statbuf;
+    statbuf.st_size = 0;
+    if (stat(local_cfg.name, &statbuf) < 0)
         return false;
-    }
+
+    if (statbuf.st_size > local_cfg.max_size)
+        return true;
+
+    return false;
 }
 
 void elog_file_write(const char *log, size_t size)
@@ -123,12 +134,19 @@ void elog_file_write(const char *log, size_t size)
     fstat(fd, &statbuf);
 
     if (unlikely(statbuf.st_size > local_cfg.max_size)) {
-        /* rotate the log file */
-        if (local_cfg.max_rotate <= 0 || !elog_file_rotate()) {
-            /* not enabled rotate or rotate failed */
+#if ELOG_FILE_MAX_ROTATE > 0
+	    if (elog_file_retate_check()) {
+                /* rotate the log file */
+                elog_file_rotate();
+        }
+
+        if (!elog_file_reopen()) {
             elog_file_port_unlock();
             return;
         }
+#else
+        return ;
+#endif
     }
 
     fwrite(log, size, 1, fp);
