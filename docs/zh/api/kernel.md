@@ -338,6 +338,32 @@ void elog_set_filter(uint8_t level, const char *tag, const char *keyword)
 |tag                                     |标签|
 |keyword                                 |关键词|
 
+#### 1.7.3 设置过滤关键词等级
+
+> 注：对于配置较低的MCU建议不开启关键词过滤（默认为不过滤），增加关键字过滤等级将会在很大程度上减低日志的输出效率。实际上当需要实时查看日志时，过滤关键词功能交给上位机做会更轻松，所以后期的跨平台日志助手开发完成后，就无需该功能。
+
+```
+void elog_set_filter_tag_lvl(const char *tag, uint8_t level);
+```
+
+|参数                                    |描述|
+|:-----                                  |:----|
+|tag                                     |标签|
+|level                                   |级别|
+
+参数 level 日志级别可取如下值：
+```
+级别 标识 描述
+0    [A]  断言(Assert)
+1    [E]  错误(Error)
+2    [W]  警告(Warn)
+3    [I]  信息(Info)
+4    [D]  调试(Debug)
+5    [V]  详细(Verbose)
+0    [A]  静默停止输出
+5    [V]  全部
+```
+
 ### 1.8 缓冲输出模式
 
 #### 1.8.1 使能/失能缓冲输出模式

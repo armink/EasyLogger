@@ -46,11 +46,15 @@ extern "C" {
 #define ELOG_LVL_DEBUG                       4
 #define ELOG_LVL_VERBOSE                     5
 
+/* the output silent level and all level for filter setting */
+#define LOG_FILTER_LVL_SILENT                      0
+#define LOG_FILTER_LVL_ALL                         5
+
 /* output log's level total number */
 #define ELOG_LVL_TOTAL_NUM                   6
 
 /* EasyLogger software version number */
-#define ELOG_SW_VERSION                      "2.1.99"
+#define ELOG_SW_VERSION                      "2.2.0"
 
 /* EasyLogger assert for developer. */
 #ifdef ELOG_ASSERT_ENABLE
@@ -135,17 +139,26 @@ typedef enum {
 #define ELOG_FMT_ALL    (ELOG_FMT_LVL|ELOG_FMT_TAG|ELOG_FMT_TIME|ELOG_FMT_P_INFO|ELOG_FMT_T_INFO| \
     ELOG_FMT_DIR|ELOG_FMT_FUNC|ELOG_FMT_LINE)
 
+/* output log's tag filter */
+typedef struct {
+    uint8_t level;
+    char tag[ELOG_FILTER_TAG_MAX_LEN + 1];
+    bool tag_use_flag; /**< false : tag is no used   true: tag is used */
+} ElogTagLvlFilter, *ElogTagLvlFilter_t;
+
 /* output log's filter */
 typedef struct {
     uint8_t level;
     char tag[ELOG_FILTER_TAG_MAX_LEN + 1];
     char keyword[ELOG_FILTER_KW_MAX_LEN + 1];
+    ElogTagLvlFilter tag_lvl_filter[ELOG_FILTER_TAG_LVL_MAX_NUM];
 } ElogFilter, *ElogFilter_t;
 
 /* easy logger */
 typedef struct {
     ElogFilter filter;
     size_t enabled_fmt_set[ELOG_LVL_TOTAL_NUM];
+    bool init_ok;
     bool output_enabled;
     bool output_lock_enabled;
     bool output_is_locked_before_enable;
@@ -174,6 +187,8 @@ void elog_set_filter(uint8_t level, const char *tag, const char *keyword);
 void elog_set_filter_lvl(uint8_t level);
 void elog_set_filter_tag(const char *tag);
 void elog_set_filter_kw(const char *keyword);
+void elog_set_filter_tag_lvl(const char *tag, uint8_t level);
+uint8_t elog_get_filter_tag_lvl(const char *tag);
 void elog_raw(const char *format, ...);
 void elog_output(uint8_t level, const char *tag, const char *file, const char *func,
         const long line, const char *format, ...);

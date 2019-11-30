@@ -43,6 +43,8 @@
 #define ELOG_FILTER_TAG_MAX_LEN              16
 /* output filter's keyword max length */
 #define ELOG_FILTER_KW_MAX_LEN               16
+/* output filter's tag level max num */
+#define ELOG_FILTER_TAG_LVL_MAX_NUM          5
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\n"
 

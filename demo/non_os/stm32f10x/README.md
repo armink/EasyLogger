@@ -28,3 +28,4 @@
 - `elog_set_filter_lvl(ELOG_LVL_WARN);` ：动态设置过滤优先级
 - `elog_set_filter_tag("main");` ：动态设置过滤标签
 - `elog_set_filter_kw("Hello");` ：动态设置过滤关键词
+- `elog_set_filter_tag_lvl("main", ELOG_LVL_WARN);` ：动态设置过滤关键词级别
