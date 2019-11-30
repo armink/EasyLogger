@@ -338,9 +338,9 @@ void elog_set_filter(uint8_t level, const char *tag, const char *keyword)
 |tag                                     |标签|
 |keyword                                 |关键词|
 
-#### 1.7.3 设置过滤关键词等级
+#### 1.7.3 按模块的级别过滤
 
-> 注：对于配置较低的MCU建议不开启关键词过滤（默认为不过滤），增加关键字过滤等级将会在很大程度上减低日志的输出效率。实际上当需要实时查看日志时，过滤关键词功能交给上位机做会更轻松，所以后期的跨平台日志助手开发完成后，就无需该功能。
+这里指的**模块**代表一类具有相同标签属性的日志代码。有些时候需要在运行时动态的修改某一个模块的日志输出级别。
 
 ```
 void elog_set_filter_tag_lvl(const char *tag, uint8_t level);
@@ -348,21 +348,29 @@ void elog_set_filter_tag_lvl(const char *tag, uint8_t level);
 
 |参数                                    |描述|
 |:-----                                  |:----|
-|tag                                     |标签|
-|level                                   |级别|
+|tag                                     |日志的标签|
+|level                                   |设定的日志级别|
 
 参数 level 日志级别可取如下值：
-```
-级别 标识 描述
-0    [A]  断言(Assert)
-1    [E]  错误(Error)
-2    [W]  警告(Warn)
-3    [I]  信息(Info)
-4    [D]  调试(Debug)
-5    [V]  详细(Verbose)
-0    [A]  静默停止输出
-5    [V]  全部
-```
+
+|**级别**             |**名称**            |
+| --------------------- | ---------------- |
+| ELOG_LVL_ASSERT        | 断言             |
+| ELOG_LVL_ERROR         | 错误             |
+| ELOG_LVL_WARNING       | 警告             |
+| ELOG_LVL_INFO          | 信息             |
+| ELOG_LVL_DEBUG | 调试             |
+| ELOG_LVL_VERBOSE | 详细 |
+| ELOG_FILTER_LVL_SILENT | 静默（停止输出） |
+| ELOG_FILTER_LVL_ALL    | 全部             |
+
+函数调用如下所示：
+
+| 功能        | 函数调用            |
+| ---------------- | ------------------------------ |
+| 关闭 `wifi` 模块全部日志  | `elog_set_filter_tag_lvl("wifi", ELOG_FILTER_LVL_SILENT);` |
+| 开启 `wifi` 模块全部日志       | `elog_set_filter_tag_lvl("wifi", ELOG_FILTER_LVL_ALL);` |
+| 设置 `wifi` 模块日志级别为警告 | `elog_set_filter_tag_lvl("wifi", ELOG_LVL_WARNING);` |
 
 ### 1.8 缓冲输出模式
 

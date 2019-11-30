@@ -57,6 +57,11 @@
     #error "Please configure output newline sign (in elog_cfg.h)"
 #endif
 
+/* output filter's tag level max num */
+#ifndef ELOG_FILTER_TAG_LVL_MAX_NUM
+#define ELOG_FILTER_TAG_LVL_MAX_NUM          4
+#endif
+
 #ifdef ELOG_COLOR_ENABLE
 /**
  * CSI(Control Sequence Introducer/Initiator) sign
@@ -340,17 +345,29 @@ static void elog_set_filter_tag_lvl_default()
     uint8_t i = 0;
 
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
-        memset(elog.filter.tag_lvl_filter[i].tag, '\0', ELOG_FILTER_TAG_MAX_LEN + 1);
-        elog.filter.tag_lvl_filter[i].level = LOG_FILTER_LVL_SILENT;
-        elog.filter.tag_lvl_filter[i].tag_use_flag = false;
+        memset(elog.filter.tag_lvl[i].tag, '\0', ELOG_FILTER_TAG_MAX_LEN + 1);
+        elog.filter.tag_lvl[i].level = ELOG_FILTER_LVL_SILENT;
+        elog.filter.tag_lvl[i].tag_use_flag = false;
     }
 }
 
 /**
- * set log filter's tag level
+ * Set the filter's level by different tag.
+ * The log on this tag which level is less than it will stop output.
  *
- * @param tag tag
- * @param level level
+ * example:
+ *     // the example tag log enter silent mode
+ *     elog_set_filter_tag_lvl("example", ELOG_FILTER_LVL_SILENT);
+ *     // the example tag log which level is less than INFO level will stop output
+ *     elog_set_filter_tag_lvl("example", ELOG_LVL_INFO);
+ *     // remove example tag's level filter, all level log will resume output
+ *     elog_set_filter_tag_lvl("example", ELOG_FILTER_LVL_ALL);
+ *
+ * @param tag log tag
+ * @param level The filter level. When the level is ELOG_FILTER_LVL_SILENT, the log enter silent mode.
+ *        When the level is ELOG_FILTER_LVL_ALL, it will remove this tag's level filer.
+ *        Then all level log will resume output.
+ *
  */
 void elog_set_filter_tag_lvl(const char *tag, uint8_t level)
 {
@@ -365,30 +382,30 @@ void elog_set_filter_tag_lvl(const char *tag, uint8_t level)
     elog_port_output_lock();
     /* find the tag in arr */
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
-        if (elog.filter.tag_lvl_filter[i].tag_use_flag == true &&
-            !strncmp(tag, elog.filter.tag_lvl_filter[i].tag,ELOG_FILTER_TAG_MAX_LEN)){
+        if (elog.filter.tag_lvl[i].tag_use_flag == true &&
+            !strncmp(tag, elog.filter.tag_lvl[i].tag,ELOG_FILTER_TAG_MAX_LEN)){
             break;
         }
     }
 
     if (i < ELOG_FILTER_TAG_LVL_MAX_NUM){
         /* find OK */
-        if (level == LOG_FILTER_LVL_ALL){
+        if (level == ELOG_FILTER_LVL_ALL){
             /* remove current tag's level filter when input level is the lowest level */
-             elog.filter.tag_lvl_filter[i].tag_use_flag = false;
-             memset(elog.filter.tag_lvl_filter[i].tag, '\0', ELOG_FILTER_TAG_MAX_LEN + 1);
-             elog.filter.tag_lvl_filter[i].level = LOG_FILTER_LVL_SILENT;
+             elog.filter.tag_lvl[i].tag_use_flag = false;
+             memset(elog.filter.tag_lvl[i].tag, '\0', ELOG_FILTER_TAG_MAX_LEN + 1);
+             elog.filter.tag_lvl[i].level = ELOG_FILTER_LVL_SILENT;
         } else{
-            elog.filter.tag_lvl_filter[i].level = level;
+            elog.filter.tag_lvl[i].level = level;
         }
     } else{
-        /* only add the new tag's level filer when level is not LOG_FILTER_LVL_ALL */
-        if (level != LOG_FILTER_LVL_ALL){
+        /* only add the new tag's level filer when level is not ELOG_FILTER_LVL_ALL */
+        if (level != ELOG_FILTER_LVL_ALL){
             for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
-                if (elog.filter.tag_lvl_filter[i].tag_use_flag == false){
-                    strncpy(elog.filter.tag_lvl_filter[i].tag, tag, ELOG_FILTER_TAG_MAX_LEN);
-                    elog.filter.tag_lvl_filter[i].level = level;
-                    elog.filter.tag_lvl_filter[i].tag_use_flag = true;
+                if (elog.filter.tag_lvl[i].tag_use_flag == false){
+                    strncpy(elog.filter.tag_lvl[i].tag, tag, ELOG_FILTER_TAG_MAX_LEN);
+                    elog.filter.tag_lvl[i].level = level;
+                    elog.filter.tag_lvl[i].tag_use_flag = true;
                     break;
                 }
             }
@@ -409,7 +426,7 @@ uint8_t elog_get_filter_tag_lvl(const char *tag)
 {
     ELOG_ASSERT(tag != ((void *)0));
     uint8_t i = 0;
-    uint8_t level = LOG_FILTER_LVL_ALL;
+    uint8_t level = ELOG_FILTER_LVL_ALL;
 
     if (!elog.init_ok) {
         return level;
@@ -418,9 +435,9 @@ uint8_t elog_get_filter_tag_lvl(const char *tag)
     elog_port_output_lock();
     /* find the tag in arr */
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
-        if (elog.filter.tag_lvl_filter[i].tag_use_flag == true &&
-            !strncmp(tag, elog.filter.tag_lvl_filter[i].tag,ELOG_FILTER_TAG_MAX_LEN)){
-            level = elog.filter.tag_lvl_filter[i].level;
+        if (elog.filter.tag_lvl[i].tag_use_flag == true &&
+            !strncmp(tag, elog.filter.tag_lvl[i].tag,ELOG_FILTER_TAG_MAX_LEN)){
+            level = elog.filter.tag_lvl[i].level;
             break;
         }
     }

@@ -47,8 +47,8 @@ extern "C" {
 #define ELOG_LVL_VERBOSE                     5
 
 /* the output silent level and all level for filter setting */
-#define LOG_FILTER_LVL_SILENT                      0
-#define LOG_FILTER_LVL_ALL                         5
+#define ELOG_FILTER_LVL_SILENT               ELOG_LVL_ASSERT
+#define ELOG_FILTER_LVL_ALL                  ELOG_LVL_VERBOSE
 
 /* output log's level total number */
 #define ELOG_LVL_TOTAL_NUM                   6
@@ -151,7 +151,7 @@ typedef struct {
     uint8_t level;
     char tag[ELOG_FILTER_TAG_MAX_LEN + 1];
     char keyword[ELOG_FILTER_KW_MAX_LEN + 1];
-    ElogTagLvlFilter tag_lvl_filter[ELOG_FILTER_TAG_LVL_MAX_NUM];
+    ElogTagLvlFilter tag_lvl[ELOG_FILTER_TAG_LVL_MAX_NUM];
 } ElogFilter, *ElogFilter_t;
 
 /* easy logger */
