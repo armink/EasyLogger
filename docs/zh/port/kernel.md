@@ -229,6 +229,13 @@ const char *elog_port_get_t_info(void)
 - 默认大小：`(ELOG_LINE_BUF_SIZE * 10)` ，不定义此宏，将会自动按照默认值设置
 - 操作方法：修改`ELOG_BUF_OUTPUT_BUF_SIZE`宏对应值即可
 
+### 4.6 过滤标签等级最大数目
+
+日志中标签内容及用户设置过滤标签等级的最大数目
+
+- 操作方法：修改`ELOG_FILTER_TAG_LVL_MAX_NUM`宏对应值即可
+
+
 ## 5、测试验证
 
 如果`\demo\`文件夹下有与项目平台一致的Demo，则直接编译运行，观察测试结果即可。无需关注下面的步骤。
