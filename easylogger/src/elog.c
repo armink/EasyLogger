@@ -184,7 +184,7 @@ ElogErrCode elog_init(void) {
     elog.output_is_locked_before_enable = false;
     elog.output_is_locked_before_disable = false;
 
-#ifdef ELOG_COLOR_ENABLE
+#ifndef ELOG_COLOR_ENABLE
     /* disable text color by default */
     elog_set_text_color_enabled(false);
 #endif
