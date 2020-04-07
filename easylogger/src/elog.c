@@ -186,7 +186,7 @@ ElogErrCode elog_init(void) {
 
 #ifdef ELOG_COLOR_ENABLE
     /* disable text color by default */
-    elog_set_text_color_enabled(false);
+    elog_set_text_color_enabled(true);
 #endif
 
     /* set level is ELOG_LVL_VERBOSE */
