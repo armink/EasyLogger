@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2019, Qintl, <qintl_linux@163.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -22,34 +22,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: It is the configure head file for this library.
- * Created on: 2015-07-30
+ * Function:  It is the configure head file for this flash log plugin.
+ * Created on: 2019-01-05
  */
 
-#ifndef _ELOG_CFG_H_
-#define _ELOG_CFG_H_
+#ifndef _ELOG_FILE_CFG_H_
+#define _ELOG_FILE_CFG_H_
 
-/* enable log output. default open this macro */
-#define ELOG_OUTPUT_ENABLE
-/* enable log write file. default open this macro */
-#define ELOG_FILE_ENABLE
-/* enable flush file cache. default open this macro */
-#define ELOG_FILE_FLUSH_CAHCE_ENABLE
-/* setting static output log level */
-#define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
-/* enable assert check */
-#define ELOG_ASSERT_ENABLE
-/* buffer size for every line's log */
-#define ELOG_LINE_BUF_SIZE                   512
-/* output line number max length */
-#define ELOG_LINE_NUM_MAX_LEN                5
-/* output filter's tag max length */
-#define ELOG_FILTER_TAG_MAX_LEN              16
-/* output filter's keyword max length */
-#define ELOG_FILTER_KW_MAX_LEN               16
-/* output filter's tag level max num */
-#define ELOG_FILTER_TAG_LVL_MAX_NUM          5
-/* output newline sign */
-#define ELOG_NEWLINE_SIGN                    "\n"
+/* EasyLogger file log plugin's using file name */
+#define ELOG_FILE_NAME      "logs/elog_file.log"
 
-#endif /* _ELOG_CFG_H_ */
+/* EasyLogger file log plugin's using file max size */
+#define ELOG_FILE_MAX_SIZE  (1 * 1024 * 1024)
+
+/* EasyLogger file log plugin's using max rotate file count */
+#define ELOG_FILE_MAX_ROTATE 10
+
+#endif /* _ELOG_FILE_CFG_H_ */

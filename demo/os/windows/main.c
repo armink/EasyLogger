@@ -80,6 +80,6 @@ void test_elog(void) {
         log_d("Hello EasyLogger!");
         log_v("Hello EasyLogger!");
 //        elog_raw("Hello EasyLogger!");
-        Sleep(5000);
+        Sleep(1000);
     }
 }

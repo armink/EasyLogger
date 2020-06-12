@@ -1,7 +1,7 @@
 /*
  * This file is part of the EasyLogger Library.
  *
- * Copyright (c) 2015, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2015-2019, Qintl, <qintl_linux@163.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -22,34 +22,44 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: It is the configure head file for this library.
- * Created on: 2015-07-30
+ * Function:  Portable interface for EasyLogger's file log pulgin.
+ * Created on: 2019-01-05
  */
 
-#ifndef _ELOG_CFG_H_
-#define _ELOG_CFG_H_
+#include <elog_file.h>
 
-/* enable log output. default open this macro */
-#define ELOG_OUTPUT_ENABLE
-/* enable log write file. default open this macro */
-#define ELOG_FILE_ENABLE
-/* enable flush file cache. default open this macro */
-#define ELOG_FILE_FLUSH_CAHCE_ENABLE
-/* setting static output log level */
-#define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
-/* enable assert check */
-#define ELOG_ASSERT_ENABLE
-/* buffer size for every line's log */
-#define ELOG_LINE_BUF_SIZE                   512
-/* output line number max length */
-#define ELOG_LINE_NUM_MAX_LEN                5
-/* output filter's tag max length */
-#define ELOG_FILTER_TAG_MAX_LEN              16
-/* output filter's keyword max length */
-#define ELOG_FILTER_KW_MAX_LEN               16
-/* output filter's tag level max num */
-#define ELOG_FILTER_TAG_LVL_MAX_NUM          5
-/* output newline sign */
-#define ELOG_NEWLINE_SIGN                    "\n"
+/**
+ * EasyLogger flile log pulgin port initialize
+ *
+ * @return result
+ */
+ElogErrCode elog_file_port_init(void) {
+    ElogErrCode result = ELOG_NO_ERR;
 
-#endif /* _ELOG_CFG_H_ */
+    /* do noting, using elog_port.c's locker only */
+
+    return result;
+}
+
+/**
+ * file log lock
+ */
+void elog_file_port_lock(void)
+{
+    /* do noting, using elog_port.c's locker only */
+}
+
+/**
+ * file log unlock
+ */
+void elog_file_port_unlock(void)
+{
+    /* do noting, using elog_port.c's locker only */
+}
+/**
+ * file log deinit
+ */
+void elog_file_port_deinit(void)
+{
+    /* do noting, using elog_port.c's locker only */
+}
