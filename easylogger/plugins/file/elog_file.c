@@ -26,21 +26,17 @@
  * Created on: 2019-01-05
  */
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
+#include <io.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <file/elog_file.h>
-#include <file/elog_file_cfg.h>
+#include "elog_file.h"
 
 /* initialize OK flag */
 static bool init_ok = false;
 static FILE *fp = NULL;
-static int fd = -1;
 static ElogFileCfg local_cfg;
 
 ElogErrCode elog_file_init(void)
@@ -65,87 +61,67 @@ __exit:
 }
 
 /*
- * Reopen file
- */
-static bool elog_file_reopen(void)
-{
-    FILE *tmp_fp;
-
-    tmp_fp = fopen(local_cfg.name, "a+");
-    if (tmp_fp) {
-        if (fp)
-            fclose(fp);
-
-        fp = tmp_fp;
-        fd = fileno(fp);
-        return true;
-    }
-
-    return false;
-}
-
-/*
  * rotate the log file xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0
  */
-static void elog_file_rotate(void)
+static bool elog_file_rotate(void)
 {
 #define SUFFIX_LEN                     10
     /* mv xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0 */
-    int n;
+    int n, err = 0;
     char oldpath[256], newpath[256];
     size_t base = strlen(local_cfg.name);
+    bool result = true;
 
     memcpy(oldpath, local_cfg.name, base);
     memcpy(newpath, local_cfg.name, base);
 
+    fclose(fp);
+
     for (n = local_cfg.max_rotate - 1; n >= 0; --n) {
         snprintf(oldpath + base, SUFFIX_LEN, n ? ".%d" : "", n - 1);
         snprintf(newpath + base, SUFFIX_LEN, ".%d", n);
-        rename(oldpath, newpath);
+        /* remove the old file */
+        if (access(newpath, F_OK) == 0) {
+            remove(newpath);
+        }
+        /* change the new log file to old file name */
+        if (access(oldpath, F_OK) == 0) {
+            err = rename(oldpath, newpath);
+        }
+
+        if (err < 0) {
+            result = false;
+            goto __exit;
+        }
     }
+
+__exit:
+    /* reopen the file */
+    fp = fopen(local_cfg.name, "a+");
+
+    return result;
 }
 
-/*
- * Check if it needed retate
- */
-static bool elog_file_retate_check(void)
-{
-    struct stat statbuf;
-    statbuf.st_size = 0;
-    if (stat(local_cfg.name, &statbuf) < 0)
-        return false;
-
-    if (statbuf.st_size > local_cfg.max_size)
-        return true;
-
-    return false;
-}
 
 void elog_file_write(const char *log, size_t size)
 {
+    size_t file_size = 0;
+
     ELOG_ASSERT(init_ok);
     ELOG_ASSERT(log);
-    struct stat statbuf;
-
-    statbuf.st_size = 0;
 
     elog_file_port_lock();
 
-    fstat(fd, &statbuf);
+    fseek(fp, 0L, SEEK_END);
+    file_size = ftell(fp);
 
-    if (unlikely(statbuf.st_size > local_cfg.max_size)) {
+    if (unlikely(file_size > local_cfg.max_size)) {
 #if ELOG_FILE_MAX_ROTATE > 0
-	    if (elog_file_retate_check()) {
-                /* rotate the log file */
-                elog_file_rotate();
-        }
-
-        if (!elog_file_reopen()) {
-            elog_file_port_unlock();
-            return;
+        if (!elog_file_rotate()) {
+            goto __exit;
         }
 #else
-        return ;
+        goto __exit;
 #endif
     }
 
@@ -153,9 +129,9 @@ void elog_file_write(const char *log, size_t size)
 
 #ifdef ELOG_FILE_FLUSH_CAHCE_ENABLE
     fflush(fp);
-    fsync(fd);
 #endif
 
+__exit:
     elog_file_port_unlock();
 }
 
@@ -180,10 +156,6 @@ void elog_file_config(ElogFileCfg *cfg)
     local_cfg.max_rotate = cfg->max_rotate;
 
     fp = fopen(local_cfg.name, "a+");
-    if (fp)
-        fd = fileno(fp);
-    else
-        fd = -1;
 
     elog_file_port_unlock();
 }
