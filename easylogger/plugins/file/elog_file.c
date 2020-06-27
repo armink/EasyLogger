@@ -26,8 +26,9 @@
  * Created on: 2019-01-05
  */
 
+ #define LOG_TAG    "elog.file"
+
 #include <stdio.h>
-#include <io.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,6 +72,7 @@ static bool elog_file_rotate(void)
     char oldpath[256], newpath[256];
     size_t base = strlen(local_cfg.name);
     bool result = true;
+    FILE *tmp_fp;
 
     memcpy(oldpath, local_cfg.name, base);
     memcpy(newpath, local_cfg.name, base);
@@ -81,11 +83,13 @@ static bool elog_file_rotate(void)
         snprintf(oldpath + base, SUFFIX_LEN, n ? ".%d" : "", n - 1);
         snprintf(newpath + base, SUFFIX_LEN, ".%d", n);
         /* remove the old file */
-        if (access(newpath, F_OK) == 0) {
+        if ((tmp_fp = fopen(newpath , "r")) != NULL) {
+            fclose(tmp_fp);
             remove(newpath);
         }
         /* change the new log file to old file name */
-        if (access(oldpath, F_OK) == 0) {
+        if ((tmp_fp = fopen(oldpath , "r")) != NULL) {
+            fclose(tmp_fp);
             err = rename(oldpath, newpath);
         }
 
