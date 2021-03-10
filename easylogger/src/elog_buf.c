@@ -82,16 +82,16 @@ void elog_buf_output(const char *log, size_t size) {
  * flush all buffered logs to output device
  */
 void elog_flush(void) {
-    if(buf_write_size){
-        /* lock output */
-        elog_output_lock();
-        /* output log */
-        elog_port_output(log_buf, buf_write_size);
-        /* reset write index */
-        buf_write_size = 0;
-        /* unlock output */
-        elog_output_unlock();
-    }
+    if(!buf_write_size)
+        return;
+    /* lock output */
+    elog_output_lock();
+    /* output log */
+    elog_port_output(log_buf, buf_write_size);
+    /* reset write index */
+    buf_write_size = 0;
+    /* unlock output */
+    elog_output_unlock();
 }
 
 /**
