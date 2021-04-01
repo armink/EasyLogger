@@ -177,7 +177,9 @@ typedef enum {
 
 /* elog.c */
 ElogErrCode elog_init(void);
+void elog_deinit(void);
 void elog_start(void);
+void elog_stop(void);
 void elog_set_output_enabled(bool enabled);
 bool elog_get_output_enabled(void);
 void elog_set_text_color_enabled(bool enabled);

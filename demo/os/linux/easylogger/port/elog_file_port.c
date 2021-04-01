@@ -55,6 +55,8 @@ static struct sembuf const down = {0, -1, SEM_UNDO};
 
 static void lock_init(void);
 static int lock_open(void);
+static void lock_deinit(void);
+
 /**
  * EasyLogger flile log pulgin port initialize
  *
@@ -83,12 +85,13 @@ void inline elog_file_port_unlock(void)
 {
     semid == -1 ? -1 : semop(semid, (struct sembuf *)&up, 1);
 }
+
 /**
  * file log deinit
  */
 void elog_file_port_deinit(void)
 {
-
+    lock_deinit();
 }
 
 /**
@@ -157,4 +160,12 @@ static int lock_open(void)
     return id;
 err:
     return -1;
+}
+
+/**
+ * deinitialize the lock 
+ */
+static void lock_deinit(void)
+{
+    semid = -1;
 }
