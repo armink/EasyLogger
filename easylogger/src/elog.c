@@ -201,9 +201,36 @@ ElogErrCode elog_init(void) {
 }
 
 /**
+ * EasyLogger deinitialize.
+ *
+ */
+void elog_deinit(void) {
+    extern ElogErrCode elog_port_deinit(void);
+    extern ElogErrCode elog_async_deinit(void);
+
+    if (!elog.init_ok) {
+        return ;
+    }
+    
+#ifdef ELOG_ASYNC_OUTPUT_ENABLE
+    elog_async_deinit();
+#endif
+
+    /* port deinitialize */
+    elog_port_deinit();
+
+    elog.init_ok = false;
+}
+
+
+/**
  * EasyLogger start after initialize.
  */
 void elog_start(void) {
+    if (!elog.init_ok) {
+        return ;
+    }
+    
     /* enable output */
     elog_set_output_enabled(true);
 
@@ -216,6 +243,28 @@ void elog_start(void) {
     /* show version */
     log_i("EasyLogger V%s is initialize success.", ELOG_SW_VERSION);
 }
+
+/**
+ * EasyLogger stop after initialize.
+ */
+void elog_stop(void) {
+    if (!elog.init_ok) {
+        return ;
+    }
+
+    /* disable output */
+    elog_set_output_enabled(false);
+
+#if defined(ELOG_ASYNC_OUTPUT_ENABLE)
+    elog_async_enabled(false);
+#elif defined(ELOG_BUF_OUTPUT_ENABLE)
+    elog_buf_enabled(false);
+#endif
+
+    /* show version */
+    log_i("EasyLogger V%s is deinitialize success.", ELOG_SW_VERSION);
+}
+
 
 /**
  * set output enable or disable
