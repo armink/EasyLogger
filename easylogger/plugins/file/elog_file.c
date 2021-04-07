@@ -131,7 +131,7 @@ void elog_file_write(const char *log, size_t size)
 
     fwrite(log, size, 1, fp);
 
-#ifdef ELOG_FILE_FLUSH_CAHCE_ENABLE
+#ifdef ELOG_FILE_FLUSH_CACHE_ENABLE
     fflush(fp);
 #endif
 

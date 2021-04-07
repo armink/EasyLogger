@@ -34,7 +34,7 @@
 /* enable log write file. default open this macro */
 #define ELOG_FILE_ENABLE
 /* enable flush file cache. default open this macro */
-#define ELOG_FILE_FLUSH_CAHCE_ENABLE
+#define ELOG_FILE_FLUSH_CACHE_ENABLE
 /* setting static output log level */
 #define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
 /* enable assert check */

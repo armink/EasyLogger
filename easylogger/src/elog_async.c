@@ -47,8 +47,14 @@
 #define ELOG_ASYNC_OUTPUT_PTHREAD_PRIORITY       (sched_get_priority_max(SCHED_RR) - 1)
 #endif
 /* output thread poll get log buffer size  */
+#ifndef ELOG_ASYNC_LINE_OUTPUT
+#ifndef ELOG_ASYNC_POLL_GET_LOG_BUF_SIZE
+#define ELOG_ASYNC_POLL_GET_LOG_BUF_SIZE         (ELOG_ASYNC_OUTPUT_BUF_SIZE - 4)
+#endif
+#else
 #ifndef ELOG_ASYNC_POLL_GET_LOG_BUF_SIZE
 #define ELOG_ASYNC_POLL_GET_LOG_BUF_SIZE         (ELOG_LINE_BUF_SIZE - 4)
+#endif
 #endif
 #endif /* ELOG_ASYNC_OUTPUT_USING_PTHREAD */
 
@@ -56,7 +62,7 @@
 static sem_t output_notice;
 /* asynchronous output pthread thread */
 static pthread_t async_output_thread;
-#endif /* ELOG_ASYNC_OUTPUT_USING_PTHREAD */
+#endif /* ELOG_ASYNC_OUTPUT_ENABLE */
 
 /* the highest output level for async mode, other level will sync output */
 #ifdef ELOG_ASYNC_OUTPUT_LVL

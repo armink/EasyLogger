@@ -31,10 +31,12 @@
 
 /* enable log output. default open this macro */
 #define ELOG_OUTPUT_ENABLE
+/* enable terminal output. default open this macro */
+#define ELOG_TERMINAL_ENABLE
 /* enable log write file. default open this macro */
 #define ELOG_FILE_ENABLE
 /* enable flush file cache. default open this macro */
-#define ELOG_FILE_FLUSH_CAHCE_ENABLE
+#define ELOG_FILE_FLUSH_CACHE_ENABLE
 /* setting static output log level */
 #define ELOG_OUTPUT_LVL                      ELOG_LVL_VERBOSE
 /* enable assert check */
@@ -58,7 +60,7 @@
 /* the highest output level for async mode, other level will sync output */
 #define ELOG_ASYNC_OUTPUT_LVL                ELOG_LVL_DEBUG
 /* buffer size for asynchronous output mode */
-#define ELOG_ASYNC_OUTPUT_BUF_SIZE           (ELOG_LINE_BUF_SIZE * 100)
+#define ELOG_ASYNC_OUTPUT_BUF_SIZE           (ELOG_LINE_BUF_SIZE * 50)
 /* each asynchronous output's log which must end with newline sign */
 //#define ELOG_ASYNC_LINE_OUTPUT
 /* asynchronous output mode using POSIX pthread implementation */
