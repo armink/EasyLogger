@@ -75,7 +75,10 @@ void elog_port_deinit(void) {
  */
 void elog_port_output(const char *log, size_t size) {
     /* output to terminal */
+#ifdef ELOG_TERMINAL_ENABLE
     printf("%.*s", (int)size, log);
+#endif
+
 #ifdef ELOG_FILE_ENABLE
     /* write the file */
     elog_file_write(log, size);
