@@ -3,16 +3,16 @@
 #define __RTTHREAD_CFG_H__
 
 /* RT_NAME_MAX*/
-#define RT_NAME_MAX	24
+#define RT_NAME_MAX 24
 
 /* RT_ALIGN_SIZE*/
-#define RT_ALIGN_SIZE	8
+#define RT_ALIGN_SIZE   8
 
 /* PRIORITY_MAX */
-#define RT_THREAD_PRIORITY_MAX	32
+#define RT_THREAD_PRIORITY_MAX  32
 
 /* Tick per Second */
-#define RT_TICK_PER_SECOND	    10000   //0.1ms
+#define RT_TICK_PER_SECOND      10000   //0.1ms
 
 /* SECTION: RT_DEBUG */
 /* Thread Debug */
@@ -26,9 +26,9 @@
 
 /* Using Software Timer */
 /* #define RT_USING_TIMER_SOFT */
-#define RT_TIMER_THREAD_PRIO		4
-#define RT_TIMER_THREAD_STACK_SIZE	512
-#define RT_TIMER_TICK_PER_SECOND	1000
+#define RT_TIMER_THREAD_PRIO        4
+#define RT_TIMER_THREAD_STACK_SIZE  512
+#define RT_TIMER_TICK_PER_SECOND    1000
 
 /* SECTION: IPC */
 /* Using Semaphore*/
@@ -60,11 +60,11 @@
 /* Using Device System */
 #define RT_USING_CONSOLE
 // <string name="RT_CONSOLE_DEVICE_NAME" description="The device name for console" default="uart1" />
-#define RT_CONSOLE_DEVICE_NAME	    "uart1"
+#define RT_CONSOLE_DEVICE_NAME      "uart1"
 
 /* SECTION: Console options */
 /* the buffer size of console*/
-#define RT_CONSOLEBUF_SIZE	512
+#define RT_CONSOLEBUF_SIZE  512
 
 /* SECTION: finsh, a C-Express shell */
 #define RT_USING_FINSH

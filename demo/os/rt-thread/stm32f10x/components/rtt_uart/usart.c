@@ -1,7 +1,7 @@
 /*
  * File      : usart.c
  * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2006-2013, RT-Thread Development Team
+ * COPYRIGHT (C) 2006-2021, RT-Thread Development Team
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -155,18 +155,18 @@ static rt_err_t stm32_control(struct rt_serial_device *serial, int cmd, void *ar
         if (irq_type == RT_DEVICE_FLAG_INT_RX)
         {
             /* return rx irq flag */
-			return USART_GetFlagStatus(uart->uart_device, USART_FLAG_RXNE);
+            return USART_GetFlagStatus(uart->uart_device, USART_FLAG_RXNE);
         }
         else if (irq_type == RT_DEVICE_FLAG_INT_TX)
         {
             /* return tx flag */
             if (uart->tx_irq_type == USART_IT_TC)
             {
-				return USART_GetFlagStatus(uart->uart_device, USART_FLAG_TC);
+                return USART_GetFlagStatus(uart->uart_device, USART_FLAG_TC);
             }
             else if (uart->tx_irq_type == USART_IT_TXE)
             {
-				return USART_GetFlagStatus(uart->uart_device, USART_FLAG_TXE);
+                return USART_GetFlagStatus(uart->uart_device, USART_FLAG_TXE);
             }
         }
         break;

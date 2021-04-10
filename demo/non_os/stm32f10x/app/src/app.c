@@ -36,9 +36,9 @@
 static void test_elog(void);
 
 int main(void){
-        
+
     BSP_Init();
-    
+
     /* initialize EasyLogger */
     elog_init();
     /* set EasyLogger log format */
@@ -50,7 +50,7 @@ int main(void){
     elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
     /* start EasyLogger */
     elog_start();
-    
+
     /* dynamic set enable or disable for output logs (true or false) */
 //    elog_set_output_enabled(false);
     /* dynamic set output logs's level (from ELOG_LVL_ASSERT to ELOG_LVL_VERBOSE) */
@@ -68,9 +68,9 @@ int main(void){
       LED_RUN_ON;
       delay(10000000);
       LED_RUN_OFF;
-      delay(10000000);      
+      delay(10000000);
     }
-    
+
     return 0;
 }
 

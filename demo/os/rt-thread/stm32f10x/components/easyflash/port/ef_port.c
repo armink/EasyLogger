@@ -53,7 +53,7 @@ static struct rt_semaphore env_cache_lock;
  */
 EfErrCode ef_port_init(ef_env const **default_env, size_t *default_env_size) {
     EfErrCode result = EF_NO_ERR;
-          
+
     *default_env = default_env_set;
     *default_env_size = sizeof(default_env_set) / sizeof(default_env_set[0]);
 
@@ -99,10 +99,10 @@ EfErrCode ef_port_erase(uint32_t addr, size_t size) {
     EfErrCode result = EF_NO_ERR;
     FLASH_Status flash_status;
     size_t erase_pages, i;
-    
+
     /* make sure the start address is a multiple of FLASH_ERASE_MIN_SIZE */
     EF_ASSERT(addr % EF_ERASE_MIN_SIZE == 0);
-    
+
     /* calculate pages */
     erase_pages = size / PAGE_SIZE;
     if (size % PAGE_SIZE != 0) {

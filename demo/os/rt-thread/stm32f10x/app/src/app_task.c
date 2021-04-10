@@ -82,7 +82,7 @@ static void test_elog(void) {
  * @param parameter parameter
  */
 void sys_init_thread(void* parameter){
-	set_system_status(SYSTEM_STATUS_INIT);
+    set_system_status(SYSTEM_STATUS_INIT);
 
     /* initialize EasyFlash and EasyLogger */
     if ((easyflash_init() == EF_NO_ERR)&&(elog_init() == ELOG_NO_ERR)) {

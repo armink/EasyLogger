@@ -49,7 +49,7 @@ ElogErrCode elog_port_init(void) {
 #ifdef ELOG_FILE_ENABLE
     elog_file_init();
 #endif
-    
+
     return result;
 }
 
@@ -65,7 +65,7 @@ void elog_port_output(const char *log, size_t size) {
 #ifdef ELOG_FILE_ENABLE
     /* write the file */
     elog_file_write(log, size);
-#endif 
+#endif
 }
 
 /**

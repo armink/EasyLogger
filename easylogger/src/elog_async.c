@@ -374,7 +374,7 @@ void elog_async_deinit(void) {
     elog_async_output_notice();
 
     pthread_join(async_output_thread, NULL);
-    
+
     sem_destroy(&output_notice);
 #endif
 
