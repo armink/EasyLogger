@@ -54,6 +54,18 @@ ElogErrCode elog_port_init(void) {
 }
 
 /**
+ * EasyLogger port deinitialize
+ *
+ */
+void elog_port_deinit(void) {
+#ifdef ELOG_FILE_ENABLE
+	elog_file_deinit();
+#endif
+
+	CloseHandle(output_lock);
+}
+
+/**
  * output log port interface
  *
  * @param log output of log
