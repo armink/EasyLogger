@@ -199,7 +199,7 @@ extern void (*elog_assert_hook)(const char* expr, const char* func, size_t line)
 void elog_assert_set_hook(void (*hook)(const char* expr, const char* func, size_t line));
 int8_t elog_find_lvl(const char *log);
 const char *elog_find_tag(const char *log, uint8_t lvl, size_t *tag_len);
-void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size);
+void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t size);
 
 #define elog_a(tag, ...)     elog_assert(tag, __VA_ARGS__)
 #define elog_e(tag, ...)     elog_error(tag, __VA_ARGS__)
