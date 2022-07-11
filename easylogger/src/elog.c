@@ -428,7 +428,7 @@ void elog_set_filter_tag_lvl(const char *tag, uint8_t level)
         return;
     }
 
-    elog_port_output_lock();
+    elog_output_lock();
     /* find the tag in arr */
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
         if (elog.filter.tag_lvl[i].tag_use_flag == true &&
@@ -481,7 +481,7 @@ uint8_t elog_get_filter_tag_lvl(const char *tag)
         return level;
     }
 
-    elog_port_output_lock();
+    elog_output_lock();
     /* find the tag in arr */
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
         if (elog.filter.tag_lvl[i].tag_use_flag == true &&
