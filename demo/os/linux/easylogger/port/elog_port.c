@@ -31,6 +31,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/syscall.h>
 
 #ifdef ELOG_FILE_ENABLE
 #include <elog_file.h>
@@ -140,7 +141,7 @@ const char *elog_port_get_p_info(void) {
 const char *elog_port_get_t_info(void) {
     static char cur_thread_info[10] = { 0 };
 
-    snprintf(cur_thread_info, 10, "tid:%04ld", pthread_self());
+    snprintf(cur_thread_info, 10, "tid:%04d", syscall(SYS_gettid));
 
     return cur_thread_info;
 }
