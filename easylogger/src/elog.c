@@ -141,7 +141,7 @@ static const char *color_output_info[] = {
 #endif /* ELOG_COLOR_ENABLE */
 
 static bool get_fmt_enabled(uint8_t level, size_t set);
-static void elog_set_filter_tag_lvl_default();
+static void elog_set_filter_tag_lvl_default(void);
 
 /* EasyLogger assert hook */
 void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
@@ -389,7 +389,7 @@ void elog_output_unlock(void) {
 /**
  * set log filter's tag level val to default
  */
-static void elog_set_filter_tag_lvl_default()
+static void elog_set_filter_tag_lvl_default(void)
 {
     uint8_t i = 0;
 
