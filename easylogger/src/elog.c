@@ -185,8 +185,8 @@ ElogErrCode elog_init(void) {
     elog.output_is_locked_before_disable = false;
 
 #ifdef ELOG_COLOR_ENABLE
-    /* disable text color by default */
-    elog_set_text_color_enabled(false);
+    /* enable text color by default */
+    elog_set_text_color_enabled(true);
 #endif
 
     /* set level is ELOG_LVL_VERBOSE */
@@ -428,7 +428,7 @@ void elog_set_filter_tag_lvl(const char *tag, uint8_t level)
         return;
     }
 
-    elog_port_output_lock();
+    elog_output_lock();
     /* find the tag in arr */
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
         if (elog.filter.tag_lvl[i].tag_use_flag == true &&
@@ -481,7 +481,7 @@ uint8_t elog_get_filter_tag_lvl(const char *tag)
         return level;
     }
 
-    elog_port_output_lock();
+    elog_output_lock();
     /* find the tag in arr */
     for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
         if (elog.filter.tag_lvl[i].tag_use_flag == true &&
@@ -848,12 +848,13 @@ const char *elog_find_tag(const char *log, uint8_t lvl, size_t *tag_len) {
  * @param buf hex buffer
  * @param size buffer size
  */
-void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size)
+void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t size)
 {
 #define __is_print(ch)       ((unsigned int)((ch) - ' ') < 127u - ' ')
 
     uint16_t i, j;
     uint16_t log_len = 0;
+    const uint8_t *buf_p = buf;
     char dump_string[8] = {0};
     int fmt_result;
 
@@ -883,7 +884,7 @@ void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size)
         /* dump hex */
         for (j = 0; j < width; j++) {
             if (i + j < size) {
-                snprintf(dump_string, sizeof(dump_string), "%02X ", buf[i + j]);
+                snprintf(dump_string, sizeof(dump_string), "%02X ", buf_p[i + j]);
             } else {
                 strncpy(dump_string, "   ", sizeof(dump_string));
             }
@@ -896,7 +897,7 @@ void elog_hexdump(const char *name, uint8_t width, uint8_t *buf, uint16_t size)
         /* dump char for hex */
         for (j = 0; j < width; j++) {
             if (i + j < size) {
-                snprintf(dump_string, sizeof(dump_string), "%c", __is_print(buf[i + j]) ? buf[i + j] : '.');
+                snprintf(dump_string, sizeof(dump_string), "%c", __is_print(buf_p[i + j]) ? buf_p[i + j] : '.');
                 log_len += elog_strcpy(log_len, log_buf + log_len, dump_string);
             }
         }
