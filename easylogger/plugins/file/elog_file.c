@@ -113,6 +113,9 @@ void elog_file_write(const char *log, size_t size)
 
     ELOG_ASSERT(init_ok);
     ELOG_ASSERT(log);
+    if(fp == NULL) {
+    	return;
+    }
 
     elog_file_port_lock();
 
