@@ -69,7 +69,7 @@ static bool elog_file_rotate(void)
 #define SUFFIX_LEN                     10
     /* mv xxx.log.n-1 => xxx.log.n, and xxx.log => xxx.log.0 */
     int n, err = 0;
-    char oldpath[256], newpath[256];
+    char oldpath[256]= {0}, newpath[256] = {0};
     size_t base = strlen(local_cfg.name);
     bool result = true;
     FILE *tmp_fp;
