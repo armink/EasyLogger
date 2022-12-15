@@ -284,6 +284,8 @@ void elog_set_output_enabled(bool enabled) {
  * @param enabled TRUE: enable FALSE:disable
  */
 void elog_set_text_color_enabled(bool enabled) {
+    ELOG_ASSERT((enabled == false) || (enabled == true));
+
     elog.text_color_enabled = enabled;
 }
 
