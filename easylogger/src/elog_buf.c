@@ -65,9 +65,8 @@ void elog_buf_output(const char *log, size_t size) {
             memcpy(log_buf + buf_write_size, log + write_index, write_size);
             write_index += write_size;
             size -= write_size;
-            buf_write_size += write_size;
             /* output log */
-            elog_port_output(log_buf, buf_write_size);
+            elog_port_output(log_buf, ELOG_BUF_OUTPUT_BUF_SIZE);
             /* reset write index */
             buf_write_size = 0;
         } else {
