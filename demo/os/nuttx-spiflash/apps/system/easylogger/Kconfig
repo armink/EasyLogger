@@ -1,0 +1,27 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+menuconfig SYSTEM_EASYLOGGER
+	tristate "Easylogger"
+	default n
+	---help---
+		Enable support for the Easylogger
+
+if SYSTEM_EASYLOGGER
+
+config SYSTEM_EASYLOGGER_FILE
+	bool "Enable EasyLogger File"
+	default n
+	---help---
+		Add EasyLogger File support.
+
+config SYSTEM_EASYLOGGER_FLASH
+	bool "Enable EasyLogger Flash"
+	default n
+	select SYSTEM_EASYFLASH
+	---help---
+		Add EasyLogger Flash support.
+
+endif # SYSTEM_EASYLOGGER
