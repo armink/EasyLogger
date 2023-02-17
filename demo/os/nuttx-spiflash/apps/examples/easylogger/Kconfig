@@ -1,0 +1,35 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config EXAMPLES_EASYLOGGER
+	tristate "Easylogger and EasyFlash Demo"
+	default n
+	select SYSTEM_EASYLOGGER
+	select SYSTEM_EASYLOGGER_FLASH
+	select SYSTEM_EASYFLASH
+	select CONFIG_MTD
+	select CONFIG_MTD_BYTE_WRITE
+	select CONFIG_MTD_W25
+	---help---
+		Enable the Easylogger Demo
+
+if EXAMPLES_EASYLOGGER
+
+config EXAMPLES_EASYLOGGER_PROGNAME
+	string "Program name"
+	default "elog"
+	---help---
+		This is the name of the program that will be used when the NSH ELF
+		program is installed.
+
+config EXAMPLES_EASYLOGGER_PRIORITY
+	int "Easylogger task priority"
+	default 100
+
+config EXAMPLES_EASYLOGGER_STACKSIZE
+	int "Easylogger stack size"
+	default DEFAULT_TASK_STACKSIZE
+
+endif
