@@ -80,8 +80,10 @@ static pthread_t async_output_thread;
 
 /* Initialize OK flag */
 static bool init_ok = false;
+#ifdef ELOG_ASYNC_OUTPUT_USING_PTHREAD
 /* thread running flag */
 static bool thread_running = false;
+#endif
 /* asynchronous output mode enabled flag */
 static bool is_enabled = false;
 /* asynchronous output mode's ring buffer */
