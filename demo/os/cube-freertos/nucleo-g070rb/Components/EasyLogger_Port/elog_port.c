@@ -43,8 +43,6 @@ extern osSemaphoreId_t elog_dma_lockHandle;
 ElogErrCode elog_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
-    osSemaphoreRelease(elog_dma_lockHandle);
-    osSemaphoreRelease(elog_lockHandle);
     /* add your code here */
 
     return result;
@@ -65,6 +63,7 @@ void elog_port_deinit(void) {
  */
 void elog_port_output(const char *log, size_t size) {
     HAL_UART_Transmit_DMA(&huart2, (uint8_t *) log, size);
+    osSemaphoreAcquire(elog_dma_lockHandle, osWaitForever);
 }
 
 /**
@@ -116,30 +115,28 @@ void elog_async_output_notice(void) {
 
 void elog_entry(void *para) {
     size_t get_log_size = 0;
+#ifdef ELOG_ASYNC_LINE_OUTPUT
     static char poll_get_buf[ELOG_LINE_BUF_SIZE - 4];
+#else
+    static char poll_get_buf[ELOG_ASYNC_OUTPUT_BUF_SIZE - 4];
+#endif
 
-    if (elog_port_init() != ELOG_NO_ERR) {
-        goto fail;
-    }
-
-    while (1) {
-        if (osOK ==
-            osSemaphoreAcquire(elog_asyncHandle, osWaitForever)) {
-            while (1) {
-                if (osOK ==
-                    osSemaphoreAcquire(elog_dma_lockHandle, osWaitForever)) {
-                    get_log_size = elog_async_get_line_log(poll_get_buf, sizeof(poll_get_buf));
-                    if (get_log_size) {
-                        elog_port_output(poll_get_buf, get_log_size);
-                    } else {
-                        osSemaphoreRelease(elog_dma_lockHandle);
-                        break;
-                    }
-                }
+    for(;;)
+    {
+        /* waiting log */
+        osSemaphoreAcquire(elog_asyncHandle, osWaitForever);
+        /* polling gets and outputs the log */
+        while (1) {
+#ifdef ELOG_ASYNC_LINE_OUTPUT
+            get_log_size = elog_async_get_line_log(poll_get_buf, sizeof(poll_get_buf));
+#else
+            get_log_size = elog_async_get_log(poll_get_buf, sizeof(poll_get_buf));
+#endif
+            if (get_log_size) {
+                elog_port_output(poll_get_buf, get_log_size);
+            } else {
+                break;
             }
         }
     }
-
-    fail:
-    osThreadExit();
 }
