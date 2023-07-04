@@ -36,7 +36,7 @@ ElogErrCode elog_flash_port_init(void)
 
 ### 3.2 Flash中的日志被读取后的输出接口
 
-将日志从Flash中读取后，调用`elog_flash_outout()`、`elog_flash_outout_all()`及`elog_flash_outout_recent()`进行输出展示时，将会调用此移植接口。可以在里面增加输出到终端、网络等功能。
+将日志从Flash中读取后，调用`elog_flash_output()`、`elog_flash_output_all()`及`elog_flash_output_recent()`进行输出展示时，将会调用此移植接口。可以在里面增加输出到终端、网络等功能。
 
 ```C
 void elog_flash_port_output(const char *log, size_t size)
@@ -75,7 +75,7 @@ void elog_flash_port_unlock(void)
 配置时需要修改项目中的`elog_flash_cfg.h`文件，开启、关闭、修改对应的宏即可。
 
 ### 4.1 缓冲模式
-    
+
 开启后，需要写入Flash的日志会先存储至RAM缓冲区，当缓冲区满时，缓冲区中的所有日志将自动写入Flash。如果关闭，所有日志在输出时会立刻写入Flash。
 
 - 默认状态：开启

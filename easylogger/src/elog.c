@@ -503,7 +503,7 @@ uint8_t elog_get_filter_tag_lvl(const char *tag)
  * @param format output format
  * @param ... args
  */
-void elog_raw(const char *format, ...) {
+void elog_raw_output(const char *format, ...) {
     va_list args;
     size_t log_len = 0;
     int fmt_result;
@@ -915,7 +915,7 @@ void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t siz
         elog_async_output(ELOG_LVL_DEBUG, log_buf, log_len);
 #elif defined(ELOG_BUF_OUTPUT_ENABLE)
         extern void elog_buf_output(const char *log, size_t size);
-    elog_buf_output(log_buf, log_len);
+        elog_buf_output(log_buf, log_len);
 #else
         elog_port_output(log_buf, log_len);
 #endif
