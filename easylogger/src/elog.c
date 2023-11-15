@@ -117,7 +117,8 @@
 /* EasyLogger object */
 static EasyLogger elog;
 /* every line log's buffer */
-static char log_buf[ELOG_LINE_BUF_SIZE] = { 0 };
+static char thread_log_buf[ELOG_LINE_BUF_SIZE] = { 0 };
+static char isr_log_buf[ELOG_LINE_BUF_SIZE] = { 0 };
 /* level output info */
 static const char *level_output_info[] = {
         [ELOG_LVL_ASSERT]  = "A/",
@@ -147,8 +148,17 @@ static void elog_set_filter_tag_lvl_default(void);
 void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
 
 extern void elog_port_output(const char *log, size_t size);
+extern int elog_port_interrupt_get_nest(void);
 extern void elog_port_output_lock(void);
 extern void elog_port_output_unlock(void);
+
+static char *get_log_buf(void)
+{
+    if (elog_port_interrupt_get_nest() == 0)
+        return thread_log_buf;
+    else
+        return isr_log_buf;
+}
 
 /**
  * EasyLogger initialize.
@@ -211,7 +221,7 @@ void elog_deinit(void) {
     if (!elog.init_ok) {
         return ;
     }
-    
+
 #ifdef ELOG_ASYNC_OUTPUT_ENABLE
     elog_async_deinit();
 #endif
@@ -230,7 +240,7 @@ void elog_start(void) {
     if (!elog.init_ok) {
         return ;
     }
-    
+
     /* enable output */
     elog_set_output_enabled(true);
 
@@ -280,7 +290,7 @@ void elog_set_output_enabled(bool enabled) {
 #ifdef ELOG_COLOR_ENABLE
 /**
  * set log text color enable or disable
- * 
+ *
  * @param enabled TRUE: enable FALSE:disable
  */
 void elog_set_text_color_enabled(bool enabled) {
@@ -365,14 +375,16 @@ void elog_set_filter_kw(const char *keyword) {
 }
 
 /**
- * lock output 
+ * lock output
  */
 void elog_output_lock(void) {
-    if (elog.output_lock_enabled) {
-        elog_port_output_lock();
-        elog.output_is_locked_before_disable = true;
-    } else {
-        elog.output_is_locked_before_enable = true;
+    if(elog_port_interrupt_get_nest() == 0) {
+        if (elog.output_lock_enabled) {
+            elog_port_output_lock();
+            elog.output_is_locked_before_disable = true;
+        } else {
+            elog.output_is_locked_before_enable = true;
+        }
     }
 }
 
@@ -380,11 +392,13 @@ void elog_output_lock(void) {
  * unlock output
  */
 void elog_output_unlock(void) {
-    if (elog.output_lock_enabled) {
-        elog_port_output_unlock();
-        elog.output_is_locked_before_disable = false;
-    } else {
-        elog.output_is_locked_before_enable = false;
+    if(elog_port_interrupt_get_nest() == 0) {
+        if (elog.output_lock_enabled) {
+            elog_port_output_unlock();
+            elog.output_is_locked_before_disable = false;
+        } else {
+            elog.output_is_locked_before_enable = false;
+        }
     }
 }
 
@@ -506,12 +520,15 @@ uint8_t elog_get_filter_tag_lvl(const char *tag)
 void elog_raw_output(const char *format, ...) {
     va_list args;
     size_t log_len = 0;
+    char *log_buf = NULL;
     int fmt_result;
 
     /* check output enabled */
     if (!elog.output_enabled) {
         return;
     }
+
+    log_buf = get_log_buf();
 
     /* args point to the first variable parameter */
     va_start(args, format);
@@ -563,6 +580,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     extern const char *elog_port_get_p_info(void);
     extern const char *elog_port_get_t_info(void);
 
+    char *log_buf = NULL;
     size_t tag_len = strlen(tag), log_len = 0, newline_len = strlen(ELOG_NEWLINE_SIGN);
     char line_num[ELOG_LINE_NUM_MAX_LEN + 1] = { 0 };
     char tag_sapce[ELOG_FILTER_TAG_MAX_LEN / 2 + 1] = { 0 };
@@ -581,6 +599,9 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     } else if (!strstr(tag, elog.filter.tag)) { /* tag filter */
         return;
     }
+
+    log_buf = get_log_buf();
+
     /* args point to the first variable parameter */
     va_start(args, format);
     /* lock output */
@@ -654,7 +675,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         /* package func info */
         if (get_fmt_enabled(level, ELOG_FMT_FUNC)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, func);
-            
+
         }
         log_len += elog_strcpy(log_len, log_buf + log_len, ")");
     }
@@ -856,6 +877,7 @@ void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t siz
 
     uint16_t i, j;
     uint16_t log_len = 0;
+    char *log_buf = NULL;
     const uint8_t *buf_p = buf;
     char dump_string[8] = {0};
     int fmt_result;
@@ -870,6 +892,8 @@ void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t siz
     } else if (!strstr(name, elog.filter.tag)) { /* tag filter */
         return;
     }
+
+    log_buf = get_log_buf();
 
     /* lock output */
     elog_output_lock();
