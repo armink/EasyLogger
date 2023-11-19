@@ -118,7 +118,9 @@
 static EasyLogger elog;
 /* every line log's buffer */
 static char thread_log_buf[ELOG_LINE_BUF_SIZE] = { 0 };
+#ifdef ELOG_USING_ISR_LOG
 static char isr_log_buf[ELOG_LINE_BUF_SIZE] = { 0 };
+#endif
 /* level output info */
 static const char *level_output_info[] = {
         [ELOG_LVL_ASSERT]  = "A/",
@@ -149,17 +151,26 @@ void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
 
 extern void elog_port_output(const char *log, size_t size);
 extern int elog_port_interrupt_get_nest(void);
+
+#ifdef ELOG_USING_ISR_LOG
 extern void elog_port_output_lock_isr(void);
 extern void elog_port_output_unlock_isr(void);
+#endif
+
 extern void elog_port_output_lock(void);
 extern void elog_port_output_unlock(void);
 
 static char *get_log_buf(void)
 {
-    if (elog_port_interrupt_get_nest() == 0)
+    if (elog_port_interrupt_get_nest() == 0) {
         return thread_log_buf;
-    else
+    } else {
+#ifdef ELOG_USING_ISR_LOG
         return isr_log_buf;
+#else
+        return NULL;
+#endif
+    }
 }
 
 /**
@@ -388,8 +399,10 @@ void elog_output_lock(void) {
             elog.output_is_locked_before_enable = true;
         }
     } else {
+#ifdef ELOG_USING_ISR_LOG
         if (elog.output_lock_enabled)
             elog_port_output_lock_isr();
+#endif
     }
 }
 
@@ -405,8 +418,10 @@ void elog_output_unlock(void) {
             elog.output_is_locked_before_enable = false;
         }
     } else {
+#ifdef ELOG_USING_ISR_LOG
         if (elog.output_lock_enabled)
             elog_port_output_unlock_isr();
+#endif
     }
 }
 
@@ -537,6 +552,9 @@ void elog_raw_output(const char *format, ...) {
     }
 
     log_buf = get_log_buf();
+    if (log_buf == NULL) {
+        return;
+    }
 
     /* args point to the first variable parameter */
     va_start(args, format);
@@ -609,6 +627,9 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     }
 
     log_buf = get_log_buf();
+    if (log_buf == NULL) {
+        return;
+    }
 
     /* args point to the first variable parameter */
     va_start(args, format);
@@ -902,6 +923,9 @@ void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t siz
     }
 
     log_buf = get_log_buf();
+    if (log_buf == NULL) {
+        return;
+    }
 
     /* lock output */
     elog_output_lock();

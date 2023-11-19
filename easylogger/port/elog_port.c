@@ -72,6 +72,8 @@ void elog_port_interrupt_get_nest(void) {
 
 }
 
+#ifdef ELOG_USING_ISR_LOG
+
 /**
  * output lock in isr context
  */
@@ -89,6 +91,8 @@ void elog_port_output_unlock_isr(void) {
     /* add your code here */
 
 }
+
+#endif
 
 /**
  * output lock
