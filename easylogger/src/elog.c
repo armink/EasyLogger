@@ -149,6 +149,8 @@ void (*elog_assert_hook)(const char* expr, const char* func, size_t line);
 
 extern void elog_port_output(const char *log, size_t size);
 extern int elog_port_interrupt_get_nest(void);
+extern void elog_port_output_lock_isr(void);
+extern void elog_port_output_unlock_isr(void);
 extern void elog_port_output_lock(void);
 extern void elog_port_output_unlock(void);
 
@@ -385,6 +387,9 @@ void elog_output_lock(void) {
         } else {
             elog.output_is_locked_before_enable = true;
         }
+    } else {
+        if (elog.output_lock_enabled)
+            elog_port_output_lock_isr();
     }
 }
 
@@ -399,6 +404,9 @@ void elog_output_unlock(void) {
         } else {
             elog.output_is_locked_before_enable = false;
         }
+    } else {
+        if (elog.output_lock_enabled)
+            elog_port_output_unlock_isr();
     }
 }
 

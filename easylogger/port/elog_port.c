@@ -73,6 +73,24 @@ void elog_port_interrupt_get_nest(void) {
 }
 
 /**
+ * output lock in isr context
+ */
+void elog_port_output_lock_isr(void) {
+
+    /* add your code here */
+
+}
+
+/**
+ * output unlock in isr context
+ */
+void elog_port_output_unlock_isr(void) {
+
+    /* add your code here */
+
+}
+
+/**
  * output lock
  */
 void elog_port_output_lock(void) {
