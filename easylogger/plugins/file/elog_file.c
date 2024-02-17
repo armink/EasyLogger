@@ -35,6 +35,8 @@
 
 #include "elog_file.h"
 
+#ifdef ELOG_FILE_ENABLE
+
 /* initialize OK flag */
 static bool init_ok = false;
 static FILE *fp = NULL;
@@ -175,3 +177,5 @@ void elog_file_config(ElogFileCfg *cfg)
 
     elog_file_port_unlock();
 }
+
+#endif /* ELOG_FILE_ENABLE */
