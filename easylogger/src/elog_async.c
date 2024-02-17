@@ -56,13 +56,13 @@
 #define ELOG_ASYNC_POLL_GET_LOG_BUF_SIZE         (ELOG_LINE_BUF_SIZE - 4)
 #endif
 #endif
-#endif /* ELOG_ASYNC_OUTPUT_USING_PTHREAD */
+#endif /* ELOG_ASYNC_OUTPUT_PTHREAD_STACK_SIZE */
 
 /* asynchronous output log notice */
 static sem_t output_notice;
 /* asynchronous output pthread thread */
 static pthread_t async_output_thread;
-#endif /* ELOG_ASYNC_OUTPUT_ENABLE */
+#endif /* ELOG_ASYNC_OUTPUT_USING_PTHREAD */
 
 /* the highest output level for async mode, other level will sync output */
 #ifdef ELOG_ASYNC_OUTPUT_LVL
