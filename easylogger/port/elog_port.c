@@ -25,7 +25,7 @@
  * Function: Portable interface for each platform.
  * Created on: 2015-04-28
  */
- 
+
 #include <elog.h>
 
 /**
@@ -37,7 +37,7 @@ ElogErrCode elog_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
     /* add your code here */
-    
+
     return result;
 }
 
@@ -58,27 +58,58 @@ void elog_port_deinit(void) {
  * @param size log size
  */
 void elog_port_output(const char *log, size_t size) {
-    
+
     /* add your code here */
-    
+
 }
+
+/**
+ *  interrupt get nest level
+ */
+void elog_port_interrupt_get_nest(void) {
+
+    /* add your code here */
+
+}
+
+#ifdef ELOG_USING_ISR_LOG
+
+/**
+ * output lock in isr context
+ */
+void elog_port_output_lock_isr(void) {
+
+    /* add your code here */
+
+}
+
+/**
+ * output unlock in isr context
+ */
+void elog_port_output_unlock_isr(void) {
+
+    /* add your code here */
+
+}
+
+#endif
 
 /**
  * output lock
  */
 void elog_port_output_lock(void) {
-    
+
     /* add your code here */
-    
+
 }
 
 /**
  * output unlock
  */
 void elog_port_output_unlock(void) {
-    
+
     /* add your code here */
-    
+
 }
 
 /**
@@ -87,9 +118,9 @@ void elog_port_output_unlock(void) {
  * @return current time
  */
 const char *elog_port_get_time(void) {
-    
+
     /* add your code here */
-    
+
 }
 
 /**
@@ -98,9 +129,9 @@ const char *elog_port_get_time(void) {
  * @return current process name
  */
 const char *elog_port_get_p_info(void) {
-    
+
     /* add your code here */
-    
+
 }
 
 /**
@@ -109,7 +140,7 @@ const char *elog_port_get_p_info(void) {
  * @return current thread name
  */
 const char *elog_port_get_t_info(void) {
-    
+
     /* add your code here */
-    
+
 }
