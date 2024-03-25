@@ -51,5 +51,9 @@
 #define ELOG_FILTER_TAG_LVL_MAX_NUM          5
 /* output newline sign */
 #define ELOG_NEWLINE_SIGN                    "\n"
+/* control some fmt */
+#define ELOG_FMT_USING_FUNC
+#define ELOG_FMT_USING_DIR
+#define ELOG_FMT_USING_LINE
 
 #endif /* _ELOG_CFG_H_ */

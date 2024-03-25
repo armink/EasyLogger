@@ -58,6 +58,12 @@
 #define ELOG_COLOR_DEBUG                         (F_GREEN B_NULL S_NORMAL)
 #define ELOG_COLOR_VERBOSE                       (F_BLUE B_NULL S_NORMAL)
 /*---------------------------------------------------------------------------*/
+/* enable log fmt */
+/* comment it if you don't want to output them at all */
+#define ELOG_FMT_USING_FUNC
+#define ELOG_FMT_USING_DIR
+#define ELOG_FMT_USING_LINE
+/*---------------------------------------------------------------------------*/
 /* enable asynchronous output mode */
 #define ELOG_ASYNC_OUTPUT_ENABLE
 /* the highest output level for async mode, other level will sync output */

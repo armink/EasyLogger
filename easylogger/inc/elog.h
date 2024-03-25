@@ -81,45 +81,64 @@ extern "C" {
     #define elog_debug(tag, ...)
     #define elog_verbose(tag, ...)
 #else /* ELOG_OUTPUT_ENABLE */
+
+    #ifdef ELOG_FMT_USING_FUNC
+    #define ELOG_OUTPUT_FUNC __FUNCTION__
+    #else
+    #define ELOG_OUTPUT_FUNC NULL
+    #endif
+
+    #ifdef ELOG_FMT_USING_DIR
+    #define ELOG_OUTPUT_DIR __FILE__
+    #else
+    #define ELOG_OUTPUT_DIR NULL
+    #endif
+
+    #ifdef ELOG_FMT_USING_LINE
+    #define ELOG_OUTPUT_LINE __LINE__
+    #else
+    #define ELOG_OUTPUT_LINE 0
+    #endif
+
     #define elog_raw(...)  elog_raw_output(__VA_ARGS__)
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_ASSERT
         #define elog_assert(tag, ...) \
-                elog_output(ELOG_LVL_ASSERT, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+                elog_output(ELOG_LVL_ASSERT, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
         #define elog_assert(tag, ...)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_ASSERT */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_ERROR
         #define elog_error(tag, ...) \
-                elog_output(ELOG_LVL_ERROR, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+                elog_output(ELOG_LVL_ERROR, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
         #define elog_error(tag, ...)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_ERROR */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_WARN
         #define elog_warn(tag, ...) \
-                elog_output(ELOG_LVL_WARN, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+                elog_output(ELOG_LVL_WARN, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
         #define elog_warn(tag, ...)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_WARN */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_INFO
         #define elog_info(tag, ...) \
-                elog_output(ELOG_LVL_INFO, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+                elog_output(ELOG_LVL_INFO, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
         #define elog_info(tag, ...)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_INFO */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_DEBUG
         #define elog_debug(tag, ...) \
-                elog_output(ELOG_LVL_DEBUG, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+                elog_output(ELOG_LVL_DEBUG, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
         #define elog_debug(tag, ...)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_DEBUG */
 
     #if ELOG_OUTPUT_LVL == ELOG_LVL_VERBOSE
         #define elog_verbose(tag, ...) \
-                elog_output(ELOG_LVL_VERBOSE, tag, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
+                elog_output(ELOG_LVL_VERBOSE, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
         #define elog_verbose(tag, ...)
     #endif /* ELOG_OUTPUT_LVL == ELOG_LVL_VERBOSE */
