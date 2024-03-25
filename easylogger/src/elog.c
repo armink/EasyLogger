@@ -636,19 +636,19 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
     /* package file directory and name, function name and line number info */
     if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_DIR, file) ||
             get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func) ||
-            get_fmt_used_and_enabled_u32(level, ELOG_FMT_FUNC, line)) {
+            get_fmt_used_and_enabled_u32(level, ELOG_FMT_LINE, line)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, "(");
         /* package file info */
         if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_DIR, file)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, file);
             if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, ":");
-            } else if (get_fmt_used_and_enabled_u32(level, ELOG_FMT_FUNC, line)) {
+            } else if (get_fmt_used_and_enabled_u32(level, ELOG_FMT_LINE, line)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
             }
         }
         /* package line info */
-        if (get_fmt_used_and_enabled_u32(level, ELOG_FMT_FUNC, line)) {
+        if (get_fmt_used_and_enabled_u32(level, ELOG_FMT_LINE, line)) {
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
             if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func)) {
