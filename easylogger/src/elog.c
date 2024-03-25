@@ -141,6 +141,8 @@ static const char *color_output_info[] = {
 #endif /* ELOG_COLOR_ENABLE */
 
 static bool get_fmt_enabled(uint8_t level, size_t set);
+static bool get_fmt_used_and_enabled_u32(uint8_t level, size_t set, uint32_t arg);
+static bool get_fmt_used_and_enabled_ptr(uint8_t level, size_t set, const char* arg);
 static void elog_set_filter_tag_lvl_default(void);
 
 /* EasyLogger assert hook */
@@ -632,27 +634,29 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         log_len += elog_strcpy(log_len, log_buf + log_len, "] ");
     }
     /* package file directory and name, function name and line number info */
-    if (get_fmt_enabled(level, ELOG_FMT_DIR | ELOG_FMT_FUNC | ELOG_FMT_LINE)) {
+    if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_DIR, file) ||
+            get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func) ||
+            get_fmt_used_and_enabled_u32(level, ELOG_FMT_LINE, line)) {
         log_len += elog_strcpy(log_len, log_buf + log_len, "(");
         /* package file info */
-        if (get_fmt_enabled(level, ELOG_FMT_DIR)) {
+        if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_DIR, file)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, file);
-            if (get_fmt_enabled(level, ELOG_FMT_FUNC)) {
+            if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, ":");
-            } else if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
+            } else if (get_fmt_used_and_enabled_u32(level, ELOG_FMT_LINE, line)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
             }
         }
         /* package line info */
-        if (get_fmt_enabled(level, ELOG_FMT_LINE)) {
+        if (get_fmt_used_and_enabled_u32(level, ELOG_FMT_LINE, line)) {
             snprintf(line_num, ELOG_LINE_NUM_MAX_LEN, "%ld", line);
             log_len += elog_strcpy(log_len, log_buf + log_len, line_num);
-            if (get_fmt_enabled(level, ELOG_FMT_FUNC)) {
+            if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func)) {
                 log_len += elog_strcpy(log_len, log_buf + log_len, " ");
             }
         }
         /* package func info */
-        if (get_fmt_enabled(level, ELOG_FMT_FUNC)) {
+        if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, func);
             
         }
@@ -735,6 +739,13 @@ static bool get_fmt_enabled(uint8_t level, size_t set) {
     } else {
         return false;
     }
+}
+
+static bool get_fmt_used_and_enabled_u32(uint8_t level, size_t set, uint32_t arg) {
+    return arg && get_fmt_enabled(level, set);
+}
+static bool get_fmt_used_and_enabled_ptr(uint8_t level, size_t set, const char* arg) {
+    return arg && get_fmt_enabled(level, set);
 }
 
 /**
