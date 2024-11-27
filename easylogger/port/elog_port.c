@@ -22,11 +22,21 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Function: Portable interface for each platform.
+ * Function: Portable interface for linux.
  * Created on: 2015-04-28
  */
- 
+
 #include <elog.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/syscall.h>
+
+#ifdef ELOG_FILE_ENABLE
+#include <elog_file.h>
+#endif
+static pthread_mutex_t output_lock;
 
 /**
  * EasyLogger port initialize
@@ -36,8 +46,12 @@
 ElogErrCode elog_port_init(void) {
     ElogErrCode result = ELOG_NO_ERR;
 
-    /* add your code here */
-    
+    pthread_mutex_init(&output_lock, NULL);
+
+#ifdef ELOG_FILE_ENABLE
+    elog_file_init();
+#endif
+
     return result;
 }
 
@@ -46,10 +60,13 @@ ElogErrCode elog_port_init(void) {
  *
  */
 void elog_port_deinit(void) {
+#ifdef ELOG_FILE_ENABLE
+    elog_file_deinit();
+#endif
 
-    /* add your code here */
-
+    pthread_mutex_destroy(&output_lock);
 }
+
 
 /**
  * output log port interface
@@ -58,28 +75,31 @@ void elog_port_deinit(void) {
  * @param size log size
  */
 void elog_port_output(const char *log, size_t size) {
-    
-    /* add your code here */
-    
+    /* output to terminal */
+#ifdef ELOG_TERMINAL_ENABLE
+    printf("%.*s", (int)size, log);
+#endif
+
+#ifdef ELOG_FILE_ENABLE
+    /* write the file */
+    elog_file_write(log, size);
+#endif 
 }
 
 /**
  * output lock
  */
 void elog_port_output_lock(void) {
-    
-    /* add your code here */
-    
+    pthread_mutex_lock(&output_lock);
 }
 
 /**
  * output unlock
  */
 void elog_port_output_unlock(void) {
-    
-    /* add your code here */
-    
+    pthread_mutex_unlock(&output_lock);
 }
+
 
 /**
  * get current time interface
@@ -87,9 +107,17 @@ void elog_port_output_unlock(void) {
  * @return current time
  */
 const char *elog_port_get_time(void) {
-    
-    /* add your code here */
-    
+    static char cur_system_time[24] = { 0 };
+
+    time_t cur_t;
+    struct tm cur_tm;
+
+    time(&cur_t);
+    localtime_r(&cur_t, &cur_tm);
+
+    strftime(cur_system_time, sizeof(cur_system_time), "%Y-%m-%d %T", &cur_tm);
+
+    return cur_system_time;
 }
 
 /**
@@ -98,9 +126,11 @@ const char *elog_port_get_time(void) {
  * @return current process name
  */
 const char *elog_port_get_p_info(void) {
-    
-    /* add your code here */
-    
+    static char cur_process_info[10] = { 0 };
+
+    snprintf(cur_process_info, 10, "pid:%04d", getpid());
+
+    return cur_process_info;
 }
 
 /**
@@ -109,7 +139,9 @@ const char *elog_port_get_p_info(void) {
  * @return current thread name
  */
 const char *elog_port_get_t_info(void) {
-    
-    /* add your code here */
-    
+    static char cur_thread_info[10] = { 0 };
+
+    snprintf(cur_thread_info, 10, "tid:%04ld", syscall(SYS_gettid));
+
+    return cur_thread_info;
 }
