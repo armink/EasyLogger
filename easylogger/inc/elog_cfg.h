@@ -79,5 +79,8 @@
 #define ELOG_BUF_OUTPUT_ENABLE
 /* buffer size for buffered output mode */
 #define ELOG_BUF_OUTPUT_BUF_SIZE                 (ELOG_LINE_BUF_SIZE * 10)
+/*---------------------------------------------------------------------------*/
+/* enable use elog in isr context */
+// #define ELOG_USING_ISR_LOG
 
 #endif /* _ELOG_CFG_H_ */
