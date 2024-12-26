@@ -78,6 +78,7 @@ void elog_start(void)
 ```c
 //WiFi 协议处理(位于 /wifi/proto.c 源代码文件)
 #define LOG_TAG    "wifi.proto"
+#define LOG_LVL    ELOG_LVL_DEBUG
 
 #include <elog.h>
 
@@ -87,6 +88,7 @@ log_e("我是 wifi.proto 日志");
 ```C
 //WiFi 数据打包处理(位于 /wifi/package.c 源代码文件)
 #define LOG_TAG    "wifi.package"
+#define LOG_LVL    ELOG_LVL_DEBUG
 
 #include <elog.h>
 
@@ -96,6 +98,7 @@ log_w("我是 wifi.package 日志");
 ```C
 //CAN 命令解析(位于 /can/disp.c 源代码文件)
 #define LOG_TAG    "can.disp"
+#define LOG_LVL    ELOG_LVL_DEBUG
 
 #include <elog.h>
 
