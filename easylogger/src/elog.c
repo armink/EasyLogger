@@ -354,6 +354,7 @@ void elog_set_filter_lvl(uint8_t level) {
  * @param tag tag
  */
 void elog_set_filter_tag(const char *tag) {
+    memset(elog.filter.tag, '\0', ELOG_FILTER_TAG_MAX_LEN + 1);
     strncpy(elog.filter.tag, tag, ELOG_FILTER_TAG_MAX_LEN);
 }
 
@@ -363,6 +364,7 @@ void elog_set_filter_tag(const char *tag) {
  * @param keyword keyword
  */
 void elog_set_filter_kw(const char *keyword) {
+    memset(elog.filter.keyword, '\0', ELOG_FILTER_KW_MAX_LEN + 1);
     strncpy(elog.filter.keyword, keyword, ELOG_FILTER_KW_MAX_LEN);
 }
 
@@ -456,6 +458,7 @@ void elog_set_filter_tag_lvl(const char *tag, uint8_t level)
         if (level != ELOG_FILTER_LVL_ALL){
             for (i =0; i< ELOG_FILTER_TAG_LVL_MAX_NUM; i++){
                 if (elog.filter.tag_lvl[i].tag_use_flag == false){
+                    memset(elog.filter.tag_lvl[i].tag, '\0', ELOG_FILTER_TAG_MAX_LEN + 1);
                     strncpy(elog.filter.tag_lvl[i].tag, tag, ELOG_FILTER_TAG_MAX_LEN);
                     elog.filter.tag_lvl[i].level = level;
                     elog.filter.tag_lvl[i].tag_use_flag = true;

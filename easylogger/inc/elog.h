@@ -69,17 +69,17 @@ extern "C" {
         }                                                                     \
     }
 #else
-    #define ELOG_ASSERT(EXPR)                    ((void)0);
+    #define ELOG_ASSERT(EXPR)                ((void)0)
 #endif
 
 #ifndef ELOG_OUTPUT_ENABLE
-    #define elog_raw(...)
-    #define elog_assert(tag, ...)
-    #define elog_error(tag, ...)
-    #define elog_warn(tag, ...)
-    #define elog_info(tag, ...)
-    #define elog_debug(tag, ...)
-    #define elog_verbose(tag, ...)
+    #define elog_raw(...)                    ((void)0)
+    #define elog_assert(tag, ...)            ((void)0)
+    #define elog_error(tag, ...)             ((void)0)
+    #define elog_warn(tag, ...)              ((void)0)
+    #define elog_info(tag, ...)              ((void)0)
+    #define elog_debug(tag, ...)             ((void)0)
+    #define elog_verbose(tag, ...)           ((void)0)
 #else /* ELOG_OUTPUT_ENABLE */
 
     #ifdef ELOG_FMT_USING_FUNC
@@ -105,42 +105,42 @@ extern "C" {
         #define elog_assert(tag, ...) \
                 elog_output(ELOG_LVL_ASSERT, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
-        #define elog_assert(tag, ...)
+        #define elog_assert(tag, ...)        ((void)0)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_ASSERT */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_ERROR
         #define elog_error(tag, ...) \
                 elog_output(ELOG_LVL_ERROR, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
-        #define elog_error(tag, ...)
+        #define elog_error(tag, ...)         ((void)0)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_ERROR */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_WARN
         #define elog_warn(tag, ...) \
                 elog_output(ELOG_LVL_WARN, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
-        #define elog_warn(tag, ...)
+        #define elog_warn(tag, ...)          ((void)0)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_WARN */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_INFO
         #define elog_info(tag, ...) \
                 elog_output(ELOG_LVL_INFO, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
-        #define elog_info(tag, ...)
+        #define elog_info(tag, ...)          ((void)0)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_INFO */
 
     #if ELOG_OUTPUT_LVL >= ELOG_LVL_DEBUG
         #define elog_debug(tag, ...) \
                 elog_output(ELOG_LVL_DEBUG, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
-        #define elog_debug(tag, ...)
+        #define elog_debug(tag, ...)         ((void)0)
     #endif /* ELOG_OUTPUT_LVL >= ELOG_LVL_DEBUG */
 
     #if ELOG_OUTPUT_LVL == ELOG_LVL_VERBOSE
         #define elog_verbose(tag, ...) \
                 elog_output(ELOG_LVL_VERBOSE, tag, ELOG_OUTPUT_DIR, ELOG_OUTPUT_FUNC, ELOG_OUTPUT_LINE, __VA_ARGS__)
     #else
-        #define elog_verbose(tag, ...)
+        #define elog_verbose(tag, ...)       ((void)0)
     #endif /* ELOG_OUTPUT_LVL == ELOG_LVL_VERBOSE */
 #endif /* ELOG_OUTPUT_ENABLE */
 
@@ -242,32 +242,32 @@ void elog_hexdump(const char *name, uint8_t width, const void *buf, uint16_t siz
 #if LOG_LVL >= ELOG_LVL_ASSERT
     #define log_a(...)       elog_a(LOG_TAG, __VA_ARGS__)
 #else
-    #define log_a(...)       ((void)0);
+    #define log_a(...)       ((void)0)
 #endif
 #if LOG_LVL >= ELOG_LVL_ERROR
     #define log_e(...)       elog_e(LOG_TAG, __VA_ARGS__)
 #else
-    #define log_e(...)       ((void)0);
+    #define log_e(...)       ((void)0)
 #endif
 #if LOG_LVL >= ELOG_LVL_WARN
     #define log_w(...)       elog_w(LOG_TAG, __VA_ARGS__)
 #else
-    #define log_w(...)       ((void)0);
+    #define log_w(...)       ((void)0)
 #endif
 #if LOG_LVL >= ELOG_LVL_INFO
     #define log_i(...)       elog_i(LOG_TAG, __VA_ARGS__)
 #else
-    #define log_i(...)       ((void)0);
+    #define log_i(...)       ((void)0)
 #endif
 #if LOG_LVL >= ELOG_LVL_DEBUG
     #define log_d(...)       elog_d(LOG_TAG, __VA_ARGS__)
 #else
-    #define log_d(...)       ((void)0);
+    #define log_d(...)       ((void)0)
 #endif
 #if LOG_LVL >= ELOG_LVL_VERBOSE
     #define log_v(...)       elog_v(LOG_TAG, __VA_ARGS__)
 #else
-    #define log_v(...)       ((void)0);
+    #define log_v(...)       ((void)0)
 #endif
 
 /* assert API short definition */
