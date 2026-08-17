@@ -213,7 +213,7 @@ void elog_deinit(void) {
     if (!elog.init_ok) {
         return ;
     }
-    
+
 #ifdef ELOG_ASYNC_OUTPUT_ENABLE
     elog_async_deinit();
 #endif
@@ -232,7 +232,7 @@ void elog_start(void) {
     if (!elog.init_ok) {
         return ;
     }
-    
+
     /* enable output */
     elog_set_output_enabled(true);
 
@@ -282,7 +282,7 @@ void elog_set_output_enabled(bool enabled) {
 #ifdef ELOG_COLOR_ENABLE
 /**
  * set log text color enable or disable
- * 
+ *
  * @param enabled TRUE: enable FALSE:disable
  */
 void elog_set_text_color_enabled(bool enabled) {
@@ -369,7 +369,7 @@ void elog_set_filter_kw(const char *keyword) {
 }
 
 /**
- * lock output 
+ * lock output
  */
 void elog_output_lock(void) {
     if (elog.output_lock_enabled) {
@@ -462,6 +462,7 @@ void elog_set_filter_tag_lvl(const char *tag, uint8_t level)
                     strncpy(elog.filter.tag_lvl[i].tag, tag, ELOG_FILTER_TAG_MAX_LEN);
                     elog.filter.tag_lvl[i].level = level;
                     elog.filter.tag_lvl[i].tag_use_flag = true;
+                    elog_set_filter_tag(tag);
                     break;
                 }
             }
@@ -661,7 +662,7 @@ void elog_output(uint8_t level, const char *tag, const char *file, const char *f
         /* package func info */
         if (get_fmt_used_and_enabled_ptr(level, ELOG_FMT_FUNC, func)) {
             log_len += elog_strcpy(log_len, log_buf + log_len, func);
-            
+
         }
         log_len += elog_strcpy(log_len, log_buf + log_len, ")");
     }
