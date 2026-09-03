@@ -1627,7 +1627,7 @@ static __INLINE uint32_t NVIC_GetPriority(IRQn_Type IRQn)
  * Encode the priority for an interrupt with the given priority group,
  * preemptive priority value and sub priority value.
  * In case of a conflict between priority grouping and available
- * priority bits (__NVIC_PRIO_BITS) the samllest possible priority group is set.
+ * priority bits (__NVIC_PRIO_BITS) the smallest possible priority group is set.
  *
  * The returned priority value can be used for NVIC_SetPriority(...) function
  */
@@ -1658,7 +1658,7 @@ static __INLINE uint32_t NVIC_EncodePriority (uint32_t PriorityGroup, uint32_t P
  * Decode an interrupt priority value with the given priority group to 
  * preemptive priority value and sub priority value.
  * In case of a conflict between priority grouping and available
- * priority bits (__NVIC_PRIO_BITS) the samllest possible priority group is set.
+ * priority bits (__NVIC_PRIO_BITS) the smallest possible priority group is set.
  *
  * The priority value can be retrieved with NVIC_GetPriority(...) function
  */
