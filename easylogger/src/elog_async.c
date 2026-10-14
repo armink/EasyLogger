@@ -146,10 +146,12 @@ static size_t async_put_log(const char *log, size_t size) {
         size = 0;
         goto __exit;
     }
-    /* drop some log */
+
+    /* If the remaining space is insufficient to accommodate the full log, 
+     * the entire entry is discarded to avoid destroying the console format */
     if (space <= size) {
-        size = space;
-        buf_is_full = true;
+        size = 0;
+        goto __exit;
     }
 
     if (write_index + size < OUTPUT_BUF_SIZE) {
