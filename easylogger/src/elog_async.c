@@ -146,9 +146,17 @@ static size_t async_put_log(const char *log, size_t size) {
         size = 0;
         goto __exit;
     }
-    /* drop some log */
-    if (space <= size) {
-        size = space;
+
+    /* If the remaining space is insufficient to accommodate the full log, 
+     * the entire entry is discarded to avoid destroying the console format */
+    if (space < size) {
+        size = 0;
+        goto __exit;
+    }
+
+    /* the frame fits exactly: the whole ring buffer becomes full, keep
+     * write_index == read_index unambiguous */
+    if (space == size) {
         buf_is_full = true;
     }
 
